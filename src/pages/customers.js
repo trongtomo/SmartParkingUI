@@ -12,7 +12,7 @@ import { CustomersSearch } from "src/sections/customer/customers-search";
 import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment"; // Import moment
 
-const apiUrl = "http://localhost:3000/api/admin/registrations/allRegistrations";
+const apiUrl = "https://server.smartparking.site/api/admin/registrations/allRegistrations";
 const bearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6NCwidXNlcm5hbWUiOiIwOTA2NjExNDEyIiwiY3JlYXRlZEF0IjoiMjAyMy0xMS0yOVQwMToyMDo0NS4xMjRaIn0sImlhdCI6MTcwMTIyMDg0NX0.ojYyZABijQYbN4Mgkfy8gzUYM8xxzsjPj77hLTP0MfA";
 

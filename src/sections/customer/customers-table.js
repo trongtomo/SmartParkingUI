@@ -34,7 +34,7 @@ export const RegistrationsTable = (props) => {
   const handleVerify = async (registrationId) => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/admin/registrations/${registrationId}`,
+        `https://server.smartparking.site/api/admin/registrations/${registrationId}`,
         {
           // Additional data to include in the request body if needed
         },
@@ -55,7 +55,7 @@ export const RegistrationsTable = (props) => {
   const handleDisable = async (registrationId) => {
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/admin/registrations/disable/${registrationId}`,
+        `https://server.smartparking.site/api/admin/registrations/disable/${registrationId}`,
         {
           // Additional data to include in the request body if needed
         },

@@ -11,7 +11,7 @@ const RegistrationDetailPage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/admin/registrations/${registrationId}`,
+          `https://server.smartparking.site/api/admin/registrations/${registrationId}`,
           {
             headers: {
               Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6NCwidXNlcm5hbWUiOiIwOTA2NjExNDEyIiwiY3JlYXRlZEF0IjoiMjAyMy0xMS0yOVQwMToyMDo0NS4xMjRaIn0sImlhdCI6MTcwMTIyMDg0NX0.ojYyZABijQYbN4Mgkfy8gzUYM8xxzsjPj77hLTP0MfA`,

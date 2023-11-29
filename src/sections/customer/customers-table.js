@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
-import { format } from 'date-fns';
+import PropTypes from "prop-types";
+import moment from "moment"; // Import moment
 import {
-  Avatar,
   Box,
   Card,
   Checkbox,
@@ -12,12 +11,13 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography
-} from '@mui/material';
-import { Scrollbar } from 'src/components/scrollbar';
-import { getInitials } from 'src/utils/get-initials';
-
-export const CustomersTable = (props) => {
+  Typography,
+  Button,
+} from "@mui/material";
+import { Scrollbar } from "src/components/scrollbar";
+import axios from "axios";
+import Link from "next/link";
+export const RegistrationsTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -29,11 +29,51 @@ export const CustomersTable = (props) => {
     onSelectOne,
     page = 0,
     rowsPerPage = 0,
-    selected = []
+    selected = [],
   } = props;
+  const handleVerify = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/api/admin/registrations/${registrationId}`,
+        {
+          // Additional data to include in the request body if needed
+        },
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6NCwidXNlcm5hbWUiOiIwOTA2NjExNDEyIiwiY3JlYXRlZEF0IjoiMjAyMy0xMS0yOVQwMToyMDo0NS4xMjRaIn0sImlhdCI6MTcwMTIyMDg0NX0.ojYyZABijQYbN4Mgkfy8gzUYM8xxzsjPj77hLTP0MfA`,
+          },
+        }
+      );
 
-  const selectedSome = (selected.length > 0) && (selected.length < items.length);
-  const selectedAll = (items.length > 0) && (selected.length === items.length);
+      // Handle the response as needed
+      console.log("Verification response:", response.data);
+    } catch (error) {
+      console.error("Error verifying registration:", error);
+    }
+  };
+
+  const handleDisable = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/api/admin/registrations/disable/${registrationId}`,
+        {
+          // Additional data to include in the request body if needed
+        },
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6NCwidXNlcm5hbWUiOiIwOTA2NjExNDEyIiwiY3JlYXRlZEF0IjoiMjAyMy0xMS0yOVQwMToyMDo0NS4xMjRaIn0sImlhdCI6MTcwMTIyMDg0NX0.ojYyZABijQYbN4Mgkfy8gzUYM8xxzsjPj77hLTP0MfA`,
+          },
+        }
+      );
+
+      // Handle the response as needed
+      console.log("Disable response:", response.data);
+    } catch (error) {
+      console.error("Error disabling registration:", error);
+    }
+  };
+  const selectedSome = selected.length > 0 && selected.length < items.length;
+  const selectedAll = items.length > 0 && selected.length === items.length;
 
   return (
     <Card>
@@ -55,72 +95,72 @@ export const CustomersTable = (props) => {
                     }}
                   />
                 </TableCell>
-                <TableCell>
-                  Name
-                </TableCell>
-                <TableCell>
-                  Email
-                </TableCell>
-                <TableCell>
-                  Location
-                </TableCell>
-                <TableCell>
-                  Phone
-                </TableCell>
-                <TableCell>
-                  Signed Up
-                </TableCell>
+                <TableCell>Registration ID</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Amount</TableCell>
+                <TableCell>Approved By</TableCell>
+                <TableCell>Expired Date</TableCell>
+                <TableCell>Face Image</TableCell>
+                {/* ... (Add other properties) */}
+                <TableCell>Created At</TableCell>
+                <TableCell>Updated At</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((customer) => {
-                const isSelected = selected.includes(customer.id);
-                const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
+              {items.map((registration) => {
+                const isSelected = selected.includes(registration.registrationId);
+                const createdAt = registration.createdAt
+                  ? moment(registration.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                  : "";
+                const updatedAt = registration.updatedAt
+                  ? moment(registration.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                  : "";
 
                 return (
-                  <TableRow
-                    hover
-                    key={customer.id}
-                    selected={isSelected}
-                  >
+                  <TableRow hover key={registration.registrationId} selected={isSelected}>
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={isSelected}
                         onChange={(event) => {
                           if (event.target.checked) {
-                            onSelectOne?.(customer.id);
+                            onSelectOne?.(registration.registrationId);
                           } else {
-                            onDeselectOne?.(customer.id);
+                            onDeselectOne?.(registration.registrationId);
                           }
                         }}
                       />
                     </TableCell>
                     <TableCell>
-                      <Stack
-                        alignItems="center"
-                        direction="row"
-                        spacing={2}
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleVerify(registration.registrationId)}
                       >
-                        <Avatar src={customer.avatar}>
-                          {getInitials(customer.name)}
-                        </Avatar>
-                        <Typography variant="subtitle2">
-                          {customer.name}
-                        </Typography>
-                      </Stack>
+                        Verify
+                      </Button>
                     </TableCell>
                     <TableCell>
-                      {customer.email}
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleDisable(registration.registrationId)}
+                      >
+                        Disable
+                      </Button>
                     </TableCell>
                     <TableCell>
-                      {customer.address.city}, {customer.address.state}, {customer.address.country}
+                      <Link href={`/registrations/${registration.registrationId}`}>
+                        {registration.registrationId}
+                      </Link>
                     </TableCell>
-                    <TableCell>
-                      {customer.phone}
-                    </TableCell>
-                    <TableCell>
-                      {createdAt}
-                    </TableCell>
+                    <TableCell>{registration.registrationStatus}</TableCell>
+                    <TableCell>{registration.amount}</TableCell>
+                    <TableCell>{registration.approvedBy}</TableCell>
+                    <TableCell>{registration.expiredDate}</TableCell>
+                    <TableCell>{registration.faceImage}</TableCell>
+                    {/* ... (Add other cells) */}
+                    <TableCell>{createdAt}</TableCell>
+                    <TableCell>{updatedAt}</TableCell>
                   </TableRow>
                 );
               })}
@@ -141,7 +181,7 @@ export const CustomersTable = (props) => {
   );
 };
 
-CustomersTable.propTypes = {
+RegistrationsTable.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,
   onDeselectAll: PropTypes.func,
@@ -152,5 +192,5 @@ CustomersTable.propTypes = {
   onSelectOne: PropTypes.func,
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
-  selected: PropTypes.array
+  selected: PropTypes.array,
 };

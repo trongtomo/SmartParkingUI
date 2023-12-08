@@ -62,7 +62,7 @@ export const AccountProfile = () => (
         fullWidth
         variant="text"
       >
-        Upload picture
+       Active Account
       </Button>
     </CardActions>
   </Card>

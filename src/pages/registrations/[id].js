@@ -11,10 +11,10 @@ const RegistrationDetailPage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://server.smartparking.site/api/admin/registrations/${registrationId}`,
+          `https://server-dev.smartparking.site//api/admin/registrations/${registrationId}`,
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6NCwidXNlcm5hbWUiOiIwOTA2NjExNDEyIiwiY3JlYXRlZEF0IjoiMjAyMy0xMS0yOVQwNDozNjo0Ny45MThaIn0sImlhdCI6MTcwMTIzMjYwN30.DpbRMxo6_v931LjfYZ6XlFFGxT2-n9oPGmgZeORC1dM`,
+              Authorization: `Bearer ${process.env.BEARER_TOKEN}`,
             },
           }
         );

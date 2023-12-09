@@ -4,13 +4,12 @@ import Head from "next/head";
 import { Box, Button, Container, Stack, Typography, Unstable_Grid2 as Grid } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import moment from "moment";
+import { useAuthContext } from "src/contexts/auth-context";
+import { useRouter } from "next/router";
 
-import { useRouter, router } from "next/router";
-
-const apiUrl = "http://localhost:3000/api/admin/registrations";
-const bearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwMDo1NTozNC45MjhaIn0sImlhdCI6MTcwMjA4MzMzNH0.YnWOzi4oA9m7UUu49q_aNXSEB3BwNOuJLc2wmD4d8k4";
-
+const apiUrl = "http://localhost:3000";
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwOTo1MzoyMy4xMTBaIn0sImlhdCI6MTcwMjExNTYwM30.FhA6rTVWvi05cYuzs_Jp8bqJajeKqEHhKyO9NvDj_A4";
 const RegistrationDetailPage = ({ registration }) => {
   if (!registration) {
     return (
@@ -40,7 +39,7 @@ const RegistrationDetailPage = ({ registration }) => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${bearerToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -52,11 +51,11 @@ const RegistrationDetailPage = ({ registration }) => {
   const handleActivate = async (registrationId) => {
     try {
       const response = await axios.put(
-        `/api/admin/registrations/active/${registrationId}`,
+        `${apiUrl}/api/admin/registrations/active/${registrationId}`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${bearerToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -73,11 +72,11 @@ const RegistrationDetailPage = ({ registration }) => {
   const handleVerify = async (registrationId) => {
     try {
       const response = await axios.put(
-        `/api/admin/registrations/verify/${registrationId}`,
+        `${apiUrl}/api/admin/registrations/verify/${registrationId}`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${bearerToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -93,27 +92,9 @@ const RegistrationDetailPage = ({ registration }) => {
 
   const handleReject = async (registrationId) => {
     try {
-      const response = await axios.put(`/api/admin/registrations/reject/${registrationId}`, {});
-      if (response.data.success) {
-        // Do something on success
-      } else {
-        // Handle errors
-      }
-    } catch (error) {
-      console.error("Error rejecting registration:", error);
-    }
-  };
-
-  const handleApprove = async (registrationId) => {
-    try {
       const response = await axios.put(
-        `/api/admin/registrations/approve/${registrationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
+        `${apiUrl}/api/admin/registrations/reject/${registrationId}`,
+        {}
       );
       if (response.data.success) {
         // Do something on success
@@ -121,7 +102,7 @@ const RegistrationDetailPage = ({ registration }) => {
         // Handle errors
       }
     } catch (error) {
-      console.error("Error approving registration:", error);
+      console.error("Error rejecting registration:", error);
     }
   };
 
@@ -189,47 +170,19 @@ const RegistrationDetailPage = ({ registration }) => {
                     {/* Add other details here */}
                     {/* Additional buttons based on registration status */}
                     <Stack spacing={1}>
-                      <Button
-                        onClick={() => handleActivate(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Paid" ||
-                          registration.registrationStatus === "Disabled" ||
-                          registration.registrationStatus === "Rejected"
-                        }
-                      >
+                      <Button onClick={() => handleActivate(registration.registrationId)}>
                         Activate
                       </Button>
 
-                      <Button
-                        onClick={() => handleReject(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Paid" ||
-                          registration.registrationStatus === "Disabled" ||
-                          registration.registrationStatus === "Rejected"
-                        }
-                      >
+                      <Button onClick={() => handleReject(registration.registrationId)}>
                         Reject
                       </Button>
 
-                      <Button
-                        onClick={() => handleDisable(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Active" &&
-                          registration.registrationStatus !== "Deactive" &&
-                          registration.registrationStatus !== "Verify"
-                        }
-                      >
+                      <Button onClick={() => handleDisable(registration.registrationId)}>
                         Disable
                       </Button>
 
-                      {/* Additional buttons based on registration status */}
-                      <Button
-                        onClick={() => handleVerify(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Verify" ||
-                          registration.registrationStatus === "Disabled"
-                        }
-                      >
+                      <Button onClick={() => handleVerify(registration.registrationId)}>
                         Verify
                       </Button>
 
@@ -260,9 +213,9 @@ export const getServerSideProps = async ({ params }) => {
   const { id } = params;
 
   try {
-    const response = await axios.get(`${apiUrl}/${id}`, {
+    const response = await axios.get(`${apiUrl}/api/admin/registrations/${id}`, {
       headers: {
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 

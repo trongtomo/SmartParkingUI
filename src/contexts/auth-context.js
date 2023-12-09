@@ -134,25 +134,35 @@ export const AuthProvider = (props) => {
         username,
         password,
       });
-      console.log("API Response:", response);
+
       const token = response.data.data.token;
       setToken(token);
+      console.log("Stored Token:", localStorage.getItem("accessToken"));
+
+      const responseData = response.data.data;
+
+      // Check if roleIds is present in the response
+      const roleIds = responseData.roleIds || [];
+
       const user = {
-        id: response.data.data.user.userId,
-        fullName: response.data.data.user.fullName,
-        username: response.data.data.user.username,
-        isActive: response.data.data.user.isActive,
-        firebaseToken: response.data.data.user.firebaseToken,
-        createdAt: response.data.data.user.createdAt,
-        updatedAt: response.data.data.user.updatedAt,
+        id: responseData.userId,
+        fullName: responseData.fullName,
+        username: responseData.username,
+        isActive: responseData.isActive,
+        firebaseToken: responseData.firebaseToken,
+        createdAt: responseData.createdAt,
+        updatedAt: responseData.updatedAt,
+        roleIds: roleIds, // Provide a default value or handle it according to your logic
       };
+
       dispatch({
         type: HANDLERS.SIGN_IN,
         payload: user,
       });
+
       return response;
     } catch (error) {
-      // Handle login error
+      console.error("Login Error:", error);
       throw new Error("Invalid credentials");
     }
   };

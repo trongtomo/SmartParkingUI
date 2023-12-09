@@ -1,11 +1,8 @@
 import PropTypes from "prop-types";
-import moment from "moment"; // Import moment
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import moment from "moment";
 import {
   Box,
   Card,
-  Checkbox,
   Stack,
   Table,
   TableBody,
@@ -17,9 +14,9 @@ import {
   Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
+import Link from "next/link"; // Import Link from Next.js
 
-import Link from "next/link";
-export const RegistrationsTable = (props) => {
+export const ParkingSessionsTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -28,6 +25,7 @@ export const RegistrationsTable = (props) => {
     page = 0,
     rowsPerPage = 0,
   } = props;
+
   return (
     <Card>
       <Scrollbar>
@@ -35,40 +33,46 @@ export const RegistrationsTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Registration ID</TableCell>
-                <TableCell>User's phone</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell>Parking Session ID</TableCell>
+                <TableCell>Card ID</TableCell>
+                <TableCell>Check-in Time</TableCell>
+                <TableCell>Check-out Time</TableCell>
                 <TableCell>Approved By</TableCell>
-                <TableCell>Expired Date</TableCell>
                 <TableCell>Plate Number</TableCell>
+                <TableCell>Parking Fee</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((registration) => {
-                const expiredDate = registration.expiredDate
-                  ? moment(registration.expiredDate).format("DD/MM/YYYY HH:mm:ss")
+              {items.map((session) => {
+                const checkinTime = session.checkinTime
+                  ? moment(session.checkinTime).format("DD/MM/YYYY HH:mm:ss")
                   : "";
-                const createdAt = registration.createdAt
-                  ? moment(registration.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                const checkoutTime = session.checkoutTime
+                  ? moment(session.checkoutTime).format("DD/MM/YYYY HH:mm:ss")
                   : "";
-                const updatedAt = registration.updatedAt
-                  ? moment(registration.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                const createdAt = session.createdAt
+                  ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
                   : "";
+                const updatedAt = session.updatedAt
+                  ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                  : "";
+
                 return (
-                  <TableRow hover key={registration.registrationId}>
+                  <TableRow hover key={session.parkingSessionId}>
                     <TableCell>
-                      <Link href={`/registrations/${registration.registrationId}`}>
-                        {registration.registrationId}
+                      <Link href={`/parkingSessions/${session.parkingSessionId}`}>
+                        {session.parkingSessionId}
                       </Link>
                     </TableCell>
-                    <TableCell>{registration.username}</TableCell>
-                    <TableCell>{registration.registrationStatus}</TableCell>
-                    <TableCell>{registration.approvedBy}</TableCell>
-                    <TableCell>{expiredDate}</TableCell>
-                    <TableCell>{registration.plateNumber}</TableCell>
+                    <TableCell>{session.cardId}</TableCell>
+                    <TableCell>{checkinTime}</TableCell>
+                    <TableCell>{checkoutTime}</TableCell>
+                    <TableCell>{session.approvedBy}</TableCell>
+                    <TableCell>{session.plateNumber}</TableCell>
+                    <TableCell>{session.parkingFee}</TableCell>
                     <TableCell>{createdAt}</TableCell>
                     <TableCell>{updatedAt}</TableCell>
                     <TableCell>
@@ -76,7 +80,7 @@ export const RegistrationsTable = (props) => {
                         <Button
                           variant="contained"
                           color="primary"
-                          href={`/registrations/${registration.registrationId}`}
+                          href={`/parkingSessions/${session.parkingSessionId}`}
                         >
                           Details
                         </Button>
@@ -102,7 +106,7 @@ export const RegistrationsTable = (props) => {
   );
 };
 
-RegistrationsTable.propTypes = {
+ParkingSessionsTable.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,
   onPageChange: PropTypes.func,

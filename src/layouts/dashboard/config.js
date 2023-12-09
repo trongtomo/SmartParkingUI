@@ -29,7 +29,7 @@ export const items = [
   },
   {
     title: "ParkingSession",
-    path: "/companies",
+    path: "/parkingSessions",
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingBagIcon />
@@ -37,8 +37,8 @@ export const items = [
     ),
   },
   {
-    title: "Card",
-    path: "/account",
+    title: "Users",
+    path: "/users",
     icon: (
       <SvgIcon fontSize="small">
         <UserIcon />
@@ -46,11 +46,20 @@ export const items = [
     ),
   },
   {
-    title: "Manage User",
-    path: "/account",
+    title: "Manage Cards",
+    path: "/cards",
     icon: (
       <SvgIcon fontSize="small">
-        <UserIcon />
+        <ShoppingBagIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Payment Histories",
+    path: "/paymentHistories",
+    icon: (
+      <SvgIcon fontSize="small">
+        <XCircleIcon />
       </SvgIcon>
     ),
   },
@@ -59,12 +68,12 @@ export const items = [
     path: "/account",
     icon: (
       <SvgIcon fontSize="small">
-        <UserIcon />
+        <UserPlusIcon />
       </SvgIcon>
     ),
   },
   {
-    title: "Payment",
+    title: "Settings",
     path: "/settings",
     icon: (
       <SvgIcon fontSize="small">
@@ -72,6 +81,7 @@ export const items = [
       </SvgIcon>
     ),
   },
+
   {
     title: "Login",
     path: "/auth/login",

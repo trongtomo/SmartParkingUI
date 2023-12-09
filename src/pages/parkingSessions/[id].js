@@ -4,19 +4,20 @@ import Head from "next/head";
 import { Box, Button, Container, Stack, Typography, Unstable_Grid2 as Grid } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import moment from "moment";
+import { useRouter } from "next/router";
 
-import { useRouter, router } from "next/router";
-
-const apiUrl = "http://localhost:3000/api/admin/registrations";
-const bearerToken =
+const apiUrl = "http://localhost:3000";
+const token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwMDo1NTozNC45MjhaIn0sImlhdCI6MTcwMjA4MzMzNH0.YnWOzi4oA9m7UUu49q_aNXSEB3BwNOuJLc2wmD4d8k4";
 
-const RegistrationDetailPage = ({ registration }) => {
-  if (!registration) {
+const SessionDetailPage = ({ session }) => {
+  const router = useRouter();
+
+  if (!session) {
     return (
       <>
         <Head>
-          <title>Registration Not Found | Smart-Parking</title>
+          <title>Session Not Found | Smart-Parking</title>
         </Head>
         <Box
           component="main"
@@ -26,104 +27,12 @@ const RegistrationDetailPage = ({ registration }) => {
           }}
         >
           <Container maxWidth="xl">
-            <Typography variant="h4">Registration Not Found</Typography>
+            <Typography variant="h4">Session Not Found</Typography>
           </Container>
         </Box>
       </>
     );
   }
-
-  const handleDisable = async (registrationId) => {
-    try {
-      const response = await axios.put(
-        `${apiUrl}/api/admin/registrations/disable/${registrationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error disabling registration:", error.response?.data || error.message);
-    }
-  };
-
-  const handleActivate = async (registrationId) => {
-    try {
-      const response = await axios.put(
-        `/api/admin/registrations/active/${registrationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      );
-      if (response.data.success) {
-        // Do something on success
-      } else {
-        // Handle errors
-      }
-    } catch (error) {
-      console.error("Error activating registration:", error);
-    }
-  };
-
-  const handleVerify = async (registrationId) => {
-    try {
-      const response = await axios.put(
-        `/api/admin/registrations/verify/${registrationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      );
-      if (response.data.success) {
-        // Do something on success
-      } else {
-        // Handle errors
-      }
-    } catch (error) {
-      console.error("Error verifying registration:", error);
-    }
-  };
-
-  const handleReject = async (registrationId) => {
-    try {
-      const response = await axios.put(`/api/admin/registrations/reject/${registrationId}`, {});
-      if (response.data.success) {
-        // Do something on success
-      } else {
-        // Handle errors
-      }
-    } catch (error) {
-      console.error("Error rejecting registration:", error);
-    }
-  };
-
-  const handleApprove = async (registrationId) => {
-    try {
-      const response = await axios.put(
-        `/api/admin/registrations/approve/${registrationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        }
-      );
-      if (response.data.success) {
-        // Do something on success
-      } else {
-        // Handle errors
-      }
-    } catch (error) {
-      console.error("Error approving registration:", error);
-    }
-  };
 
   return (
     <>
@@ -131,7 +40,7 @@ const RegistrationDetailPage = ({ registration }) => {
         <div>
           <button onClick={() => router.back()}>Back</button>
         </div>
-        <title>{`Registration #${registration.registrationId} | Smart-Parking`}</title>
+        <title>{`Session #${session.parkingSessionId} | Smart-Parking`}</title>
       </Head>
       <Box
         component="main"
@@ -144,105 +53,70 @@ const RegistrationDetailPage = ({ registration }) => {
           <Stack spacing={3}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Button onClick={() => router.back()}>Back</Button>
-              <Typography variant="h4">{`Registration #${registration.registrationId}`}</Typography>
+              <Typography variant="h4">{`Session #${session.parkingSessionId}`}</Typography>
             </Stack>
 
             <Grid container spacing={3}>
-              {/* Face Image on the left */}
-              <Grid item xs={12} md={6} lg={4}>
-                {registration.faceImage && (
-                  <img
-                    src={`data:image/png;base64, ${registration.faceImage}`}
-                    alt={`Face of ${registration.username}`}
-                    style={{ width: "100%", height: "auto" }}
-                  />
-                )}
-              </Grid>
+              {[
+                session.checkinFaceImage,
+                session.checkinPlateNumberImage,
+                session.checkoutFaceImage,
+                session.checkoutPlateNumberImage,
+              ].map((image, index) => (
+                <Grid item key={index} xs={12} md={6} lg={4}>
+                  {image && (
+                    <img
+                      src={`data:image/png;base64, ${image}`}
+                      alt={`Image ${index + 1}`}
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                  )}
+                </Grid>
+              ))}
 
-              {/* Registration Details on the right */}
-              <Grid item xs={12} md={6} lg={8}>
-                <Box
-                  sx={{
-                    backgroundColor: "#f0f0f0", // Set your preferred background color
-                    borderRadius: 4,
-                    padding: 3,
-                  }}
-                >
-                  <Stack spacing={1}>
-                    <Typography variant="body1">{`Registration Status: ${registration.registrationStatus}`}</Typography>
-                    <Typography variant="body1">{`Approved By: ${registration.approvedBy}`}</Typography>
-                    <Typography variant="body1">{`Expired Date: ${moment(
-                      registration.expiredDate
-                    ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
-                    <Typography variant="body1">{`Plate Number: ${registration.plateNumber}`}</Typography>
-                    <Typography variant="body1">{`Model: ${registration.model}`}</Typography>
-                    <Typography variant="body1">{`Registration Number: ${registration.registrationNumber}`}</Typography>
-                    <Typography variant="body1">{`Manufacture: ${registration.manufacture}`}</Typography>
-                    <Typography variant="body1">{`Gender: ${registration.gender}`}</Typography>
-                    <Typography variant="body1">{`User ID: ${registration.userId}`}</Typography>
-                    <Typography variant="body1">{`Created At: ${moment(
-                      registration.createdAt
-                    ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
-                    <Typography variant="body1">{`Updated At: ${moment(
-                      registration.updatedAt
-                    ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
-                    {/* Add other details here */}
-                    {/* Additional buttons based on registration status */}
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6} lg={4}>
+                  {/* No images to display */}
+                </Grid>
+
+                <Grid item xs={12} md={6} lg={8}>
+                  <Box
+                    sx={{
+                      backgroundColor: "#f0f0f0",
+                      borderRadius: 4,
+                      padding: 3,
+                    }}
+                  >
                     <Stack spacing={1}>
-                      <Button
-                        onClick={() => handleActivate(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Paid" ||
-                          registration.registrationStatus === "Disabled" ||
-                          registration.registrationStatus === "Rejected"
-                        }
-                      >
-                        Activate
-                      </Button>
+                      <Typography variant="body1">{`Card ID: ${session.cardId}`}</Typography>
+                      <Typography variant="body1">{`Check-in Time: ${moment(
+                        session.checkinTime
+                      ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
+                      <Typography variant="body1">{`Check-out Time: ${moment(
+                        session.checkoutTime
+                      ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
+                      <Typography variant="body1">{`Approved By: ${session.approvedBy}`}</Typography>
+                      <Typography variant="body1">{`Plate Number: ${session.plateNumber}`}</Typography>
+                      <Typography variant="body1">{`Parking Fee: ${session.parkingFee}`}</Typography>
+                      <Typography variant="body1">{`Created At: ${moment(session.createdAt).format(
+                        "YYYY-MM-DD HH:mm:ss"
+                      )}`}</Typography>
+                      <Typography variant="body1">{`Updated At: ${moment(session.updatedAt).format(
+                        "YYYY-MM-DD HH:mm:ss"
+                      )}`}</Typography>
 
-                      <Button
-                        onClick={() => handleReject(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Paid" ||
-                          registration.registrationStatus === "Disabled" ||
-                          registration.registrationStatus === "Rejected"
-                        }
-                      >
-                        Reject
-                      </Button>
+                      {/* Display Parking Type ID or Name */}
+                      <Typography variant="body1">
+                        {`Parking Type: ${
+                          session.ParkingType?.parkingTypeId || session.parkingTypeId
+                        }`}
+                      </Typography>
 
-                      <Button
-                        onClick={() => handleDisable(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Active" &&
-                          registration.registrationStatus !== "Deactive" &&
-                          registration.registrationStatus !== "Verify"
-                        }
-                      >
-                        Disable
-                      </Button>
-
-                      {/* Additional buttons based on registration status */}
-                      <Button
-                        onClick={() => handleVerify(registration.registrationId)}
-                        disabled={
-                          registration.registrationStatus !== "Verify" ||
-                          registration.registrationStatus === "Disabled"
-                        }
-                      >
-                        Verify
-                      </Button>
-
-                      {/* Display message for Rejected and Disabled states */}
-                      {(registration.registrationStatus === "Rejected" ||
-                        registration.registrationStatus === "Disabled") && (
-                        <Typography variant="body1">
-                          {`Registration ${registration.registrationStatus}`}
-                        </Typography>
-                      )}
+                      {/* Additional details from ParkingType if needed */}
+                      {/* <Typography variant="body1">{`Parking Type Description: ${session.ParkingType?.description}`}</Typography> */}
                     </Stack>
-                  </Stack>
-                </Box>
+                  </Box>
+                </Grid>
               </Grid>
             </Grid>
           </Stack>
@@ -252,24 +126,24 @@ const RegistrationDetailPage = ({ registration }) => {
   );
 };
 
-RegistrationDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+SessionDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default RegistrationDetailPage;
+export default SessionDetailPage;
 
 export const getServerSideProps = async ({ params }) => {
   const { id } = params;
 
   try {
-    const response = await axios.get(`${apiUrl}/${id}`, {
+    const response = await axios.get(`${apiUrl}/api/admin/sessions/${id}`, {
       headers: {
-        Authorization: `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
-    if (response.data.success && response.data.data && response.data.data.registration) {
-      const registration = response.data.data.registration;
+    if (response.data.success && response.data.data && response.data.data.parkingSession) {
+      const session = response.data.data.parkingSession;
       return {
-        props: { registration },
+        props: { session },
       };
     } else {
       return {
@@ -277,7 +151,7 @@ export const getServerSideProps = async ({ params }) => {
       };
     }
   } catch (error) {
-    console.error("Error fetching registration data:", error);
+    console.error("Error fetching session data:", error);
     return {
       props: {},
     };

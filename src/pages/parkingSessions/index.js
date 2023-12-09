@@ -12,7 +12,7 @@ import moment from "moment";
 const apiUrl = `http://localhost:3000/api/admin/registrations/allRegistrations`;
 
 const bearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDEzIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wNlQxMzoxNjozMC41ODlaIn0sImlhdCI6MTcwMTg2ODU5MH0.HHGR8YGq94a14C-khCdKE0e_IWciAKlDuCkG2eNaXCA";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwMDo1NTozNC45MjhaIn0sImlhdCI6MTcwMjA4MzMzNH0.YnWOzi4oA9m7UUu49q_aNXSEB3BwNOuJLc2wmD4d8k4";
 
 const Page = () => {
   const [registrations, setRegistrations] = useState([]);

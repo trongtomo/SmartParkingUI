@@ -26,6 +26,26 @@ export const RegistrationsTable = (props) => {
     page = 0,
     rowsPerPage = 0,
   } = props;
+  const apiUrl = `http://localhost:3000`;
+  const bearerToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDEzIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOFQyMjo0MToxOS41OTFaIn0sImlhdCI6MTcwMjA3NTI3OX0.DSuDkWS64sbkrBlrReEI2e8hJud5HwoGN7nGEnxqmIo";
+  const handleDisable = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `${apiUrl}/api/admin/registrations/disable/${registrationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      );
+
+      console.log("Registration disabled:", response.data);
+    } catch (error) {
+      console.error("Error disabling registration:", error.response?.data || error.message);
+    }
+  };
 
   return (
     <Card>
@@ -75,9 +95,9 @@ export const RegistrationsTable = (props) => {
                         <Button
                           variant="contained"
                           color="primary"
-                          onClick={() => handleApprove(registration.registrationId)}
+                          href={`/registrations/${registration.registrationId}`}
                         >
-                          Approve
+                          Details
                         </Button>
                         <Button
                           variant="contained"

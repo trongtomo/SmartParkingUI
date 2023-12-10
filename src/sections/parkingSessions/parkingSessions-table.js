@@ -1,3 +1,4 @@
+// Import necessary modules
 import PropTypes from "prop-types";
 import moment from "moment";
 import {
@@ -14,8 +15,9 @@ import {
   Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
-import Link from "next/link"; // Import Link from Next.js
+import Link from "next/link";
 
+// Define the ParkingSessionsTable component
 export const ParkingSessionsTable = (props) => {
   const {
     count = 0,
@@ -106,6 +108,7 @@ export const ParkingSessionsTable = (props) => {
   );
 };
 
+// Define the PropTypes for the component
 ParkingSessionsTable.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,

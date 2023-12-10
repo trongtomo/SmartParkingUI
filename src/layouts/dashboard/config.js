@@ -47,19 +47,10 @@ export const items = [
   },
   {
     title: "Manage Cards",
-    path: "/cards",
+    path: "/companies",
     icon: (
       <SvgIcon fontSize="small">
         <ShoppingBagIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Payment Histories",
-    path: "/paymentHistories",
-    icon: (
-      <SvgIcon fontSize="small">
-        <XCircleIcon />
       </SvgIcon>
     ),
   },

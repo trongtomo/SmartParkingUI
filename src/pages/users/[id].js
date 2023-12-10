@@ -6,7 +6,7 @@ import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from "@mui/
 
 const apiUrl = "http://localhost:3000";
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwOTo1MzoyMy4xMTBaIn0sImlhdCI6MTcwMjExNTYwM30.FhA6rTVWvi05cYuzs_Jp8bqJajeKqEHhKyO9NvDj_A4";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQyMjoyNjowMy45OThaIn0sImlhdCI6MTcwMjE2MDc2NH0.QebBFmf9EILaR4NTROeffE8ZVNrmOTTn61j3BO92rw4";
 
 const UserDetailPage = ({ user }) => {
   return (

@@ -17,7 +17,7 @@ const UsersIndexPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const router = useRouter();
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwOTo1MzoyMy4xMTBaIn0sImlhdCI6MTcwMjExNTYwM30.FhA6rTVWvi05cYuzs_Jp8bqJajeKqEHhKyO9NvDj_A4";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQyMjowNzoxNS44NzVaIn0sImlhdCI6MTcwMjE1OTYzNX0.J60sJNJPAXtXajholJQ8vg_FWWTJBJgXtuJ3DiTayWg";
 
   useEffect(() => {
     let isMounted = true;

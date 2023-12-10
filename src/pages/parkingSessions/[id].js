@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 
 const apiUrl = "http://localhost:3000";
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA2NjExNDE0IiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQwMDo1NTozNC45MjhaIn0sImlhdCI6MTcwMjA4MzMzNH0.YnWOzi4oA9m7UUu49q_aNXSEB3BwNOuJLc2wmD4d8k4";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQyMjowNzoxNS44NzVaIn0sImlhdCI6MTcwMjE1OTYzNX0.J60sJNJPAXtXajholJQ8vg_FWWTJBJgXtuJ3DiTayWg";
 
 const SessionDetailPage = ({ session }) => {
   const router = useRouter();

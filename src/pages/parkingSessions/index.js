@@ -11,14 +11,14 @@ import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 
-const apiUrl = `https://server-dev.smartparking.site/api/admin/sessions`;
+const apiUrl = `http://localhost:3000/api/admin/sessions`;
 const ParkingSessionsIndexPage = () => {
   const [parkingSessions, setParkingSessions] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const router = useRouter();
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MTEsInVzZXJuYW1lIjoiMDg2NzY5ODc3NyIsImNyZWF0ZWRBdCI6IjIwMjMtMTItMDlUMTc6NDE6NDYuNTU4WiJ9LCJpYXQiOjE3MDIxNDM3MDZ9.pioIH4R9-HhLGcmyvuyST_nRR4pNq-tsEeBae7J7rhA";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQyMjowNzoxNS44NzVaIn0sImlhdCI6MTcwMjE1OTYzNX0.J60sJNJPAXtXajholJQ8vg_FWWTJBJgXtuJ3DiTayWg";
 
   useEffect(() => {
     let isMounted = true;
@@ -29,12 +29,11 @@ const ParkingSessionsIndexPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
+        console.log(response);
         if (isMounted && response.data.code === 200) {
           const parkingSessions = response.data.data.parkingSessions;
           const formattedData = parkingSessions.map((session) => ({
             parkingSessionId: session.parkingSessionId,
-            cardId: session.cardId,
             checkinTime: moment(session.checkinTime).format("YYYY-MM-DD FHH:mm:ss"),
             checkoutTime: moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss"),
             approvedBy: session.approvedBy,
@@ -42,14 +41,6 @@ const ParkingSessionsIndexPage = () => {
             parkingFee: session.parkingFee,
             createdAt: moment(session.createdAt).format("YYYY-MM-DD HH:mm:ss"),
             updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-            parkingTypeId: session.parkingTypeId, // Add this line to include parkingTypeId
-            ParkingType: {
-              parkingTypeId: session.ParkingType.parkingTypeId,
-              name: session.ParkingType.name,
-              description: session.ParkingType.description,
-              createdAt: moment(session.ParkingType.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-              updatedAt: moment(session.ParkingType.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-            },
           }));
 
           setParkingSessions(formattedData);

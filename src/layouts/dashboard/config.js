@@ -7,7 +7,7 @@ import UserPlusIcon from "@heroicons/react/24/solid/UserPlusIcon";
 import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
 import XCircleIcon from "@heroicons/react/24/solid/XCircleIcon";
 import { SvgIcon } from "@mui/material";
-
+import MoneyIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
 export const items = [
   {
     title: "Overview",
@@ -24,6 +24,15 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <UsersIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Fee",
+    path: "/fees",
+    icon: (
+      <SvgIcon fontSize="small">
+        <MoneyIcon />
       </SvgIcon>
     ),
   },

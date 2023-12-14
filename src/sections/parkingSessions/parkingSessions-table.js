@@ -27,7 +27,7 @@ export const ParkingSessionsTable = (props) => {
     page = 0,
     rowsPerPage = 0,
   } = props;
-
+  console.log(items);
   return (
     <Card>
       <Scrollbar>
@@ -36,14 +36,15 @@ export const ParkingSessionsTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Parking Session ID</TableCell>
-                <TableCell>Card ID</TableCell>
+                <TableCell>Checkin Card ID</TableCell>
                 <TableCell>Check-in Time</TableCell>
+                <TableCell>Check-out Card ID</TableCell>
                 <TableCell>Check-out Time</TableCell>
                 <TableCell>Approved By</TableCell>
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Parking Fee</TableCell>
                 <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
+                {/* <TableCell>Updated At</TableCell> */}
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -58,9 +59,9 @@ export const ParkingSessionsTable = (props) => {
                 const createdAt = session.createdAt
                   ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
                   : "";
-                const updatedAt = session.updatedAt
-                  ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
+                // const updatedAt = session.updatedAt
+                //   ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                //   : "";
 
                 return (
                   <TableRow hover key={session.parkingSessionId}>
@@ -69,14 +70,15 @@ export const ParkingSessionsTable = (props) => {
                         {session.parkingSessionId}
                       </Link>
                     </TableCell>
-                    <TableCell>{session.cardId}</TableCell>
+                    <TableCell>{session.checkinCardId}</TableCell>
                     <TableCell>{checkinTime}</TableCell>
+                    <TableCell>{session.checkoutCardId}</TableCell>
                     <TableCell>{checkoutTime}</TableCell>
                     <TableCell>{session.approvedBy}</TableCell>
                     <TableCell>{session.plateNumber}</TableCell>
                     <TableCell>{session.parkingFee}</TableCell>
                     <TableCell>{createdAt}</TableCell>
-                    <TableCell>{updatedAt}</TableCell>
+                    {/* <TableCell>{updatedAt}</TableCell> */}
                     <TableCell>
                       <Stack direction="row" spacing={1}>
                         <Button

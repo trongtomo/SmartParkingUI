@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import moment from "moment"; // Import moment
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 import {
   Box,
   Card,
@@ -65,7 +64,7 @@ export const RegistrationsTable = (props) => {
                       </Link>
                     </TableCell>
                     <TableCell>{registration.username}</TableCell>
-                    <TableCell>{registration.registrationStatus}</TableCell>
+                    <TableCell>{registration.status}</TableCell>
                     <TableCell>{registration.approvedBy}</TableCell>
                     <TableCell>{expiredDate}</TableCell>
                     <TableCell>{registration.plateNumber}</TableCell>

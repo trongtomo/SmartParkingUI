@@ -18,7 +18,7 @@ const ParkingSessionsIndexPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const router = useRouter();
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MiwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0wOVQyMjowNzoxNS44NzVaIn0sImlhdCI6MTcwMjE1OTYzNX0.J60sJNJPAXtXajholJQ8vg_FWWTJBJgXtuJ3DiTayWg";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xMlQxNjowNjoyNy4yMzJaIn0sImlhdCI6MTcwMjM5NzE4N30.U_ENWOCJkDWK154fEVPSKHu7ODIBCXx3gHiCshwSjeM";
 
   useEffect(() => {
     let isMounted = true;
@@ -29,40 +29,27 @@ const ParkingSessionsIndexPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response);
         if (isMounted && response.data.code === 200) {
-          const parkingSessions = response.data.data.parkingSessions;
-          const formattedData = parkingSessions.map((session) => ({
+          const formattedData = response.data.data.parkingSessions.map((session) => ({
             parkingSessionId: session.parkingSessionId,
-            checkinTime: moment(session.checkinTime).format("YYYY-MM-DD FHH:mm:ss"),
-            checkoutTime: moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss"),
+            checkinCardId: session.checkinCardId,
+            checkinTime: session.checkinTime
+              ? moment(session.checkinTime).format("YYYY-MM-DD HH:mm:ss")
+              : "",
+            checkoutCardId: session.checkoutCardId,
+            checkoutTime: session.checkoutTime
+              ? moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss")
+              : "",
             approvedBy: session.approvedBy,
             plateNumber: session.plateNumber,
             parkingFee: session.parkingFee,
             createdAt: moment(session.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-            updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+            // updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
           }));
-
           setParkingSessions(formattedData);
         }
       } catch (error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          const statusCode = error.response.status;
-
-          if (statusCode === 401) {
-            toast.error("Unauthorized. Please log in again.");
-          } else {
-            toast.error(`Server responded with ${statusCode}. Please try again later.`);
-          }
-        } else if (error.request) {
-          // The request was made but no response was received
-          toast.error("No response from the server. Please check your internet connection.");
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          toast.error("An unexpected error occurred. Please try again.");
-        }
+        toast.error("Failed to fetch sessions. Please try again later.");
       }
     };
 
@@ -95,10 +82,12 @@ const ParkingSessionsIndexPage = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
-            <Typography variant="h4">Parking Sessions</Typography>
-
+            <Stack direction="row" justifyContent="space-between" spacing={4}>
+              <Typography variant="h4">Parking Sessions</Typography>
+            </Stack>
             <ParkingSessionsTable
-              sessions={applyPagination(parkingSessions, page, rowsPerPage)}
+              count={parkingSessions.length}
+              items={applyPagination(parkingSessions, page, rowsPerPage)}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}

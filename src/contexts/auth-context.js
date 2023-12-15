@@ -129,7 +129,7 @@ export const AuthProvider = (props) => {
     localStorage.setItem("accessToken", token);
   };
   const signIn = async (username, password) => {
-    const apiUrl = "http://localhost:3000/pub/login";
+    const apiUrl = "https://smart-parking-server-dev.azurewebsites.net/pub/login";
     try {
       const response = await axios.post(apiUrl, {
         username,

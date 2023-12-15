@@ -16,9 +16,9 @@ import {
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 
-const apiUrl = "http://localhost:3000";
+const apiUrl = "https://smart-parking-server-dev.azurewebsites.net";
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNFQxNzoxMDoxMS43NjBaIn0sImlhdCI6MTcwMjU3MzgxMX0.HrFRgoBb_HHBWsKYaXf6h0wGtFbLRDr1i_S4WJVnv2Y";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNVQwMTowODo1MS4zMjZaIn0sImlhdCI6MTcwMjYwMjUzMX0.5QLM-Kh-HKgxR79v0cYRhntZC0DGYFlZt9UspIDWk9I";
 
 const ParkingTypesIndexPage = () => {
   const [parkingTypesList, setParkingTypesList] = useState([]);

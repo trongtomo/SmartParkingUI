@@ -18,7 +18,7 @@ import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-const apiUrl = `http://localhost:3000`;
+const apiUrl = `https://smart-parking-server-dev.azurewebsites.net`;
 
 const UsersIndexPage = () => {
   const [users, setUsers] = useState([]);
@@ -32,7 +32,7 @@ const UsersIndexPage = () => {
   });
   const router = useRouter();
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNFQxNzoxMDoxMS43NjBaIn0sImlhdCI6MTcwMjU3MzgxMX0.HrFRgoBb_HHBWsKYaXf6h0wGtFbLRDr1i_S4WJVnv2Y";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNVQwMTowODo1MS4zMjZaIn0sImlhdCI6MTcwMjYwMjUzMX0.5QLM-Kh-HKgxR79v0cYRhntZC0DGYFlZt9UspIDWk9I";
 
   useEffect(() => {
     let isMounted = true;

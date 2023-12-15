@@ -11,14 +11,14 @@ import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 
-const apiUrl = `http://localhost:3000/api/admin/registrations/allRegistrations`;
+const apiUrl = `https://smart-parking-server-dev.azurewebsites.net/api/admin/registrations/allRegistrations`;
 const RegistrationPage = () => {
   const [registrations, setRegistrations] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const router = useRouter();
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNFQxNzoxMDoxMS43NjBaIn0sImlhdCI6MTcwMjU3MzgxMX0.HrFRgoBb_HHBWsKYaXf6h0wGtFbLRDr1i_S4WJVnv2Y";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNVQwMTowODo1MS4zMjZaIn0sImlhdCI6MTcwMjYwMjUzMX0.5QLM-Kh-HKgxR79v0cYRhntZC0DGYFlZt9UspIDWk9I";
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {

@@ -5,10 +5,10 @@ import { Box, Button, Container, Stack, Typography, Unstable_Grid2 as Grid } fro
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import moment from "moment";
 import { useRouter } from "next/router";
-
+import Image from "next/image";
 const apiUrl = "http://localhost:3000";
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xMVQxMTozMDowNi4yMzRaIn0sImlhdCI6MTcwMjI5NDIwNn0.lE8-J7-qlDNQcXmqEVhTdOZ5jylF9BDEI1Ow0rBBdn8";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNFQxNzoxMDoxMS43NjBaIn0sImlhdCI6MTcwMjU3MzgxMX0.HrFRgoBb_HHBWsKYaXf6h0wGtFbLRDr1i_S4WJVnv2Y";
 
 const SessionDetailPage = ({ session }) => {
   const router = useRouter();
@@ -42,6 +42,7 @@ const SessionDetailPage = ({ session }) => {
         </div>
         <title>{`Session #${session.parkingSessionId} | Smart-Parking`}</title>
       </Head>
+
       <Box
         component="main"
         sx={{
@@ -57,66 +58,76 @@ const SessionDetailPage = ({ session }) => {
             </Stack>
 
             <Grid container spacing={3}>
-              {[
-                session.checkinFaceImage,
-                session.checkinPlateNumberImage,
-                session.checkoutFaceImage,
-                session.checkoutPlateNumberImage,
-              ].map((image, index) => (
-                <Grid item key={index} xs={12} md={6} lg={4}>
-                  {image && (
-                    <img
+              {/* Check-in Images */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Typography variant="h6">Check-In</Typography>
+                {[session.checkinFaceImage, session.checkinPlateNumberImage].map((image, index) => (
+                  <Image
+                    key={index}
+                    src={`data:image/png;base64, ${image}`}
+                    alt={`Check-In Image ${index + 1}`}
+                    width={400}
+                    height={600}
+                  />
+                ))}
+              </Grid>
+
+              {/* Check-out Images */}
+              <Grid item xs={12} md={6} lg={4}>
+                <Typography variant="h6">Check-Out</Typography>
+                {[session.checkoutFaceImage, session.checkoutPlateNumberImage].map(
+                  (image, index) => (
+                    <Image
+                      key={index}
                       src={`data:image/png;base64, ${image}`}
-                      alt={`Image ${index + 1}`}
-                      style={{ width: "100%", height: "auto" }}
+                      alt={`Check-Out Image ${index + 1}`}
+                      width={400}
+                      height={600}
                     />
-                  )}
-                </Grid>
-              ))}
+                  )
+                )}
+              </Grid>
 
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6} lg={4}>
-                  {/* No images to display */}
-                </Grid>
+              {/* Session Details */}
+              <Grid item xs={12} md={12} lg={12}>
+                <Box
+                  sx={{
+                    backgroundColor: "#f0f0f0",
+                    borderRadius: 4,
+                    padding: 3,
+                  }}
+                >
+                  <Stack spacing={1}>
+                    <Typography variant="body1">{`Card ID: ${session.cardId}`}</Typography>
+                    <Typography variant="body1">{`Check-in Time: ${moment(
+                      session.checkinTime
+                    ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
+                    <Typography variant="body1">{`Check-out Time: ${moment(
+                      session.checkoutTime
+                    ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
+                    <Typography variant="body1">{`Approved By: ${session.approvedBy}`}</Typography>
+                    <Typography variant="body1">{`Plate Number: ${session.plateNumber}`}</Typography>
+                    <Typography variant="body1">{`Parking Fee: ${session.parkingFee}`}</Typography>
+                    <Typography variant="body1">{`Created At: ${moment(session.createdAt).format(
+                      "YYYY-MM-DD HH:mm:ss"
+                    )}`}</Typography>
+                    <Typography variant="body1">{`Updated At: ${moment(session.updatedAt).format(
+                      "YYYY-MM-DD HH:mm:ss"
+                    )}`}</Typography>
 
-                <Grid item xs={12} md={6} lg={8}>
-                  <Box
-                    sx={{
-                      backgroundColor: "#f0f0f0",
-                      borderRadius: 4,
-                      padding: 3,
-                    }}
-                  >
-                    <Stack spacing={1}>
-                      <Typography variant="body1">{`Card ID: ${session.cardId}`}</Typography>
-                      <Typography variant="body1">{`Check-in Time: ${moment(
-                        session.checkinTime
-                      ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
-                      <Typography variant="body1">{`Check-out Time: ${moment(
-                        session.checkoutTime
-                      ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
-                      <Typography variant="body1">{`Approved By: ${session.approvedBy}`}</Typography>
-                      <Typography variant="body1">{`Plate Number: ${session.plateNumber}`}</Typography>
-                      <Typography variant="body1">{`Parking Fee: ${session.parkingFee}`}</Typography>
-                      <Typography variant="body1">{`Created At: ${moment(session.createdAt).format(
-                        "YYYY-MM-DD HH:mm:ss"
-                      )}`}</Typography>
-                      <Typography variant="body1">{`Updated At: ${moment(session.updatedAt).format(
-                        "YYYY-MM-DD HH:mm:ss"
-                      )}`}</Typography>
+                    {/* Display Parking Type ID or Name */}
+                    <Typography variant="body1">
+                      {`Parking Type: ${
+                        session.ParkingType?.parkingTypeId || session.parkingTypeId
+                      }`}
+                    </Typography>
 
-                      {/* Display Parking Type ID or Name */}
-                      <Typography variant="body1">
-                        {`Parking Type: ${
-                          session.ParkingType?.parkingTypeId || session.parkingTypeId
-                        }`}
-                      </Typography>
-
-                      {/* Additional details from ParkingType if needed */}
-                      {/* <Typography variant="body1">{`Parking Type Description: ${session.ParkingType?.description}`}</Typography> */}
-                    </Stack>
-                  </Box>
-                </Grid>
+                    {/* Additional details from ParkingType if needed */}
+                    <Typography variant="body1">{`Parking Type Description: ${
+                      session.ParkingType?.description || "N/A"
+                    }`}</Typography>
+                  </Stack>
+                </Box>
               </Grid>
             </Grid>
           </Stack>

@@ -6,8 +6,10 @@ import UserIcon from "@heroicons/react/24/solid/UserIcon";
 import UserPlusIcon from "@heroicons/react/24/solid/UserPlusIcon";
 import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
 import XCircleIcon from "@heroicons/react/24/solid/XCircleIcon";
-import { SvgIcon } from "@mui/material";
+import { SpeedDialIcon, SvgIcon } from "@mui/material";
 import MoneyIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
+import ComputerDesktopIcon from "@heroicons/react/24/solid/ComputerDesktopIcon";
+import ArrowPathIcon from "@heroicons/react/24/solid/ArrowPathIcon";
 export const items = [
   {
     title: "Overview",
@@ -37,6 +39,15 @@ export const items = [
     ),
   },
   {
+    title: "Parking Types",
+    path: "/parkingTypes",
+    icon: (
+      <SvgIcon fontSize="small">
+        <ComputerDesktopIcon />
+      </SvgIcon>
+    ),
+  },
+  {
     title: "ParkingSession",
     path: "/parkingSessions",
     icon: (
@@ -56,57 +67,57 @@ export const items = [
   },
   {
     title: "Manage Cards",
-    path: "/companies",
+    path: "/cards",
     icon: (
       <SvgIcon fontSize="small">
-        <ShoppingBagIcon />
+        <ArrowPathIcon />
       </SvgIcon>
     ),
   },
-  {
-    title: "User profile",
-    path: "/account",
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserPlusIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Settings",
-    path: "/settings",
-    icon: (
-      <SvgIcon fontSize="small">
-        <CogIcon />
-      </SvgIcon>
-    ),
-  },
+  // {
+  //   title: "User profile",
+  //   path: "/account",
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <UserPlusIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
+  // {
+  //   title: "Settings",
+  //   path: "/settings",
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <CogIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
 
-  {
-    title: "Login",
-    path: "/auth/login",
-    icon: (
-      <SvgIcon fontSize="small">
-        <LockClosedIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Register",
-    path: "/auth/register",
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserPlusIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Logout",
-    path: "/404",
-    icon: (
-      <SvgIcon fontSize="small">
-        <XCircleIcon />
-      </SvgIcon>
-    ),
-  },
+  // {
+  //   title: "Login",
+  //   path: "/auth/login",
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <LockClosedIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
+  // {
+  //   title: "Register",
+  //   path: "/auth/register",
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <UserPlusIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
+  // {
+  //   title: "Logout",
+  //   path: "/404",
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <XCircleIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
 ];

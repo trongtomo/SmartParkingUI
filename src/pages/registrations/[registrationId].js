@@ -11,8 +11,10 @@ import {
   FormControl,
   InputLabel,
   Select,
+  MenuItem,
   TextField,
 } from "@mui/material";
+import Image from "next/image";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import moment from "moment";
 import { useAuthContext } from "src/contexts/auth-context";
@@ -21,7 +23,7 @@ import { toast } from "react-toastify";
 
 const apiUrl = "http://localhost:3000";
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xMVQxMTozMDowNi4yMzRaIn0sImlhdCI6MTcwMjI5NDIwNn0.lE8-J7-qlDNQcXmqEVhTdOZ5jylF9BDEI1Ow0rBBdn8";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNFQxNzoxMDoxMS43NjBaIn0sImlhdCI6MTcwMjU3MzgxMX0.HrFRgoBb_HHBWsKYaXf6h0wGtFbLRDr1i_S4WJVnv2Y";
 const handleDisable = async (registrationId) => {
   try {
     const response = await axios.put(
@@ -44,33 +46,34 @@ const handleDisable = async (registrationId) => {
   }
 };
 
-const handleActivate = async (registrationId) => {
-  try {
-    // Make a request to activate the registration using the selected card
-    const response = await axios.put(
-      `${apiUrl}/api/admin/registrations/activate/${registrationId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+// const handleActivate = async (registrationId) => {
+//   try {
+//     // Make a request to activate the registration using the selected card
 
-    if (response.data.success) {
-      toast.success("Registration activated successfully!");
-      router.replace(router.asPath);
-    } else {
-      console.error(
-        "Failed to activate registration, regis doesn't have valid payment",
-        response.data.message
-      );
-    }
-  } catch (error) {
-    toast.error("Error activating registration. Please try again.", { autoClose: 3000 });
-    console.error("Error activating registration:", error);
-  }
-};
+//     const response = await axios.put(
+//       `${apiUrl}/api/admin/registrations/activate/${registrationId}`,
+//       {},
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
+
+//     if (response.data.success) {
+//       toast.success("Registration activated successfully!");
+//       router.replace(router.asPath);
+//     } else {
+//       console.error(
+//         "Failed to activate registration, regis doesn't have valid payment",
+//         response.data.message
+//       );
+//     }
+//   } catch (error) {
+//     toast.error("Error activating registration. Please try again.", { autoClose: 3000 });
+//     console.error("Error activating registration:", error);
+//   }
+// };
 
 const handleVerify = async (registrationId) => {
   try {
@@ -135,9 +138,19 @@ const handleEnable = async (registrationId) => {
   }
 };
 
-const RegistrationDetailPage = ({ registration, registrationHistories, payments }) => {
+const RegistrationDetailPage = ({ registration, registrationHistories, payments, cards }) => {
   const router = useRouter();
   const [isActivateFormOpen, setIsActivateFormOpen] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState("");
+  const handleActivate = (registrationId) => {
+    // Set the selected card to the first card by default
+    const defaultCardId =
+      cards.data && cards.data.activeCards.length > 0 ? cards.data.activeCards[0].cardId : "";
+    setSelectedCardId(defaultCardId);
+
+    // Open the activation form
+    setIsActivateFormOpen(true);
+  };
   if (!registration) {
     return (
       <>
@@ -184,11 +197,12 @@ const RegistrationDetailPage = ({ registration, registrationHistories, payments 
               {/* Face Image on the left */}
               <Grid item xs={12} md={6} lg={4}>
                 {registration.faceImage && (
-                  <img
+                  <Image
                     src={`data:image/png;base64, ${registration.faceImage}`}
                     alt={`Face of ${registration.username}`}
-                    style={{ width: "100%", height: "auto" }}
-                  />
+                    width={400}
+                    height={600}
+                  ></Image>
                 )}
               </Grid>
 
@@ -267,12 +281,15 @@ const RegistrationDetailPage = ({ registration, registrationHistories, payments 
                     </Stack>
 
                     {/* Activate Registration Form */}
-                    {/* <ActivateRegistrationForm
+                    <ActivateRegistrationForm
                       open={isActivateFormOpen}
                       handleClose={() => setIsActivateFormOpen(false)}
                       handleActivate={handleActivate}
                       cards={cards}
-                    /> */}
+                      selectedCardId={selectedCardId}
+                      setSelectedCardId={setSelectedCardId}
+                      registrationId={registration.registrationId}
+                    />
                   </Stack>
                 </Box>
               </Grid>
@@ -315,13 +332,39 @@ const RegistrationDetailPage = ({ registration, registrationHistories, payments 
 
 RegistrationDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards }) => {
+const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards, registrationId }) => {
   const [selectedCardId, setSelectedCardId] = useState("");
 
-  const handleActivateClick = () => {
+  const handleActivateClick = async () => {
     // Validate the form fields, perform additional checks if needed
+    console.log(selectedCardId);
     if (selectedCardId) {
-      handleActivate(selectedCardId);
+      try {
+        // Make a request to activate the registration using the selected card
+        const response = await axios.put(
+          `${apiUrl}/api/admin/registrations/active/${registrationId}`,
+          {
+            cardId: selectedCardId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          // Call handleActivate to perform additional logic
+          handleActivate(registrationId);
+          toast.success("Registration activated successfully!");
+        } else {
+          console.error("Failed to activate registration", response.data.message);
+        }
+      } catch (error) {
+        toast.error("Error activating registration. Please try again.", { autoClose: 3000 });
+        console.error("Error activating registration:", error);
+      }
+
       handleClose();
     } else {
       // Display an error or handle invalid form data
@@ -329,6 +372,7 @@ const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards }) 
       toast.error("Please select a card to activate the registration.");
     }
   };
+
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Activate Registration</DialogTitle>
@@ -342,11 +386,15 @@ const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards }) 
             onChange={(e) => setSelectedCardId(e.target.value)}
             required
           >
-            {cards.map((card) => (
-              <MenuItem key={card.cardId} value={card.cardId}>
-                {card.cardId}
-              </MenuItem>
-            ))}
+            {cards.activeCards ? (
+              cards.activeCards.map((card) => (
+                <MenuItem key={card.cardId} value={card.cardId}>
+                  {card.cardId}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>No cards available</MenuItem>
+            )}
           </Select>
         </FormControl>
       </DialogContent>

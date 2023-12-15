@@ -35,7 +35,7 @@ export const RegistrationsTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Registration ID</TableCell>
-                <TableCell>User's phone</TableCell>
+                <TableCell>Users phone</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Approved By</TableCell>
                 <TableCell>Expired Date</TableCell>

@@ -11,13 +11,14 @@ import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 
-const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/admin/cards`;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const CardsIndexPage = () => {
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [showActive, setShowActive] = useState(false);
-  const [showBroken, setShowBroken] = useState(false);
+  const [showAssigned, setShowAssigned] = useState(false);
+  const [showExpired, setShowExpired] = useState(false);
   const router = useRouter();
   const auth = useAuthContext();
   const token = auth.user.accessToken;
@@ -25,7 +26,7 @@ const CardsIndexPage = () => {
     let isMounted = true;
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiUrl, {
+        const response = await axios.get(`${apiUrl}/api/admin/cards`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -33,10 +34,10 @@ const CardsIndexPage = () => {
         if (isMounted && response.data.code === 200) {
           const formattedData = response.data.data.cards.map((card) => ({
             cardId: card.cardId,
-            startDate: card.startDate ? moment(card.startDate).format("YYYY-MM-DD ") : "",
-            expiredDate: card.expiredDate ? moment(card.expiredDate).format("YYYY-MM-DD ") : "",
+            startDate: card.startDate ? moment(card.startDate).format("YYYY-MM-DD ") : "N/A",
+            expiredDate: card.expiredDate ? moment(card.expiredDate).format("YYYY-MM-DD ") : "N/A",
             status: card.status,
-            bikeId: card.bikeId,
+            plateNumber: card.Bike ? card.Bike.plateNumber : "N/A",
             parkingTypeId: card.parkingTypeId,
           }));
           setCards(formattedData);
@@ -67,19 +68,26 @@ const CardsIndexPage = () => {
       filteredCards = filteredCards.filter((card) => card.status === "active");
     }
 
-    if (showBroken) {
-      filteredCards = filteredCards.filter((card) => card.status === "broken");
+    if (showAssigned) {
+      filteredCards = filteredCards.filter((card) => card.status === "assigned");
     }
-
+    if (showExpired) {
+      filteredCards = filteredCards.filter(
+        (card) => card.status !== "active" && card.status !== "assigned"
+      );
+    }
     return filteredCards;
   };
   const handleShowActiveChange = (event) => {
     setShowActive(event.target.checked);
     setPage(0); // Reset page when changing filters
   };
-
-  const handleShowBrokenChange = (event) => {
-    setShowBroken(event.target.checked);
+  const handleShowExpiredChange = (event) => {
+    setShowExpired(event.target.checked);
+    setPage(0); // Reset page when changing filters
+  };
+  const handleShowAssignedChange = (event) => {
+    setShowAssigned(event.target.checked);
     setPage(0); // Reset page when changing filters
   };
   return (
@@ -107,17 +115,27 @@ const CardsIndexPage = () => {
                       color="primary"
                     />
                   }
-                  label="Show Active Cards"
+                  label="Show Only Active"
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={showBroken}
-                      onChange={handleShowBrokenChange}
+                      checked={showAssigned}
+                      onChange={handleShowAssignedChange}
                       color="primary"
                     />
                   }
-                  label="Show Broken Cards"
+                  label="Show Only Assigned"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={showExpired}
+                      onChange={handleShowExpiredChange}
+                      color="primary"
+                    />
+                  }
+                  label="Show Only Expired"
                 />
               </Box>
             </Stack>

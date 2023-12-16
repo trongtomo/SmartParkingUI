@@ -16,8 +16,9 @@ import {
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 import Link from "next/link";
-
+import { useRouter } from "next/router";
 export const UsersTable = (props) => {
+  const router = useRouter();
   const {
     count = 0,
     items = [],
@@ -26,7 +27,18 @@ export const UsersTable = (props) => {
     page = 0,
     rowsPerPage = 0,
   } = props;
-
+  const getRoleName = (roleId) => {
+    switch (roleId) {
+      case 1:
+        return "Admin";
+      case 2:
+        return "Security";
+      case 3:
+        return "User";
+      default:
+        return "Unknown";
+    }
+  };
   return (
     <Card>
       <Scrollbar>
@@ -40,6 +52,7 @@ export const UsersTable = (props) => {
                 <TableCell>Active</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
+                <TableCell>Role</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -55,12 +68,17 @@ export const UsersTable = (props) => {
                     <TableCell>{user.isActive ? "Yes" : "No"}</TableCell>
                     <TableCell>{moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
+                    <TableCell>{getRoleName(user.roleId)}</TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
                         {/* Add other action buttons */}
-                        <Button variant="contained" color="primary" href={`/users/${user.userId}`}>
+                        <Button variant="contained" color="primary" onClick={() => {
+                          router.push(`/users/${user.userId}`)
+                      
+                        }}>
                           Details
                         </Button>
+
                       </Stack>
                     </TableCell>
                   </TableRow>

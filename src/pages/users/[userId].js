@@ -11,7 +11,6 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const UserDetailPage = ({ user }) => {
   const auth = useAuthContext();
   const token = auth.user?.accessToken;
-  console.log("This is details token:", token);
   const router = useRouter();
 
   const getRoleName = (roleId) => {
@@ -136,30 +135,28 @@ UserDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default UserDetailPage;
 
-export const getServerSideProps = async ({ params, req }) => {
-  const { userId } = params;
-  const token = req.cookies.accessToken;
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+export const getStaticPaths = async () => {
+  // Fetch the user IDs from your API
+  const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`);
+  const users = response.data.data.users;
+  console.log(users);
+  // Generate paths for each user ID
+  const paths = users.map((user) => ({
+    params: { userId: user.userId.toString() },
+  }));
 
-    if (response.data.success && response.data.data && response.data.data.user) {
-      const user = response.data.data.user;
-      return {
-        props: { user },
-      };
-    } else {
-      return {
-        props: { user: null },
-      };
-    }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    return {
-      props: { user: null },
-    };
-  }
+  return {
+    paths,
+    fallback: false,
+  };
+};
+export const getStaticProps = async ({ params }) => {
+  const { userId } = params;
+
+  const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`);
+  const user = response.data.data.user;
+  console.log(user);
+  return {
+    props: { user },
+  };
 };

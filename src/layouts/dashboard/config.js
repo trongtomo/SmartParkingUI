@@ -10,6 +10,10 @@ import { SpeedDialIcon, SvgIcon } from "@mui/material";
 import MoneyIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
 import ComputerDesktopIcon from "@heroicons/react/24/solid/ComputerDesktopIcon";
 import ArrowPathIcon from "@heroicons/react/24/solid/ArrowPathIcon";
+import ListBulletIcon from "@heroicons/react/24/solid/ListBulletIcon";
+import PhoneIcon from "@heroicons/react/24/solid/PhoneIcon";
+import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
+import CurrencyDollarIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
 export const items = [
   {
     title: "Overview",
@@ -30,29 +34,11 @@ export const items = [
     ),
   },
   {
-    title: "Fee",
-    path: "/fees",
-    icon: (
-      <SvgIcon fontSize="small">
-        <MoneyIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Parking Types",
-    path: "/parkingTypes",
-    icon: (
-      <SvgIcon fontSize="small">
-        <ComputerDesktopIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "ParkingSession",
+    title: "Parking Sessions",
     path: "/parkingSessions",
     icon: (
       <SvgIcon fontSize="small">
-        <ShoppingBagIcon />
+        <ClockIcon />
       </SvgIcon>
     ),
   },
@@ -71,6 +57,33 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <ArrowPathIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Parking Types",
+    path: "/parkingTypes",
+    icon: (
+      <SvgIcon fontSize="small">
+        <ListBulletIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Fees",
+    path: "/fees",
+    icon: (
+      <SvgIcon fontSize="small">
+        <MoneyIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Payments",
+    path: "/payments",
+    icon: (
+      <SvgIcon fontSize="small">
+        <ShoppingBagIcon />
       </SvgIcon>
     ),
   },

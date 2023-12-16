@@ -161,4 +161,11 @@ AuthProvider.propTypes = {
 
 export const AuthConsumer = AuthContext.Consumer;
 
+export const getTokenFromLocalStorage = () => {
+  // Check if window is defined (client-side check)
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("accessToken");
+  }
+  return null;
+};
 export const useAuthContext = () => useContext(AuthContext);

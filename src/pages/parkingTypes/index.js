@@ -15,12 +15,14 @@ import {
   DialogActions,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
+import { useAuthContext } from "src/contexts/auth-context";
+import { toast } from "react-toastify";
 
-const apiUrl = "${process.env.NEXT_PUBLIC_API_URL}";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNlQwNzoyNjoyNy40MzhaIn0sImlhdCI6MTcwMjcxMTU4N30.yklKOcXTKAaW8LzeESrmP_-oPqFIMIBbKIOeTtM0b-Y";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const ParkingTypesIndexPage = () => {
+  const auth = useAuthContext();
+  const token = auth.user.accessToken;
   const [parkingTypesList, setParkingTypesList] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -43,7 +45,7 @@ const ParkingTypesIndexPage = () => {
       if (response.data.success && response.data.data && response.data.data.parkingTypes) {
         setParkingTypesList(response.data.data.parkingTypes);
       } else {
-        console.error("Failed to fetch parking types:", response.data.message);
+        toast.error("Failed to fetch parking types:", response.data.message);
       }
     } catch (error) {
       console.error("Error fetching parking types data:", error);
@@ -71,8 +73,9 @@ const ParkingTypesIndexPage = () => {
           response.data.data.parkingType,
         ]);
         setIsFormOpen(false);
+        toast.success("Create new parking Type success!");
       } else {
-        console.error("Failed to create parking type:", response.data.message);
+        toast.error("Failed to create parking type:", response.data.message);
       }
     } catch (error) {
       console.error("Error creating parking type:", error);
@@ -94,8 +97,9 @@ const ParkingTypesIndexPage = () => {
         setParkingTypesList((prevParkingTypes) =>
           prevParkingTypes.filter((item) => item.parkingTypeId !== parkingType.parkingTypeId)
         );
+        toast.success("Delete parking Type success!");
       } else {
-        console.error("Failed to delete parking type:", response.data.message);
+        toast.error("Failed to delete parking type:", response.data.message);
       }
     } catch (error) {
       console.error("Error deleting parking type:", error);
@@ -105,7 +109,7 @@ const ParkingTypesIndexPage = () => {
   return (
     <Container maxWidth="xl">
       <Stack spacing={3}>
-        <Typography variant="h4">Parking Type Management</Typography>
+        <Typography variant="h4">Parking Types</Typography>
         <div style={{ textAlign: "left" }}>
           <Button variant="contained" color="primary" onClick={() => setIsFormOpen(true)}>
             Create New Parking Type

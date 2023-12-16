@@ -11,18 +11,16 @@ import {
   TextField,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
+import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
-const apiUrl = "${process.env.NEXT_PUBLIC_API_URL}";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNlQwNzoyNjoyNy40MzhaIn0sImlhdCI6MTcwMjcxMTU4N30.yklKOcXTKAaW8LzeESrmP_-oPqFIMIBbKIOeTtM0b-Y";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const CreateFeeForm = ({ open, handleClose, handleCreate }) => {
   const [feeName, setFeeName] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-
   const handleCreateClick = () => {
     // Validate the form fields, perform additional checks if needed
     if (feeName && amount && description) {
@@ -34,7 +32,6 @@ const CreateFeeForm = ({ open, handleClose, handleCreate }) => {
       toast.error("Invalid form data. Please fill in all the fields.");
     }
   };
-
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Create New Fee</DialogTitle>
@@ -80,29 +77,54 @@ const CreateFeeForm = ({ open, handleClose, handleCreate }) => {
     </Dialog>
   );
 };
-const handleCreateFee = async (formData) => {
-  try {
-    // Make a POST request to create a new fee with the provided data
-    const response = await axios.post(`${apiUrl}/api/admin/fees`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
 
-    if (response.data.success) {
-      setFeesList((prevFees) => [...prevFees, response.data.data.fee]);
-      toast.success("Fee created successfully!");
-    } else {
-      console.error("Failed to create fee:", response.data.message);
-    }
-  } catch (error) {
-    toast.error("Error creating fee. Please try again.", { autoClose: 3000 });
-    console.error("Error creating fee:");
-  }
-};
 const FeesIndexPage = ({ fees }) => {
-  const [feesList, setFeesList] = useState(fees);
+  const [feesList, setFeesList] = useState(fees || []);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const auth = useAuthContext();
+  const token = auth.user.accessToken;
+
+  const handleCreateFee = async (formData) => {
+    try {
+      const response = await axios.post(`${apiUrl}/api/admin/fees`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setFeesList((prevFees) => [...prevFees, response.data.data.fee]);
+        toast.success("Fee created successfully!");
+      } else {
+        console.error("Failed to create fee:", response.data.message);
+      }
+    } catch (error) {
+      toast.error("Error creating fee. Please try again.", { autoClose: 3000 });
+      console.error("Error creating fee:");
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/admin/fees`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success && response.data.data && response.data.data.fees) {
+          const fees = response.data.data.fees;
+          setFeesList(fees);
+        } else {
+          console.error("Failed to fetch fees data:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching fees data:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
 
   return (
     <>
@@ -172,29 +194,4 @@ const FeesIndexPage = ({ fees }) => {
 
 FeesIndexPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export const getServerSideProps = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/fees`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.data.success && response.data.data && response.data.data.fees) {
-      const fees = response.data.data.fees;
-      return {
-        props: { fees },
-      };
-    } else {
-      return {
-        props: { fees: [] },
-      };
-    }
-  } catch (error) {
-    console.error("Error fetching fees data:", error);
-    return {
-      props: { fees: [] },
-    };
-  }
-};
 export default FeesIndexPage;

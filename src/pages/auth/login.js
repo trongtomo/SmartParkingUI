@@ -26,7 +26,7 @@ const Page = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "0905547890",
+      username: "trong",
       password: "123456",
       submit: null,
     },

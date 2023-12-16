@@ -27,7 +27,6 @@ export const ParkingSessionsTable = (props) => {
     page = 0,
     rowsPerPage = 0,
   } = props;
-  console.log(items);
   return (
     <Card>
       <Scrollbar>
@@ -44,7 +43,6 @@ export const ParkingSessionsTable = (props) => {
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Parking Fee</TableCell>
                 <TableCell>Created At</TableCell>
-                {/* <TableCell>Updated At</TableCell> */}
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -52,17 +50,13 @@ export const ParkingSessionsTable = (props) => {
               {items.map((session) => {
                 const checkinTime = session.checkinTime
                   ? moment(session.checkinTime).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                const checkoutTime = session.checkoutTime
+                  : "N/A";
+                const checkoutTime = moment(session.checkoutTime).isValid()
                   ? moment(session.checkoutTime).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
+                  : "N/A";
                 const createdAt = session.createdAt
                   ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                // const updatedAt = session.updatedAt
-                //   ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
-                //   : "";
-
+                  : "N/A";
                 return (
                   <TableRow hover key={session.parkingSessionId}>
                     <TableCell>
@@ -70,10 +64,10 @@ export const ParkingSessionsTable = (props) => {
                         {session.parkingSessionId}
                       </Link>
                     </TableCell>
-                    <TableCell>{session.checkinCardId}</TableCell>
-                    <TableCell>{checkinTime}</TableCell>
-                    <TableCell>{session.checkoutCardId}</TableCell>
-                    <TableCell>{checkoutTime}</TableCell>
+                    <TableCell>{session.checkinCardId ? session.checkinCardId : "N/A"}</TableCell>
+                    <TableCell>{checkinTime ? checkinTime : "N/A"}</TableCell>
+                    <TableCell>{session.checkoutCardId ? session.checkoutCardId : "N/A"}</TableCell>
+                    <TableCell>{checkoutTime ? checkoutTime : "N/A"}</TableCell>
                     <TableCell>{session.approvedBy}</TableCell>
                     <TableCell>{session.plateNumber}</TableCell>
                     <TableCell>{session.parkingFee}</TableCell>

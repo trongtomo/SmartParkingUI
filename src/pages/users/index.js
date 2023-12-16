@@ -10,10 +10,11 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { UsersTable } from "src/sections/users/users-table";
-import { UsersSearch } from "src/sections/users/users-search";
 import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment";
 import { toast } from "react-toastify";
@@ -31,6 +32,10 @@ const UsersIndexPage = () => {
     password: "",
     fullName: "",
   });
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [showSecurity, setShowSecurity] = useState(false);
+  const [showUser, setShowUser] = useState(true);
+
   const router = useRouter();
   const auth = useAuthContext();
   const token = auth.user.accessToken;
@@ -53,6 +58,7 @@ const UsersIndexPage = () => {
             firebaseToken: user.firebaseToken,
             createdAt: moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss"),
             updatedAt: moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+            roleId: user.roleId,
           }));
 
           setUsers(formattedData);
@@ -176,15 +182,52 @@ const UsersIndexPage = () => {
               <Stack spacing={1}>
                 <Typography variant="h4">Users</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}>
-                  {/* Add import/export buttons */}
+                  {/* Create User Form */}
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showAdmin}
+                        onChange={(e) => setShowAdmin(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label="Show Admin"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showSecurity}
+                        onChange={(e) => setShowSecurity(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label="Show Security"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showUser}
+                        onChange={(e) => setShowUser(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label="Show User"
+                  />
                 </Stack>
               </Stack>
-              <div>{/* Add 'Add User' button */}</div>
             </Stack>
-            {/* Add UsersTable component */}
             <UsersTable
               count={users.length}
-              items={applyPagination(users, page, rowsPerPage)}
+              items={applyPagination(
+                users.filter((user) => {
+                  if (showAdmin && user.roleId === 1) return true;
+                  if (showSecurity && user.roleId === 2) return true;
+                  if (showUser && user.roleId === 3) return true;
+                  return false;
+                }),
+                page,
+                rowsPerPage
+              )}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}

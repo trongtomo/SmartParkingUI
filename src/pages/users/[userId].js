@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -6,13 +5,15 @@ import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from "@mui/
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-
-const apiUrl = "https://smart-parking-server-dev.azurewebsites.net";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNVQwMTowODo1MS4zMjZaIn0sImlhdCI6MTcwMjYwMjUzMX0.5QLM-Kh-HKgxR79v0cYRhntZC0DGYFlZt9UspIDWk9I";
+import { useAuthContext } from "src/contexts/auth-context";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UserDetailPage = ({ user }) => {
+  const auth = useAuthContext();
+  const token = auth.user?.accessToken;
+  console.log("This is details token:", token);
   const router = useRouter();
+
   const getRoleName = (roleId) => {
     switch (roleId) {
       case 1:
@@ -135,9 +136,9 @@ UserDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default UserDetailPage;
 
-export const getServerSideProps = async ({ params }) => {
+export const getServerSideProps = async ({ params, req }) => {
   const { userId } = params;
-
+  const token = req.cookies.accessToken;
   try {
     const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`, {
       headers: {

@@ -37,54 +37,30 @@ export const CardsTable = (props) => {
                 <TableCell>Card ID</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>Expired Date</TableCell>
-                <TableCell>Current Status</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Bike ID</TableCell>
                 <TableCell>Parking Type ID</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((card) => {
                 const startDate = card.startDate
-                  ? moment(card.startDate).format("DD/MM/YYYY HH:mm:ss")
+                  ? moment(card.startDate).format("DD/MM/YYYY ")
                   : "";
                 const expiredDate = card.expiredDate
-                  ? moment(card.expiredDate).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                const createdAt = card.createdAt
-                  ? moment(card.createdAt).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                const updatedAt = card.updatedAt
-                  ? moment(card.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                  ? moment(card.expiredDate).format("DD/MM/YYYY ")
                   : "";
 
                 return (
                   <TableRow hover key={card.cardId}>
                     <TableCell>
-                      <Link href={`/cards/${card.cardId}`}>
-                        {card.cardId}
-                      </Link>
+                      <Link href={`/cards/${card.cardId}`}>{card.cardId}</Link>
                     </TableCell>
                     <TableCell>{startDate}</TableCell>
-                    <TableCell>{expiredDate}</TableCell>
-                    <TableCell>{card.currentStatus}</TableCell>
-                    <TableCell>{card.bikeId}</TableCell>
+                    <TableCell>{expiredDate ? expiredDate : "N/A"}</TableCell>
+                    <TableCell>{card.status}</TableCell>
+                    <TableCell>{card.bikeId ? card.bikeId : "N/A"}</TableCell>
                     <TableCell>{card.parkingTypeId}</TableCell>
-                    <TableCell>{createdAt}</TableCell>
-                    <TableCell>{updatedAt}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          href={`/cards/${card.cardId}`}
-                        >
-                          Details
-                        </Button>
-                      </Stack>
-                    </TableCell>
                   </TableRow>
                 );
               })}

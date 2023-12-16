@@ -1,3 +1,4 @@
+// auth-context.js
 import { createContext, useContext, useEffect, useReducer, useRef } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
@@ -20,8 +21,7 @@ const handlers = {
 
     return {
       ...state,
-      ...// if payload (user) is provided, then is authenticated
-      (user
+      ...(user
         ? {
             isAuthenticated: true,
             isLoading: false,
@@ -42,6 +42,7 @@ const handlers = {
     };
   },
   [HANDLERS.SIGN_OUT]: (state) => {
+    localStorage.removeItem("accessToken");
     return {
       ...state,
       isAuthenticated: false,
@@ -53,10 +54,7 @@ const handlers = {
 const reducer = (state, action) =>
   handlers[action.type] ? handlers[action.type](state, action) : state;
 
-// The role of this context is to propagate authentication state through the App tree.
-
-// this return ???
-export const AuthContext = createContext({ undefined });
+export const AuthContext = createContext({});
 
 export const AuthProvider = (props) => {
   const { children } = props;
@@ -64,7 +62,6 @@ export const AuthProvider = (props) => {
   const initialized = useRef(false);
 
   const initialize = async () => {
-    // Prevent from calling twice in development mode with React.StrictMode enabled
     if (initialized.current) {
       return;
     }
@@ -74,22 +71,15 @@ export const AuthProvider = (props) => {
     let isAuthenticated = false;
 
     try {
-      isAuthenticated = window.sessionStorage.getItem("authenticated") === "true";
+      isAuthenticated = localStorage.getItem("authenticated") === "true";
     } catch (err) {
       console.error(err);
     }
 
     if (isAuthenticated) {
-      const user = {
-        id: "5e86809283e28b96d2d38537",
-        avatar: "/assets/avatars/avatar-anika-visser.png",
-        name: "Anika Visser",
-        email: "anika.visser@devias.io",
-      };
-
       dispatch({
         type: HANDLERS.INITIALIZE,
-        payload: user,
+        payload: { token: localStorage.getItem("accessToken") },
       });
     } else {
       dispatch({
@@ -98,38 +88,16 @@ export const AuthProvider = (props) => {
     }
   };
 
-  useEffect(
-    () => {
-      initialize();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  useEffect(() => {
+    initialize();
+  }, []);
 
-  const skip = () => {
-    try {
-      window.sessionStorage.setItem("authenticated", "true");
-    } catch (err) {
-      console.error(err);
-    }
-
-    const user = {
-      id: "5e86809283e28b96d2d38537",
-      avatar: "/assets/avatars/avatar-anika-visser.png",
-      name: "Anika Visser",
-      email: "anika.visser@devias.io",
-    };
-
-    dispatch({
-      type: HANDLERS.SIGN_IN,
-      payload: user,
-    });
-  };
   const setToken = (token) => {
     localStorage.setItem("accessToken", token);
   };
+
   const signIn = async (username, password) => {
-    const apiUrl = "https://smart-parking-server-dev.azurewebsites.net/pub/login";
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/pub/loginAdmin`;
     try {
       const response = await axios.post(apiUrl, {
         username,
@@ -138,22 +106,17 @@ export const AuthProvider = (props) => {
 
       const token = response.data.data.token;
       setToken(token);
-      console.log("Stored Token:", localStorage.getItem("accessToken"));
 
       const responseData = response.data.data;
-
-      // Check if roleIds is present in the response
-      const roleIds = responseData.roleIds || [];
 
       const user = {
         id: responseData.userId,
         fullName: responseData.fullName,
         username: responseData.username,
         isActive: responseData.isActive,
-        firebaseToken: responseData.firebaseToken,
         createdAt: responseData.createdAt,
         updatedAt: responseData.updatedAt,
-        roleIds: roleIds, // Provide a default value or handle it according to your logic
+        accessToken: token,
       };
 
       dispatch({
@@ -182,7 +145,6 @@ export const AuthProvider = (props) => {
     <AuthContext.Provider
       value={{
         ...state,
-        skip,
         signIn,
         signUp,
         signOut,

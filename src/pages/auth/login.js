@@ -26,7 +26,7 @@ const Page = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "0903322112",
+      username: "0905547890",
       password: "123456",
       submit: null,
     },
@@ -54,11 +54,6 @@ const Page = () => {
   const handleMethodChange = useCallback((event, value) => {
     setMethod(value);
   }, []);
-
-  const handleSkip = useCallback(() => {
-    auth.skip();
-    router.push("/");
-  }, [auth, router]);
 
   return (
     <>
@@ -116,7 +111,7 @@ const Page = () => {
                     value={formik.values.password}
                   />
                 </Stack>
-                <FormHelperText sx={{ mt: 1 }}>Optionally you can skip.</FormHelperText>
+                <FormHelperText sx={{ mt: 1 }}>Provided your admin credentials.</FormHelperText>
                 {formik.errors.submit && (
                   <Typography color="error" sx={{ mt: 3 }} variant="body2">
                     {formik.errors.submit}
@@ -124,9 +119,6 @@ const Page = () => {
                 )}
                 <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                   Continue
-                </Button>
-                <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
-                  Skip authentication
                 </Button>
               </form>
             )}

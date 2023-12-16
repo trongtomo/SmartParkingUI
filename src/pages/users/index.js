@@ -18,7 +18,8 @@ import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-const apiUrl = `https://smart-parking-server-dev.azurewebsites.net`;
+import { useAuthContext } from "src/contexts/auth-context";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UsersIndexPage = () => {
   const [users, setUsers] = useState([]);
@@ -31,9 +32,8 @@ const UsersIndexPage = () => {
     fullName: "",
   });
   const router = useRouter();
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNVQwMTowODo1MS4zMjZaIn0sImlhdCI6MTcwMjYwMjUzMX0.5QLM-Kh-HKgxR79v0cYRhntZC0DGYFlZt9UspIDWk9I";
-
+  const auth = useAuthContext();
+  const token = auth.user.accessToken;
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -86,8 +86,8 @@ const UsersIndexPage = () => {
 
       if (response.data.success && response.data.data && response.data.data.user) {
         const createdUser = response.data.data.user;
-        // router.push(`/admin/users/${createdUser.userId}`); // Redirect to the details page of the created user
-        toast.success("User created successfully!", { autoClose: 2000 });
+        router.push(`${apiUrl}/admin/users/${createdUser.userId}`); // Redirect to the details page of the created user
+        toast.success("Security created successfully!", { autoClose: 2000 });
       } else {
         console.error("Failed to create user:", response.data.message);
       }
@@ -130,9 +130,9 @@ const UsersIndexPage = () => {
               onClose={() => setIsFormOpen(false)}
               aria-labelledby="form-dialog-title"
             >
-              <DialogTitle id="form-dialog-title">Create New User</DialogTitle>
+              <DialogTitle id="form-dialog-title">Create New Security</DialogTitle>
               <DialogContent>
-                <DialogContentText>Fill in the details for the new user:</DialogContentText>
+                <DialogContentText>Fill in the details for the new Security:</DialogContentText>
                 <TextField
                   autoFocus
                   margin="dense"

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -78,9 +79,11 @@ const CreateFeeForm = ({ open, handleClose, handleCreate }) => {
   );
 };
 
-const FeesIndexPage = ({ fees }) => {
-  const [feesList, setFeesList] = useState(fees || []);
+const FeesIndexPage = () => {
+  const [feesList, setFeesList] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedFeeId, setSelectedFeeId] = useState([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const auth = useAuthContext();
   const token = auth.user.accessToken;
 
@@ -103,6 +106,31 @@ const FeesIndexPage = ({ fees }) => {
       console.error("Error creating fee:");
     }
   };
+  const handleDeleteFee = async () => {
+    try {
+      const response = await axios.delete(`${apiUrl}/api/admin/fees/${selectedFeeId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setFeesList((prevFees) => prevFees.filter((fee) => fee.feeId !== selectedFeeId));
+        toast.success("Fee deleted successfully!");
+      } else {
+        console.error("Failed to delete fee:", response.data.message);
+        toast.error("Failed to delete fee. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting fee:", error);
+      toast.error("Error deleting fee. Something went wrong.");
+    }
+  };
+
+  const handleDeleteButtonClick = (feeId) => {
+    setSelectedFeeId(feeId);
+    setIsDeleteDialogOpen(true);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -124,7 +152,7 @@ const FeesIndexPage = ({ fees }) => {
     };
 
     fetchData();
-  }, [token]);
+  }, []);
 
   return (
     <>
@@ -176,15 +204,30 @@ const FeesIndexPage = ({ fees }) => {
                       {/* <Typography variant="body1">{`Created At: ${fee.createdAt}`}</Typography> */}
                       <Typography variant="body1">{`Updated At: ${fee.updatedAt}`}</Typography>
                     </div>
-                    <Link href={`/fees/${fee.feeId}`}>
-                      <Button variant="outlined" color="primary">
-                        View Details
+                    {/* button section */}
+                    <Stack direction="row" spacing={1} justifyContent="space-between">
+                      <Link href={`/fees/${fee.feeId}`}>
+                        <Button variant="outlined" color="primary">
+                          View Details
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleDeleteButtonClick(fee.feeId)}
+                      >
+                        Delete
                       </Button>
-                    </Link>
+                    </Stack>
                   </Box>
                 </Grid>
               ))}
             </Grid>
+            <DeleteFeeDialog
+              open={isDeleteDialogOpen}
+              handleClose={() => setIsDeleteDialogOpen(false)}
+              handleDelete={handleDeleteFee}
+            />
           </Stack>
         </Container>
       </Box>
@@ -195,3 +238,33 @@ const FeesIndexPage = ({ fees }) => {
 FeesIndexPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default FeesIndexPage;
+const DeleteFeeDialog = ({ open, handleClose, handleDelete }) => {
+  const handleConfirmDelete = () => {
+    handleDelete();
+    handleClose();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{"Delete Fee"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Are you sure you want to delete this fee? This action cannot be undone.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};

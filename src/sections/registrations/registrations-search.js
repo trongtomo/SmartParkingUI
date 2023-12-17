@@ -1,9 +1,5 @@
-// RegistrationsSearch.js
-
 import { Card, InputAdornment, OutlinedInput, SvgIcon } from "@mui/material";
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL; // Set your API URL
 
 export const RegistrationsSearch = ({ onSearch }) => {
   return (

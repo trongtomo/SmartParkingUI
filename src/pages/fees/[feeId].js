@@ -1,42 +1,63 @@
+// pages/fees/[feeId].js
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Head from "next/head";
+import { useRouter } from "next/router";
 import { Box, Container, Stack, Typography, Button, TextField } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { useRouter } from "next/router";
+import { useAuthContext } from "src/contexts/auth-context";
 import moment from "moment";
 import { toast } from "react-toastify";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const FeeDetailsPage = ({ fee }) => {
+const FeeDetailsPage = () => {
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
+  const [feeDetails, setFeeDetails] = useState({});
   const [updatedFee, setUpdatedFee] = useState({});
-  const [originalFee, setOriginalFee] = useState({});
+  const auth = useAuthContext();
+  const token = auth.user.accessToken;
+  const feeId = router.query.feeId;
+
   useEffect(() => {
-    // Initialize the updated fee object with the current fee details
-    setUpdatedFee({
-      feeName: fee.feeName || "",
-      amount: fee.amount || "",
-      description: fee.description || "",
-      createdAt: fee.createdAt || "",
-      updatedAt: fee.updatedAt || "",
-    });
-    setOriginalFee({
-      feeName: fee.feeName || "",
-      amount: fee.amount || "",
-      description: fee.description || "",
-      createdAt: fee.createdAt || "",
-      updatedAt: fee.updatedAt || "",
-    });
-  }, [fee]);
+    const fetchFeeDetails = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/admin/fees/${feeId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success && response.data.data && response.data.data.fee) {
+          const fee = response.data.data.fee;
+          setFeeDetails(fee);
+          setUpdatedFee({ ...fee });
+        } else {
+          console.error("Failed to fetch fee details:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching fee details:", error);
+      }
+    };
+
+    fetchFeeDetails();
+  }, [feeId, token]);
+
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    // Reset the updated fee to the original fee details
+    setUpdatedFee({ ...feeDetails });
+  };
 
   const handleUpdate = async () => {
     try {
-      // Make a PUT request to update the fee
       const response = await axios.put(
-        `${apiUrl}/api/admin/fees/${fee.feeId}`,
+        `${apiUrl}/api/admin/fees/${feeId}`,
         {
           feeName: updatedFee.feeName,
           amount: updatedFee.amount,
@@ -50,135 +71,92 @@ const FeeDetailsPage = ({ fee }) => {
       );
 
       if (response.data.success && response.data.data && response.data.data.fee) {
-        toast.success("Fee updated successfully!");
-        setUpdatedFee(response.data.data.fee);
-        setIsEditMode(false); // Disable edit mode after successful update
+        setFeeDetails(response.data.data.fee);
+        setIsEditMode(false);
+        toast.success("Fee Updated!");
       } else {
         console.error("Failed to update fee:", response.data.message);
-        toast.error("Failed to update fee. Please try again.");
       }
     } catch (error) {
       console.error("Error updating fee:", error);
-      toast.error("Error updating fee. Please try again.");
+      toast.error("Error updating fee");
     }
   };
-  const handleDelete = async () => {
-    try {
-      // Make a DELETE request to delete the fee
-      const response = await axios.delete(`${apiUrl}/api/admin/fees/${fee.feeId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (response.data.success) {
-        toast.success("Fee deleted successfully!");
-        // Redirect to the fee list page or any other appropriate page
-        router.push("/fees");
-      } else {
-        console.error("Failed to delete fee:", response.data.message);
-        toast.error("Failed to delete fee. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error deleting fee:", error);
-      toast.error("Error deleting fee. Something Wrong.");
-    }
-  };
-  const handleCancel = () => {
-    // Reset the updated fee to the original fee details
-    setUpdatedFee(updatedFee.feeId ? updatedFee : originalFee);
-
-    // Disable edit mode
-    setIsEditMode(false);
-  };
   return (
-    <>
-      <Head>
-        <title>{`Fee: ${fee.feeName} | Your App Name`}</title>
-      </Head>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          py: 8,
-        }}
-      >
-        <Container maxWidth="xl">
-          <Stack spacing={3}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Button onClick={() => router.back()}>Back</Button>
-              <Typography variant="h4">{`Fee: ${fee.feeName}`}</Typography>
-            </Stack>
-
+    <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
+      <Container maxWidth="xl">
+        <Stack spacing={3}>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Button onClick={() => router.back()}>Back</Button>
+            <Typography variant="h4">Fee Details</Typography>
+          </Stack>
+          {feeDetails && (
             <Box
               sx={{
                 backgroundColor: "#f0f0f0",
                 borderRadius: 4,
                 padding: 3,
+                minHeight: "250px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
-              {/* Editable form fields */}
-              <TextField
-                margin="dense"
-                label="Fee Name"
-                type="text"
-                fullWidth
-                value={updatedFee.feeName}
-                onChange={(e) => setUpdatedFee((prev) => ({ ...prev, feeName: e.target.value }))}
-                disabled={!isEditMode}
-              />
-              <TextField
-                margin="dense"
-                label="Amount"
-                type="number"
-                fullWidth
-                value={updatedFee.amount}
-                onChange={(e) => setUpdatedFee((prev) => ({ ...prev, amount: e.target.value }))}
-                disabled={!isEditMode}
-              />
-              <TextField
-                margin="dense"
-                label="Description"
-                type="text"
-                fullWidth
-                value={updatedFee.description}
-                onChange={(e) =>
-                  setUpdatedFee((prev) => ({ ...prev, description: e.target.value }))
-                }
-                disabled={!isEditMode}
-              />
-            </Box>
-            {/* Display non-editable fields */}
-            <Typography variant="body1">{`Created At: ${moment(updatedFee.createdAt).format(
-              "YYYY-MM-DD HH:mm:ss"
-            )}`}</Typography>
-            <Typography variant="body1">{`Updated At: ${moment(updatedFee.updatedAt).format(
-              "YYYY-MM-DD HH:mm:ss"
-            )}`}</Typography>
-            {/* Update,Delete and Cancel Buttons */}
-            {isEditMode ? (
-              <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={handleUpdate}>
-                  Update
-                </Button>
-                <Button variant="contained" color="secondary" onClick={handleCancel}>
-                  Cancel
-                </Button>
-              </Stack>
-            ) : (
-              <Stack direction="row" spacing={2}>
-                <Button variant="contained" color="primary" onClick={() => setIsEditMode(true)}>
+              <div>
+                <TextField
+                  margin="dense"
+                  label="Fee Name"
+                  type="text"
+                  fullWidth
+                  value={isEditMode ? updatedFee.feeName : feeDetails.feeName}
+                  onChange={(e) => setUpdatedFee({ ...updatedFee, feeName: e.target.value })}
+                  disabled={!isEditMode}
+                />
+                <TextField
+                  margin="normal"
+                  label="Amount"
+                  type="number"
+                  fullWidth
+                  value={isEditMode ? updatedFee.amount : feeDetails.amount}
+                  onChange={(e) => setUpdatedFee({ ...updatedFee, amount: e.target.value })}
+                  disabled={!isEditMode}
+                />
+                <TextField
+                  margin="dense"
+                  label="Description"
+                  type="text"
+                  fullWidth
+                  value={isEditMode ? updatedFee.description : feeDetails.description}
+                  onChange={(e) => setUpdatedFee({ ...updatedFee, description: e.target.value })}
+                  disabled={!isEditMode}
+                />
+                <Typography variant="body1">{`Created At: ${moment(
+                  isEditMode ? updatedFee.createdAt : feeDetails.createdAt
+                ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
+                <Typography variant="body1">{`Updated At: ${moment(
+                  isEditMode ? updatedFee.updatedAt : feeDetails.updatedAt
+                ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
+              </div>
+              {isEditMode ? (
+                <Stack direction="row" spacing={2}>
+                  <Button variant="contained" color="primary" onClick={handleUpdate}>
+                    Update
+                  </Button>
+                  <Button variant="contained" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                </Stack>
+              ) : (
+                <Button variant="va" color="primary" onClick={handleEdit}>
                   Edit
                 </Button>
-                <Button variant="contained" color="error" onClick={handleDelete}>
-                  Delete
-                </Button>
-              </Stack>
-            )}
-          </Stack>
-        </Container>
-      </Box>
-    </>
+              )}
+            </Box>
+          )}
+        </Stack>
+      </Container>
+    </Box>
   );
 };
 

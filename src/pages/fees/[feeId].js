@@ -7,9 +7,7 @@ import { useRouter } from "next/router";
 import moment from "moment";
 import { toast } from "react-toastify";
 
-const apiUrl = "${process.env.NEXT_PUBLIC_API_URL}";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNlQwNzoyNjoyNy40MzhaIn0sImlhdCI6MTcwMjcxMTU4N30.yklKOcXTKAaW8LzeESrmP_-oPqFIMIBbKIOeTtM0b-Y";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const FeeDetailsPage = ({ fee }) => {
   const router = useRouter();
@@ -185,33 +183,5 @@ const FeeDetailsPage = ({ fee }) => {
 };
 
 FeeDetailsPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
-export const getServerSideProps = async ({ params }) => {
-  const { feeId } = params;
-
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/fees/${feeId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.data.success && response.data.data && response.data.data.fee) {
-      const fee = response.data.data.fee;
-      return {
-        props: { fee },
-      };
-    } else {
-      return {
-        props: {},
-      };
-    }
-  } catch (error) {
-    console.error("Error fetching fee data:", error);
-    return {
-      props: {},
-    };
-  }
-};
 
 export default FeeDetailsPage;

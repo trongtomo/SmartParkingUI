@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -5,13 +6,33 @@ import { Box, Button, Container, Stack, Typography, Unstable_Grid2 as Grid } fro
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import moment from "moment";
 import { useRouter } from "next/router";
+import { useAuthContext } from "src/contexts/auth-context";
 import Image from "next/image";
-const apiUrl = "${process.env.NEXT_PUBLIC_API_URL}";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNlQwNzoyNjoyNy40MzhaIn0sImlhdCI6MTcwMjcxMTU4N30.yklKOcXTKAaW8LzeESrmP_-oPqFIMIBbKIOeTtM0b-Y";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const SessionDetailPage = ({ session }) => {
+const SessionDetailPage = () => {
+  const [session, setSessionData] = useState({});
   const router = useRouter();
+  const auth = useAuthContext();
+  const token = auth.user?.accessToken;
+  const sessionId = router.query?.sessionId;
+  useEffect(() => {
+    const getParkingSession = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/admin/sessions/${sessionId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const session = response.data.data.parkingSession;
+        setSessionData(session);
+      } catch (err) {
+        console.error("ERR", err);
+      }
+    };
+
+    getParkingSession();
+  }, []);
 
   if (!session) {
     return (
@@ -140,31 +161,3 @@ const SessionDetailPage = ({ session }) => {
 SessionDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default SessionDetailPage;
-
-export const getServerSideProps = async ({ params }) => {
-  const { id } = params;
-
-  try {
-    const response = await axios.get(`${apiUrl}/api/admin/sessions/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.data.success && response.data.data && response.data.data.parkingSession) {
-      const session = response.data.data.parkingSession;
-      return {
-        props: { session },
-      };
-    } else {
-      return {
-        props: {},
-      };
-    }
-  } catch (error) {
-    console.error("Error fetching session data:", error);
-    return {
-      props: {},
-    };
-  }
-};

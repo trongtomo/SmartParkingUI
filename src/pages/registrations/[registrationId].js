@@ -372,7 +372,8 @@ RegistrationDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardL
 
 const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards, registrationId }) => {
   const [selectedCardId, setSelectedCardId] = useState("");
-
+  const auth = useAuthContext();
+  const token = auth.user?.accessToken;
   const handleActivateClick = async () => {
     // Validate the form fields, perform additional checks if needed
     if (selectedCardId) {

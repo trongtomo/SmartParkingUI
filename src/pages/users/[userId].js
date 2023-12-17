@@ -99,6 +99,26 @@ const UserDetailPage = () => {
     getUserDetails();
   }, []);
 
+  if (!user) {
+    return (
+      <>
+        <Head>
+          <title>User Not Found | Smart-Parking</title>
+        </Head>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            py: 8,
+          }}
+        >
+          <Container maxWidth="xl">
+            <Typography variant="h4">User Not Found</Typography>
+          </Container>
+        </Box>
+      </>
+    );
+  }
   return (
     <>
       <Head>

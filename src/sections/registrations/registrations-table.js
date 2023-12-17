@@ -30,63 +30,69 @@ export const RegistrationsTable = (props) => {
   return (
     <Card>
       <Scrollbar>
-        <Box sx={{ minWidth: 800 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Registration ID</TableCell>
-                <TableCell>Users phone</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Approved By</TableCell>
-                <TableCell>Expired Date</TableCell>
-                <TableCell>Plate Number</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.map((registration) => {
-                const expiredDate = registration.expiredDate
-                  ? moment(registration.expiredDate).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                const createdAt = registration.createdAt
-                  ? moment(registration.createdAt).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                const updatedAt = registration.updatedAt
-                  ? moment(registration.updatedAt).format("DD/MM/YYYY HH:mm:ss")
-                  : "";
-                return (
-                  <TableRow hover key={registration.registrationId}>
-                    <TableCell>
-                      <Link href={`/registrations/${registration.registrationId}`}>
-                        {registration.registrationId}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{registration.username}</TableCell>
-                    <TableCell>{registration.status}</TableCell>
-                    <TableCell>{registration.approvedBy}</TableCell>
-                    <TableCell>{expiredDate}</TableCell>
-                    <TableCell>{registration.plateNumber}</TableCell>
-                    <TableCell>{createdAt}</TableCell>
-                    <TableCell>{updatedAt}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          href={`/registrations/${registration.registrationId}`}
-                        >
-                          Details
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Box>
+        {items.length > 0 ? (
+          <Box sx={{ minWidth: 800 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Registration ID</TableCell>
+                  <TableCell>Users phone</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Approved By</TableCell>
+                  <TableCell>Expired Date</TableCell>
+                  <TableCell>Plate Number</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>Updated At</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {items.map((registration) => {
+                  const expiredDate = registration.expiredDate
+                    ? moment(registration.expiredDate).format("DD/MM/YYYY HH:mm:ss")
+                    : "";
+                  const createdAt = registration.createdAt
+                    ? moment(registration.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                    : "";
+                  const updatedAt = registration.updatedAt
+                    ? moment(registration.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                    : "";
+                  return (
+                    <TableRow hover key={registration.registrationId}>
+                      <TableCell>
+                        <Link href={`/registrations/${registration.registrationId}`}>
+                          {registration.registrationId}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{registration.username}</TableCell>
+                      <TableCell>{registration.status}</TableCell>
+                      <TableCell>{registration.approvedBy}</TableCell>
+                      <TableCell>{expiredDate}</TableCell>
+                      <TableCell>{registration.plateNumber}</TableCell>
+                      <TableCell>{createdAt}</TableCell>
+                      <TableCell>{updatedAt}</TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={1}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            href={`/registrations/${registration.registrationId}`}
+                          >
+                            Details
+                          </Button>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Box>
+        ) : (
+          <Box sx={{ p: 2 }}>
+            <Typography variant="body1">No registrations found.</Typography>
+          </Box>
+        )}
       </Scrollbar>
       <TablePagination
         component="div"

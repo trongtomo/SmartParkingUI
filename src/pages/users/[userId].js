@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import axios from "axios";
 import Head from "next/head";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -8,10 +12,12 @@ import { toast } from "react-toastify";
 import { useAuthContext } from "src/contexts/auth-context";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const UserDetailPage = ({ user }) => {
+const UserDetailPage = () => {
+  const router = useRouter();
+  const userId = router.query.userId;
+  const [user, setUser] = useState({});
   const auth = useAuthContext();
   const token = auth.user?.accessToken;
-  const router = useRouter();
 
   const getRoleName = (roleId) => {
     switch (roleId) {
@@ -38,7 +44,8 @@ const UserDetailPage = ({ user }) => {
       );
       if (response.data.success) {
         toast.success("User activated successfully");
-        router.replace(router.asPath); // Reload the page
+        setUser((prev) => ({ ...prev, isActive: true }));
+        // router.replace(router.asPath); // Reload the page
       } else {
         console.error("Failed to active user:", response.data.message);
         toast.error("Failed to active user. Please try again.");
@@ -62,7 +69,8 @@ const UserDetailPage = ({ user }) => {
       );
       if (response.data.success) {
         toast.success("User activated successfully");
-        router.replace(router.asPath); // Reload the page
+        setUser((prev) => ({ ...prev, isActive: false }));
+        // router.replace(router.asPath); // Reload the page
       } else {
         console.error("Failed to deactive user:", response.data.message);
         toast.error("Failed to deactive user. Please try again.");
@@ -72,6 +80,25 @@ const UserDetailPage = ({ user }) => {
       toast.error("Failed to deactivate user. Please try again.");
     }
   };
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const userDetails = response.data?.data?.user || {};
+        setUser(userDetails);
+      } catch (err) {
+        console.error("ERR", err);
+      }
+    };
+
+    getUserDetails();
+  }, []);
+
   return (
     <>
       <Head>
@@ -134,29 +161,3 @@ const UserDetailPage = ({ user }) => {
 UserDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default UserDetailPage;
-
-export const getStaticPaths = async () => {
-  // Fetch the user IDs from your API
-  const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`);
-  const users = response.data.data.users;
-  console.log(users);
-  // Generate paths for each user ID
-  const paths = users.map((user) => ({
-    params: { userId: user.userId.toString() },
-  }));
-
-  return {
-    paths,
-    fallback: false,
-  };
-};
-export const getStaticProps = async ({ params }) => {
-  const { userId } = params;
-
-  const response = await axios.get(`${apiUrl}/api/admin/users/${userId}`);
-  const user = response.data.data.user;
-  console.log(user);
-  return {
-    props: { user },
-  };
-};

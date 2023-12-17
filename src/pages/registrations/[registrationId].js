@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -21,128 +22,81 @@ import { useAuthContext } from "src/contexts/auth-context";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
-const apiUrl = "${process.env.NEXT_PUBLIC_API_URL}";
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6OCwidXNlcm5hbWUiOiIwOTA1NTQ3ODkwIiwiY3JlYXRlZEF0IjoiMjAyMy0xMi0xNlQwNzoyNjoyNy40MzhaIn0sImlhdCI6MTcwMjcxMTU4N30.yklKOcXTKAaW8LzeESrmP_-oPqFIMIBbKIOeTtM0b-Y";
-const handleDisable = async (registrationId) => {
-  try {
-    const response = await axios.put(
-      `${apiUrl}/api/admin/registrations/disable/${registrationId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.data.success) {
-      toast.success("Registration disable successfully!");
-      router.replace(router.asPath);
-    } else {
-      console.error("Failed to disable registration", response.data.message);
-    }
-  } catch (error) {
-    console.error("Error disabling registration:", error.response?.data || error.message);
-  }
-};
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-// const handleActivate = async (registrationId) => {
-//   try {
-//     // Make a request to activate the registration using the selected card
-
-//     const response = await axios.put(
-//       `${apiUrl}/api/admin/registrations/activate/${registrationId}`,
-//       {},
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-
-//     if (response.data.success) {
-//       toast.success("Registration activated successfully!");
-//       router.replace(router.asPath);
-//     } else {
-//       console.error(
-//         "Failed to activate registration, regis doesn't have valid payment",
-//         response.data.message
-//       );
-//     }
-//   } catch (error) {
-//     toast.error("Error activating registration. Please try again.", { autoClose: 3000 });
-//     console.error("Error activating registration:", error);
-//   }
-// };
-
-const handleVerify = async (registrationId) => {
-  try {
-    const response = await axios.put(
-      `${apiUrl}/api/admin/registrations/verify/${registrationId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.data.success) {
-      // Do something on success
-      toast.success("Verify success");
-      router.replace(router.asPath);
-    } else {
-      // Handle errors
-      toast.error("Can't verify, please try again!");
-    }
-  } catch (error) {
-    console.error("Error verifying registration:", error);
-  }
-};
-
-const handleReject = async (registrationId) => {
-  try {
-    const response = await axios.put(
-      `${apiUrl}/api/admin/registrations/reject/${registrationId}`,
-      {}
-    );
-    if (response.data.success) {
-      // Do something on success
-      toast.success("Reject success");
-      router.replace(router.asPath);
-    } else {
-      // Handle errors
-    }
-  } catch (error) {
-    console.error("Error rejecting registration:", error);
-  }
-};
-const handleEnable = async (registrationId) => {
-  try {
-    const response = await axios.put(
-      `${apiUrl}/api/admin/registrations/enable/${registrationId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.data.success) {
-      toast.success("Registration enable successfully!");
-      router.replace(router.asPath);
-    } else {
-      console.error("Failed to enable registration", response.data.message);
-    }
-  } catch (error) {
-    console.error("Error enabling registration:", error.message);
-  }
-};
-
-const RegistrationDetailPage = ({ registration, registrationHistories, payments, cards }) => {
+const RegistrationDetailPage = () => {
+  const auth = useAuthContext();
+  const token = auth.user?.accessToken;
   const router = useRouter();
+  const registrationId = router.query.registrationId;
+  const [registration, setRegistrationData] = useState({});
+  const [registrationHistories, setRegistrationHistories] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [cards, setCards] = useState([]);
   const [isActivateFormOpen, setIsActivateFormOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState("");
-  const handleActivate = (registrationId) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [registrationResponse, historyResponse, paymentResponse, cardResponse] =
+          await Promise.all([
+            axios.get(`${apiUrl}/api/admin/registrations/${registrationId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }),
+            axios.get(`${apiUrl}/api/admin/registrations/history/${registrationId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }),
+            axios.get(`${apiUrl}/api/admin/registrations/payment/${registrationId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }),
+            axios.get(`${apiUrl}/api/admin/active-cards`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }),
+          ]);
+
+        if (
+          registrationResponse.data.success &&
+          registrationResponse.data.data &&
+          registrationResponse.data.data.registration
+        ) {
+          const registration = registrationResponse.data.data.registration;
+
+          // Extract registrationHistories from the second response
+          const registrationHistories =
+            historyResponse.data.success && historyResponse.data.data
+              ? historyResponse.data.data.registrationHistories
+              : [];
+          // Third response
+          const payments =
+            paymentResponse.data.success && paymentResponse.data.data
+              ? paymentResponse.data.data
+              : [];
+          // Fourth
+          const cards =
+            cardResponse.data.success && cardResponse.data.data ? cardResponse.data.data : [];
+          setRegistrationData(registration);
+          setRegistrationHistories(registrationHistories);
+          setPayments(payments);
+          setCards(cards);
+        } else {
+          console.error("Failed to fetch registration data");
+        }
+      } catch (error) {
+        console.error("Error fetching registration data:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+  const handleActivate = () => {
     // Set the selected card to the first card by default
     const defaultCardId =
       cards.data && cards.data.activeCards.length > 0 ? cards.data.activeCards[0].cardId : "";
@@ -150,6 +104,90 @@ const RegistrationDetailPage = ({ registration, registrationHistories, payments,
 
     // Open the activation form
     setIsActivateFormOpen(true);
+  };
+  const handleDisable = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `${apiUrl}/api/admin/registrations/disable/${registrationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        toast.success("Registration disable successfully!");
+        router.replace(router.asPath);
+      } else {
+        console.error("Failed to disable registration", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error disabling registration:", error.response?.data || error.message);
+    }
+  };
+
+  const handleVerify = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `${apiUrl}/api/admin/registrations/verify/${registrationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        // Do something on success
+        toast.success("Verify success");
+        router.replace(router.asPath);
+      } else {
+        // Handle errors
+        toast.error("Can't verify, please try again!");
+      }
+    } catch (error) {
+      console.error("Error verifying registration:", error);
+    }
+  };
+
+  const handleReject = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `${apiUrl}/api/admin/registrations/reject/${registrationId}`,
+        {}
+      );
+      if (response.data.success) {
+        // Do something on success
+        toast.success("Reject success");
+        router.replace(router.asPath);
+      } else {
+        // Handle errors
+      }
+    } catch (error) {
+      console.error("Error rejecting registration:", error);
+    }
+  };
+  const handleEnable = async (registrationId) => {
+    try {
+      const response = await axios.put(
+        `${apiUrl}/api/admin/registrations/enable/${registrationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        toast.success("Registration enable successfully!");
+        router.replace(router.asPath);
+      } else {
+        console.error("Failed to enable registration", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error enabling registration:", error.message);
+    }
   };
   if (!registration) {
     return (
@@ -337,7 +375,6 @@ const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards, re
 
   const handleActivateClick = async () => {
     // Validate the form fields, perform additional checks if needed
-    console.log(selectedCardId);
     if (selectedCardId) {
       try {
         // Make a request to activate the registration using the selected card
@@ -437,65 +474,4 @@ const PaymentInfo = ({ payments }) => {
   );
 };
 
-export const getServerSideProps = async ({ params }) => {
-  const { registrationId } = params;
-
-  try {
-    const [registrationResponse, historyResponse, paymentResponse, cardResponse] =
-      await Promise.all([
-        axios.get(`${apiUrl}/api/admin/registrations/${registrationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(`${apiUrl}/api/admin/registrations/history/${registrationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(`${apiUrl}/api/admin/registrations/payment/${registrationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        axios.get(`${apiUrl}/api/admin/active-cards`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
-
-    if (
-      registrationResponse.data.success &&
-      registrationResponse.data.data &&
-      registrationResponse.data.data.registration
-    ) {
-      const registration = registrationResponse.data.data.registration;
-
-      // Extract registrationHistories from the second response
-      const registrationHistories =
-        historyResponse.data.success && historyResponse.data.data
-          ? historyResponse.data.data.registrationHistories
-          : [];
-      // Third response
-      const payments =
-        paymentResponse.data.success && paymentResponse.data.data ? paymentResponse.data.data : [];
-      // Fourth
-      const cards =
-        cardResponse.data.success && cardResponse.data.data ? cardResponse.data.data : [];
-      return {
-        props: { registration, registrationHistories, payments, cards },
-      };
-    } else {
-      return {
-        props: {},
-      };
-    }
-  } catch (error) {
-    console.error("Error fetching registration data:", error);
-    return {
-      props: {},
-    };
-  }
-};
 export default RegistrationDetailPage;

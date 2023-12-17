@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -14,13 +15,13 @@ import { toast } from "react-toastify";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const RegistrationPage = () => {
   const [registrations, setRegistrations] = useState([]);
+  const [filteredRegistrations, setFilteredRegistrations] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const router = useRouter();
   const auth = useAuthContext();
   const token = auth.user.accessToken;
   useEffect(() => {
-    let isMounted = true;
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/admin/registrations/allRegistrations`, {
@@ -29,20 +30,28 @@ const RegistrationPage = () => {
           },
         });
 
-        if (isMounted && response.data.code === 200) {
-          const formattedData = response.data.data.map((registration) => ({
-            registrationId: registration.registrationId,
-            username: registration.User.username,
-            status: registration.status,
-            approvedBy: registration.approvedBy,
-            expiredDate: registration.expiredDate
-              ? moment(registration.expiredDate).format("YYYY-MM-DD HH:mm:ss")
-              : "",
-            plateNumber: registration.plateNumber,
-            createdAt: moment(registration.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-            updatedAt: moment(registration.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-          }));
-          setRegistrations(formattedData);
+        if (response.data.code === 200) {
+          if (response.data.data === "No registrations found") {
+            // Handle the case when no registrations are found, show a message or perform any specific action
+            toast.warning("No registrations found");
+          } else {
+            const formattedData = response.data.data.map((registration) => ({
+              registrationId: registration.registrationId,
+              username: registration.User.username,
+              status: registration.status,
+              approvedBy: registration.approvedBy,
+              expiredDate: registration.expiredDate
+                ? moment(registration.expiredDate).format("YYYY-MM-DD HH:mm:ss")
+                : "",
+              plateNumber: registration.plateNumber,
+              createdAt: moment(registration.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+              updatedAt: moment(registration.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+            }));
+            setRegistrations(formattedData);
+            setFilteredRegistrations(formattedData);
+          }
+        } else {
+          toast.error("Failed to fetch registrations. Please try again.");
         }
       } catch (error) {
         toast.error("Failed to fetch registrations. Please try again.");
@@ -50,16 +59,17 @@ const RegistrationPage = () => {
     };
 
     fetchData();
-    return () => {
-      isMounted = false;
-    };
-  }, [token]);
+  }, []);
 
   const handlePageChange = (event, value) => {
     setPage(value);
   };
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
+  };
+  const handleSearch = (searchResults) => {
+    setFilteredRegistrations(searchResults);
+    setPage(0); // Reset page when performing a new search
   };
 
   return (
@@ -81,11 +91,11 @@ const RegistrationPage = () => {
                 <Typography variant="h4">Registration</Typography>
               </Stack>
             </Stack>
-            <RegistrationsSearch />
+            <RegistrationsSearch onSearch={handleSearch} />
 
             <RegistrationsTable
-              count={registrations.length}
-              items={applyPagination(registrations, page, rowsPerPage)}
+              count={filteredRegistrations.length}
+              items={applyPagination(filteredRegistrations, page, rowsPerPage)}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}

@@ -10,6 +10,7 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
+import { ParkingSessionsSearch } from "src/sections/parkingSessions/parkingSessions-search";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const ParkingSessionsIndexPage = () => {
@@ -84,6 +85,7 @@ const ParkingSessionsIndexPage = () => {
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Typography variant="h4">Parking Sessions</Typography>
             </Stack>
+            <ParkingSessionsSearch />
             <ParkingSessionsTable
               count={parkingSessions.length}
               items={applyPagination(parkingSessions, page, rowsPerPage)}

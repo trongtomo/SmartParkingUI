@@ -129,7 +129,7 @@ const FeesIndexPage = ({ fees }) => {
   return (
     <>
       <Head>
-        <title>Fee Management | Your App Name</title>
+        <title>Fee Management | Smart Parking</title>
       </Head>
       <Box
         component="main"

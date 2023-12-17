@@ -42,7 +42,7 @@ export const ParkingSessionsTable = (props) => {
                 <TableCell>Approved By</TableCell>
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Parking Fee</TableCell>
-                <TableCell>Created At</TableCell>
+                <TableCell>Updated At</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -54,8 +54,11 @@ export const ParkingSessionsTable = (props) => {
                 const checkoutTime = moment(session.checkoutTime).isValid()
                   ? moment(session.checkoutTime).format("DD/MM/YYYY HH:mm:ss")
                   : "N/A";
-                const createdAt = session.createdAt
-                  ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                // const createdAt = session.createdAt
+                // ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                // : "N/A";
+                const updatedAt = session.updatedAt
+                  ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
                   : "N/A";
                 return (
                   <TableRow hover key={session.parkingSessionId}>
@@ -71,8 +74,8 @@ export const ParkingSessionsTable = (props) => {
                     <TableCell>{session.approvedBy}</TableCell>
                     <TableCell>{session.plateNumber}</TableCell>
                     <TableCell>{session.parkingFee}</TableCell>
-                    <TableCell>{createdAt}</TableCell>
-                    {/* <TableCell>{updatedAt}</TableCell> */}
+                    {/* <TableCell>{createdAt}</TableCell> */}
+                    <TableCell>{updatedAt}</TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
                         <Button

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
+import { Box, Button, Container, Stack, Typography, Popover } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { ParkingSessionsTable } from "src/sections/parkingSessions/parkingSessions-table";
 import { applyPagination } from "src/utils/apply-pagination";
@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 import { ParkingSessionsSearch } from "src/sections/parkingSessions/parkingSessions-search";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const ParkingSessionsIndexPage = () => {
@@ -18,18 +20,27 @@ const ParkingSessionsIndexPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(moment().subtract(7, "days").toDate()); // Default to 7 days ago
+  const [endDate, setEndDate] = useState(new Date());
+
   const auth = useAuthContext();
   const token = auth.user.accessToken;
   useEffect(() => {
-    let isMounted = true;
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/admin/sessions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params: {
+            dateStart: startDate ? startDate.toISOString() : null,
+            dateEnd: endDate ? endDate.toISOString() : null,
+          },
         });
-        if (isMounted && response.data.code === 200) {
+
+        if (response.data.code === 200) {
           const formattedData = response.data.data.parkingSessions.map((session) => ({
             parkingSessionId: session.parkingSessionId,
             checkinCardId: session.checkinCardId,
@@ -43,22 +54,24 @@ const ParkingSessionsIndexPage = () => {
             approvedBy: session.approvedBy,
             plateNumber: session.plateNumber,
             parkingFee: session.parkingFee,
-            createdAt: moment(session.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-            // updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+            // createdAt: moment(session.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+            updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
           }));
           setParkingSessions(formattedData);
         }
       } catch (error) {
-        toast.error("Failed to fetch sessions. Please try again later.");
+        if (error.response && error.response.status === 204) {
+          toast.info("No sessions found for this date range");
+          setParkingSessions([]);
+        } else {
+          console.error("Error fetching sessions:", error);
+          toast.error("Failed to fetch sessions. Please try again later.");
+        }
       }
     };
 
     fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [token]);
+  }, [startDate, endDate]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -66,6 +79,15 @@ const ParkingSessionsIndexPage = () => {
 
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
+  };
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+  };
+  const handleToggleDatePicker = (event) => {
+    setShowDatePicker(!showDatePicker);
+    setAnchorEl(event.currentTarget);
   };
 
   return (
@@ -85,7 +107,19 @@ const ParkingSessionsIndexPage = () => {
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Typography variant="h4">Parking Sessions</Typography>
             </Stack>
-            <ParkingSessionsSearch />
+            <Stack direction="row" justifyContent="space-between">
+              <ParkingSessionsSearch />
+              <Button onClick={handleToggleDatePicker}>Choose Date</Button>
+              <DateRangePicker
+                startDate={startDate}
+                endDate={endDate}
+                onDateChange={handleDateChange}
+                open={showDatePicker}
+                onClose={() => setShowDatePicker(false)}
+                anchorEl={anchorEl}
+              />
+            </Stack>
+
             <ParkingSessionsTable
               count={parkingSessions.length}
               items={applyPagination(parkingSessions, page, rowsPerPage)}
@@ -104,3 +138,30 @@ const ParkingSessionsIndexPage = () => {
 ParkingSessionsIndexPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default ParkingSessionsIndexPage;
+
+const DateRangePicker = ({ startDate, endDate, onDateChange, open, onClose, anchorEl }) => (
+  <Popover
+    open={open}
+    onClose={onClose}
+    anchorEl={anchorEl}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "left",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "left",
+    }}
+  >
+    <Box p={2}>
+      <DatePicker
+        selected={startDate}
+        onChange={onDateChange}
+        startDate={startDate}
+        endDate={endDate}
+        selectsRange
+        inline
+      />
+    </Box>
+  </Popover>
+);

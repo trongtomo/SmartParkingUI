@@ -115,7 +115,7 @@ const CardsIndexPage = () => {
                       color="primary"
                     />
                   }
-                  label="Show Only Active"
+                  label="Active"
                 />
                 <FormControlLabel
                   control={
@@ -125,7 +125,7 @@ const CardsIndexPage = () => {
                       color="primary"
                     />
                   }
-                  label="Show Only Assigned"
+                  label="Assigned"
                 />
                 <FormControlLabel
                   control={
@@ -135,7 +135,7 @@ const CardsIndexPage = () => {
                       color="primary"
                     />
                   }
-                  label="Show Only Expired"
+                  label="Expired"
                 />
               </Box>
             </Stack>

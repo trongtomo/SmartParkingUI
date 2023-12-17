@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Head from "next/head";
 import axios from "axios";
 import {
   Box,
@@ -108,84 +109,99 @@ const ParkingTypesIndexPage = () => {
   };
 
   return (
-    <Container maxWidth="xl">
-      <Stack spacing={3}>
-        <Typography variant="h4">Parking Types</Typography>
-        <div style={{ textAlign: "left" }}>
-          <Button variant="contained" color="primary" onClick={() => setIsFormOpen(true)}>
-            Create New Parking Type
-          </Button>
-        </div>
-        <Dialog
-          open={isFormOpen}
-          onClose={() => setIsFormOpen(false)}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="form-dialog-title">Parking Type Details</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Fill in the details for the new parking type:</DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Name"
-              type="text"
-              fullWidth
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-            />
-            <TextField
-              margin="dense"
-              id="description"
-              label="Description"
-              type="text"
-              fullWidth
-              value={formData.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsFormOpen(false)} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleCreate} color="primary">
-              Create
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Grid container spacing={3}>
-          {parkingTypesList.map((parkingType) => (
-            <Grid item key={parkingType.parkingTypeId} xs={12} md={6} lg={4}>
-              <Box
-                sx={{
-                  padding: 3,
-                  minHeight: "150px",
-                  margin: "16px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <Typography variant="h6" gutterBottom>
-                    {parkingType.name}
-                  </Typography>
-                  <Typography variant="body1">Description: {parkingType.description}</Typography>
-                </div>
-                <Button
-                  variant="outlined"
-                  color="secondary" // Change color to red or any color that indicates delete
-                  onClick={() => handleDelete(parkingType)}
-                >
-                  Delete
+    <>
+      <Head>
+        <title>Parking Type | Smart Parking</title>
+      </Head>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 8,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Stack spacing={3}>
+            <Typography variant="h4">Parking Types</Typography>
+            <div style={{ textAlign: "left" }}>
+              <Button variant="contained" color="primary" onClick={() => setIsFormOpen(true)}>
+                Create New Parking Type
+              </Button>
+            </div>
+            <Dialog
+              open={isFormOpen}
+              onClose={() => setIsFormOpen(false)}
+              aria-labelledby="form-dialog-title"
+            >
+              <DialogTitle id="form-dialog-title">Parking Type Details</DialogTitle>
+              <DialogContent>
+                <DialogContentText>Fill in the details for the new parking type:</DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Name"
+                  type="text"
+                  fullWidth
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                />
+                <TextField
+                  margin="dense"
+                  id="description"
+                  label="Description"
+                  type="text"
+                  fullWidth
+                  value={formData.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setIsFormOpen(false)} color="primary">
+                  Cancel
                 </Button>
-              </Box>
+                <Button onClick={handleCreate} color="primary">
+                  Create
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Grid container spacing={3}>
+              {parkingTypesList.map((parkingType) => (
+                <Grid item key={parkingType.parkingTypeId} xs={12} md={6} lg={4}>
+                  <Box
+                    sx={{
+                      padding: 3,
+                      minHeight: "150px",
+                      margin: "16px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <Typography variant="h6" gutterBottom>
+                        {parkingType.name}
+                      </Typography>
+                      <Typography variant="body1">
+                        Description: {parkingType.description}
+                      </Typography>
+                    </div>
+                    <Button
+                      variant="outlined"
+                      color="secondary" // Change color to red or any color that indicates delete
+                      onClick={() => handleDelete(parkingType)}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </Stack>
-    </Container>
+          </Stack>
+        </Container>
+      </Box>
+    </>
   );
 };
 

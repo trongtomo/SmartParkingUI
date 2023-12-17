@@ -2,7 +2,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
-import { Box, Button, Container, Stack, SvgIcon, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  SvgIcon,
+  Typography,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { RegistrationsTable } from "src/sections/registrations/registrations-table";
 import { RegistrationsSearch } from "src/sections/registrations/registrations-search";
@@ -18,6 +27,10 @@ const RegistrationPage = () => {
   const [filteredRegistrations, setFilteredRegistrations] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [showPaid, setShowPaid] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
+  const [showVerified, setShowVerified] = useState(false);
+
   const router = useRouter();
   const auth = useAuthContext();
   const token = auth.user.accessToken;
@@ -27,6 +40,11 @@ const RegistrationPage = () => {
         const response = await axios.get(`${apiUrl}/api/admin/registrations/allRegistrations`, {
           headers: {
             Authorization: `Bearer ${token}`,
+          },
+          params: {
+            showPaid,
+            showInactive,
+            showVerified,
           },
         });
 
@@ -59,7 +77,7 @@ const RegistrationPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [showPaid, showInactive, showVerified]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -67,8 +85,23 @@ const RegistrationPage = () => {
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
   };
-  const handleSearch = (searchResults) => {
-    setFilteredRegistrations(searchResults);
+  const handleSearch = (e) => {
+    const keyword = e.target.value;
+    const filteredData = registrations.filter((item) => item?.plateNumber?.includes(keyword));
+    // Apply status filter
+    const statusFilteredData = filteredData.filter((item) => {
+      if (showPaid && item.status === "paid") {
+        return true;
+      }
+      if (showInactive && item.status === "inactive") {
+        return true;
+      }
+      if (showVerified && item.status === "verified") {
+        return true;
+      }
+      return false;
+    });
+    setFilteredRegistrations(statusFilteredData);
     setPage(0); // Reset page when performing a new search
   };
 
@@ -92,6 +125,31 @@ const RegistrationPage = () => {
               </Stack>
             </Stack>
             <RegistrationsSearch onSearch={handleSearch} />
+            {/* Filter button */}
+            <Stack spacing={1} direction="row">
+              <FormControlLabel
+                control={<Checkbox checked={showPaid} onChange={() => setShowPaid(!showPaid)} />}
+                label="Paid"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showInactive}
+                    onChange={() => setShowInactive(!showInactive)}
+                  />
+                }
+                label="Inactive"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showVerified}
+                    onChange={() => setShowVerified(!showVerified)}
+                  />
+                }
+                label="Verified"
+              />
+            </Stack>
 
             <RegistrationsTable
               count={filteredRegistrations.length}

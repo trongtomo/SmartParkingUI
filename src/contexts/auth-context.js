@@ -97,9 +97,9 @@ export const AuthProvider = (props) => {
   };
 
   const signIn = async (username, password) => {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/pub/loginAdmin`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
-      const response = await axios.post(apiUrl, {
+      const response = await axios.post(`${apiUrl}/pub/loginAdmin`, {
         username,
         password,
       });

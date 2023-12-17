@@ -82,31 +82,15 @@ const SessionDetailPage = () => {
               {/* Check-in Images */}
               <Grid item xs={12} md={6} lg={4}>
                 <Typography variant="h6">Check-In</Typography>
-                {[session.checkinFaceImage, session.checkinPlateNumberImage].map((image, index) => (
-                  <Image
-                    key={index}
-                    src={`data:image/png;base64, ${image}`}
-                    alt={`Check-In Image ${index + 1}`}
-                    width={400}
-                    height={600}
-                  />
-                ))}
+                {renderImage(session.checkinFaceImage, "Check-In Face Image")}
+                {renderImage(session.checkinPlateNumberImage, "Check-In Plate Number Image")}
               </Grid>
 
               {/* Check-out Images */}
               <Grid item xs={12} md={6} lg={4}>
                 <Typography variant="h6">Check-Out</Typography>
-                {[session.checkoutFaceImage, session.checkoutPlateNumberImage].map(
-                  (image, index) => (
-                    <Image
-                      key={index}
-                      src={`data:image/png;base64, ${image}`}
-                      alt={`Check-Out Image ${index + 1}`}
-                      width={400}
-                      height={600}
-                    />
-                  )
-                )}
+                {renderImage(session.checkoutFaceImage, "Check-Out Face Image")}
+                {renderImage(session.checkoutPlateNumberImage, "Check-Out Plate Number Image")}
               </Grid>
 
               {/* Session Details */}
@@ -157,7 +141,15 @@ const SessionDetailPage = () => {
     </>
   );
 };
+const renderImage = (imageData, altText) => {
+  if (!imageData) {
+    return <Typography variant="body2">{`${altText}: N/A`}</Typography>;
+  }
 
+  return (
+    <Image src={`data:image/png;base64, ${imageData}`} alt={altText} width={400} height={600} />
+  );
+};
 SessionDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default SessionDetailPage;

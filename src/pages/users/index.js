@@ -33,7 +33,7 @@ const UsersIndexPage = () => {
     password: "",
     fullName: "",
   });
-  const [showAdmin, setShowAdmin] = useState(false);
+
   const [showSecurity, setShowSecurity] = useState(false);
   const [showUser, setShowUser] = useState(true);
 
@@ -93,7 +93,8 @@ const UsersIndexPage = () => {
 
       if (response.data.success && response.data.data && response.data.data.user) {
         const createdUser = response.data.data.user;
-        router.push(`${apiUrl}/admin/users/${createdUser.userId}`); // Redirect to the details page of the created user
+        setIsFormOpen(false);
+        // router.push(`${apiUrl}/admin/users/${createdUser.userId}`); // Redirect to the details page of the created user
         toast.success("Security created successfully!", { autoClose: 2000 });
       } else {
         console.error("Failed to create user:", response.data.message);
@@ -184,16 +185,7 @@ const UsersIndexPage = () => {
                 <Typography variant="h4">Users</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}>
                   {/* Create User Form */}
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={showAdmin}
-                        onChange={(e) => setShowAdmin(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label="Show Admin"
-                  />
+
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -221,7 +213,6 @@ const UsersIndexPage = () => {
               count={users.length}
               items={applyPagination(
                 users.filter((user) => {
-                  if (showAdmin && user.roleId === 1) return true;
                   if (showSecurity && user.roleId === 2) return true;
                   if (showUser && user.roleId === 3) return true;
                   return false;

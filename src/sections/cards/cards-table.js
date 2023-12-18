@@ -1,4 +1,5 @@
 // src/sections/cards/cards-table.js
+"use client";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { useState, useEffect } from "react";
@@ -17,7 +18,9 @@ import {
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 import Link from "next/link";
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import { useAuthContext } from "src/contexts/auth-context";
+import axios from "axios";
 export const CardsTable = (props) => {
   const {
     count = 0,
@@ -28,16 +31,40 @@ export const CardsTable = (props) => {
     rowsPerPage = 0,
   } = props;
   const [revokeButtonDisabled, setRevokeButtonDisabled] = useState(true);
+  const auth = useAuthContext();
+  const token = auth.user?.accessToken;
   useEffect(() => {
     // Check if any card in the items array has an expiredDate
-    const isAnyCardWithExpiredDate = items.some(
-      (card) => card.expiredDate !== null || card.expiredDate !== "N/A"
+    const isAnyCardWithInactive = items.some(
+      (card) => card.status === "inactive" && card.plateNumber !== "N/A"
     );
-    setRevokeButtonDisabled(!isAnyCardWithExpiredDate);
+    setRevokeButtonDisabled(!isAnyCardWithInactive);
   }, [items]);
-  const handleRevokeAction = (card) => {
-    // Implement the logic to handle the revoke action here
-    console.log(`Revoke action for card ID ${card.cardId}`);
+
+  const handleRevokeAction = async (card) => {
+    try {
+      // Make an API request to revoke the card by plate number
+      const response = await axios.post(
+        `${apiUrl}/api/admin/cards/revoke?plateNumber=${card.plateNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        // If the API request is successful, you can handle any additional actions or updates here
+        console.log(`Card revoked successfully for plate number: ${card.plateNumber}`);
+        // You might want to refetch data or update the local state
+      } else {
+        // Handle the case where the API request was not successful
+        console.error(`Failed to revoke card for plate number: ${card.plateNumber}`);
+      }
+    } catch (error) {
+      // Handle errors that may occur during the API request
+      console.error("Error revoking card:", error);
+    }
   };
   return (
     <Card>
@@ -65,9 +92,7 @@ export const CardsTable = (props) => {
                     : "N/A";
                 return (
                   <TableRow hover key={card.cardId}>
-                    <TableCell>
-                      <Link href={`/cards/${card.cardId}`}>{card.cardId}</Link>
-                    </TableCell>
+                    <TableCell>{card.cardId}</TableCell>
                     <TableCell>{card.startDate}</TableCell>
                     <TableCell>{card.expiredDate ? card.expiredDate : "N/A"}</TableCell>
                     <TableCell>{card.status}</TableCell>
@@ -77,7 +102,7 @@ export const CardsTable = (props) => {
                       <Button
                         variant="contained"
                         color="secondary"
-                        disabled={card.expiredDate === null || card.expiredDate === "N/A"}
+                        disabled={revokeButtonDisabled || card.status !== "inactive"}
                         onClick={() => handleRevokeAction(card)}
                       >
                         Revoke

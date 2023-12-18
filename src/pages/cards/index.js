@@ -1,4 +1,5 @@
 // pages/cards/index.js
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -10,20 +11,20 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
-
+import { CardsSearch } from "src/sections/cards/cards-search";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const CardsIndexPage = () => {
   const [cards, setCards] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showActive, setShowActive] = useState(false);
   const [showAssigned, setShowAssigned] = useState(false);
-  const [showExpired, setShowExpired] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const auth = useAuthContext();
   const token = auth.user.accessToken;
   useEffect(() => {
-    let isMounted = true;
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/admin/cards`, {
@@ -31,7 +32,7 @@ const CardsIndexPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (isMounted && response.data.code === 200) {
+        if (response.data.code === 200) {
           const formattedData = response.data.data.cards.map((card) => ({
             cardId: card.cardId,
             startDate: card.startDate ? moment(card.startDate).format("YYYY-MM-DD ") : "N/A",
@@ -48,11 +49,7 @@ const CardsIndexPage = () => {
     };
 
     fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [token]);
+  }, []);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -71,19 +68,28 @@ const CardsIndexPage = () => {
     if (showAssigned) {
       filteredCards = filteredCards.filter((card) => card.status === "assigned");
     }
-    if (showExpired) {
+    if (showInactive) {
       filteredCards = filteredCards.filter(
         (card) => card.status !== "active" && card.status !== "assigned"
       );
     }
+    if (searchTerm.trim() !== "") {
+      filteredCards = filteredCards.filter((card) =>
+        card.cardId.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
     return filteredCards;
+  };
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setPage(0); // Reset page when performing a search
   };
   const handleShowActiveChange = (event) => {
     setShowActive(event.target.checked);
     setPage(0); // Reset page when changing filters
   };
-  const handleShowExpiredChange = (event) => {
-    setShowExpired(event.target.checked);
+  const handleShowInactiveChange = (event) => {
+    setShowInactive(event.target.checked);
     setPage(0); // Reset page when changing filters
   };
   const handleShowAssignedChange = (event) => {
@@ -106,39 +112,43 @@ const CardsIndexPage = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Typography variant="h4">Manage Cards</Typography>
-              <Box>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={showActive}
-                      onChange={handleShowActiveChange}
-                      color="primary"
-                    />
-                  }
-                  label="Active"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={showAssigned}
-                      onChange={handleShowAssignedChange}
-                      color="primary"
-                    />
-                  }
-                  label="Assigned"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={showExpired}
-                      onChange={handleShowExpiredChange}
-                      color="primary"
-                    />
-                  }
-                  label="Expired"
-                />
-              </Box>
             </Stack>
+            {/* Add the CardsSearch component for searching by cardId */}
+            <CardsSearch onSearch={handleSearch} />
+
+            <Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showActive}
+                    onChange={handleShowActiveChange}
+                    color="primary"
+                  />
+                }
+                label="Active"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showAssigned}
+                    onChange={handleShowAssignedChange}
+                    color="primary"
+                  />
+                }
+                label="Assigned"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showInactive}
+                    onChange={handleShowInactiveChange}
+                    color="primary"
+                  />
+                }
+                label="Inactive"
+              />
+            </Box>
+
             <CardsTable
               count={filterCards().length}
               items={applyPagination(filterCards(), page, rowsPerPage)}

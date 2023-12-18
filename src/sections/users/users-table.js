@@ -53,7 +53,6 @@ export const UsersTable = (props) => {
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
                 <TableCell>Role</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -69,18 +68,6 @@ export const UsersTable = (props) => {
                     <TableCell>{moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{getRoleName(user.roleId)}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        {/* Add other action buttons */}
-                        <Button variant="contained" color="primary" onClick={() => {
-                          router.push(`/users/${user.userId}`)
-                      
-                        }}>
-                          Details
-                        </Button>
-
-                      </Stack>
-                    </TableCell>
                   </TableRow>
                 );
               })}

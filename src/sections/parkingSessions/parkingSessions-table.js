@@ -50,27 +50,27 @@ export const ParkingSessionsTable = (props) => {
               {items.map((session) => {
                 const checkinTime = session.checkinTime
                   ? moment(session.checkinTime).format("DD/MM/YYYY HH:mm:ss")
-                  : "N/A";
+                  : "parking";
                 const checkoutTime = moment(session.checkoutTime).isValid()
                   ? moment(session.checkoutTime).format("DD/MM/YYYY HH:mm:ss")
-                  : "N/A";
+                  : "parking";
                 // const createdAt = session.createdAt
                 // ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
-                // : "N/A";
+                // : "parking";
                 const updatedAt = session.updatedAt
                   ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
-                  : "N/A";
+                  : "parking";
                 return (
                   <TableRow hover key={session.parkingSessionId}>
+                    <TableCell>{session.parkingSessionId}</TableCell>
                     <TableCell>
-                      <Link href={`/parkingSessions/${session.parkingSessionId}`}>
-                        {session.parkingSessionId}
-                      </Link>
+                      {session.checkinCardId ? session.checkinCardId : "parking"}
                     </TableCell>
-                    <TableCell>{session.checkinCardId ? session.checkinCardId : "N/A"}</TableCell>
-                    <TableCell>{checkinTime ? checkinTime : "N/A"}</TableCell>
-                    <TableCell>{session.checkoutCardId ? session.checkoutCardId : "N/A"}</TableCell>
-                    <TableCell>{checkoutTime ? checkoutTime : "N/A"}</TableCell>
+                    <TableCell>{checkinTime ? checkinTime : "parking"}</TableCell>
+                    <TableCell>
+                      {session.checkoutCardId ? session.checkoutCardId : "parking"}
+                    </TableCell>
+                    <TableCell>{checkoutTime ? checkoutTime : "parking"}</TableCell>
                     <TableCell>{session.approvedBy}</TableCell>
                     <TableCell>{session.plateNumber}</TableCell>
                     <TableCell>{session.parkingFee}</TableCell>
@@ -78,13 +78,9 @@ export const ParkingSessionsTable = (props) => {
                     <TableCell>{updatedAt}</TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          href={`/parkingSessions/${session.parkingSessionId}`}
-                        >
-                          Details
-                        </Button>
+                        <Link href={`/parkingSessions/${session.parkingSessionId}`}>
+                          <p style={{ textDecoration: "none", color: "inherit" }}>Details</p>
+                        </Link>
                       </Stack>
                     </TableCell>
                   </TableRow>

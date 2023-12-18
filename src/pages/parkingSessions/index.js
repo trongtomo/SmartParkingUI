@@ -1,4 +1,6 @@
 // pages/parkingSessions/index.js
+
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -24,7 +26,7 @@ const ParkingSessionsIndexPage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(moment().subtract(7, "days").toDate()); // Default to 7 days ago
   const [endDate, setEndDate] = useState(new Date());
-
+  const [searchTerm, setSearchTerm] = useState("");
   const auth = useAuthContext();
   const token = auth.user.accessToken;
   useEffect(() => {
@@ -39,9 +41,12 @@ const ParkingSessionsIndexPage = () => {
             dateEnd: endDate ? endDate.toISOString() : null,
           },
         });
+        const filteredData = response.data.data.parkingSessions.filter((session) =>
+          session.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
         if (response.data.code === 200) {
-          const formattedData = response.data.data.parkingSessions.map((session) => ({
+          const formattedData = filteredData.map((session) => ({
             parkingSessionId: session.parkingSessionId,
             checkinCardId: session.checkinCardId,
             checkinTime: session.checkinTime
@@ -71,7 +76,7 @@ const ParkingSessionsIndexPage = () => {
     };
 
     fetchData();
-  }, [startDate, endDate]);
+  }, [endDate, searchTerm]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -89,7 +94,10 @@ const ParkingSessionsIndexPage = () => {
     setShowDatePicker(!showDatePicker);
     setAnchorEl(event.currentTarget);
   };
-
+  const handleSearch = (term) => {
+    setPage(0); // Reset page when searching
+    setSearchTerm(term);
+  };
   return (
     <>
       <Head>
@@ -107,8 +115,8 @@ const ParkingSessionsIndexPage = () => {
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Typography variant="h4">Parking Sessions</Typography>
             </Stack>
+            <ParkingSessionsSearch onSearch={handleSearch} />
             <Stack direction="row" justifyContent="space-between">
-              <ParkingSessionsSearch />
               <Button onClick={handleToggleDatePicker}>Choose Date</Button>
               <DateRangePicker
                 startDate={startDate}

@@ -94,27 +94,27 @@ const SessionDetailPage = () => {
                     borderRadius: 4,
                     padding: 3,
                   }}
-                >
+                >parking
                   <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Paper elevation={3} sx={{ p: 2 }}>
                         <Typography variant="body1">{`Checkin card ID: ${
-                          session.checkinCardId || "N/A"
+                          session.checkinCardId || "parking"
                         }`}</Typography>
                         <Typography variant="body1">{`Check-in Time: ${
                           session.checkinTime
                             ? moment(session.checkinTime).format("YYYY-MM-DD HH:mm:ss")
-                            : "N/A"
+                            : "parking"
                         }`}</Typography>
                         <Typography variant="body1">{`Checkout card ID: ${
-                          session.checkoutCardId || "N/A"
+                          session.checkoutCardId || "parking"
                         }`}</Typography>
                         <Typography variant="body1">{`Check-out Time: ${
                           session.checkoutTime
                             ? moment(session.checkoutTime, "YYYY-MM-DD HH:mm:ss", true).isValid()
                               ? moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss")
-                              : "N/A"
-                            : "N/A"
+                              : "parking"
+                            : "parking"
                         }`}</Typography>
                       </Paper>
                     </Grid>
@@ -123,7 +123,7 @@ const SessionDetailPage = () => {
                         <Typography variant="body1">{`Approved By: ${session.approvedBy}`}</Typography>
                         <Typography variant="body1">{`Plate Number: ${session.plateNumber}`}</Typography>
                         <Typography variant="body1">{`Parking Fee: ${
-                          session.parkingFee ? session.parkingFee : "N/A"
+                          session.parkingFee ? session.parkingFee : "parking"
                         }`}</Typography>
                         {/* <Typography variant="body1">{`Created At: ${moment(
                           session.createdAt
@@ -142,8 +142,8 @@ const SessionDetailPage = () => {
                                 ? "Guest"
                                 : session.ParkingType.parkingTypeId === 2
                                 ? "Resident"
-                                : "N/A"
-                              : "N/A"
+                                : "parking"
+                              : "parking"
                           }`}
                         </Typography>
                       </Paper>
@@ -167,7 +167,7 @@ const SessionDetailPage = () => {
 };
 const renderImage = (imageData, altText) => {
   if (!imageData) {
-    return <Typography variant="body2">{`${altText}: N/A`}</Typography>;
+    return <Typography variant="body2">{`${altText}: parking`}</Typography>;
   }
 
   return (

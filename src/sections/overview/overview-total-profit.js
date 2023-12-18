@@ -1,39 +1,70 @@
-import PropTypes from 'prop-types';
-import CurrencyDollarIcon from '@heroicons/react/24/solid/CurrencyDollarIcon';
-import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from '@mui/material';
+import PropTypes from "prop-types";
+import ArrowDownIcon from "@heroicons/react/24/solid/ArrowDownIcon";
+import ArrowUpIcon from "@heroicons/react/24/solid/ArrowUpIcon";
+import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
+import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useAuthContext } from "src/contexts/auth-context";
+import moment from "moment";
 
-export const OverviewTotalProfit = (props) => {
-  const { value, sx } = props;
+export const TotalGuestInCome = (props) => {
+  const { difference, positive = false, sx, value } = props;
+
+  const [totalCustomers, setTotalCustomers] = useState();
+
+  const auth = useAuthContext();
+  const token = auth.user.accessToken;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const endDate = moment().toISOString();
+        const startDate = moment(endDate).subtract(7, "days").toISOString();
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalGuestInCome?dateStart=${startDate}&dateEnd=${endDate}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          setTotalCustomers(response.data.data);
+        } else {
+          // Handle error if needed
+          console.error("Failed to fetch total customers:", response.data);
+        }
+      } catch (error) {
+        // Handle error if needed
+        console.error("Error fetching total customers:", error);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this effect runs once when the component mounts
 
   return (
     <Card sx={sx}>
       <CardContent>
-        <Stack
-          alignItems="flex-start"
-          direction="row"
-          justifyContent="space-between"
-          spacing={3}
-        >
+        <Stack alignItems="flex-start" direction="row" justifyContent="space-between" spacing={3}>
           <Stack spacing={1}>
-            <Typography
-              color="text.secondary"
-              variant="overline"
-            >
-              Total Profit
+            <Typography color="text.secondary" variant="overline">
+            Total Profits in 7 days
             </Typography>
             <Typography variant="h4">
-              {value}
+              {totalCustomers !== null ? totalCustomers : "Loading..."}
             </Typography>
           </Stack>
           <Avatar
             sx={{
-              backgroundColor: 'primary.main',
+              backgroundColor: "success.main",
               height: 56,
-              width: 56
+              width: 56,
             }}
           >
             <SvgIcon>
-              <CurrencyDollarIcon />
+              <UsersIcon />
             </SvgIcon>
           </Avatar>
         </Stack>
@@ -42,7 +73,9 @@ export const OverviewTotalProfit = (props) => {
   );
 };
 
-OverviewTotalProfit.propTypes = {
-  value: PropTypes.string,
-  sx: PropTypes.object
+TotalGuestInCome.propTypes = {
+  difference: PropTypes.number,
+  positive: PropTypes.bool,
+  value: PropTypes.string.isRequired,
+  sx: PropTypes.object,
 };

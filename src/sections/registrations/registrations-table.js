@@ -42,7 +42,6 @@ export const RegistrationsTable = (props) => {
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -70,17 +69,6 @@ export const RegistrationsTable = (props) => {
                     <TableCell>{registration.plateNumber}</TableCell>
                     <TableCell>{createdAt}</TableCell>
                     <TableCell>{updatedAt}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          href={`/registrations/${registration.registrationId}`}
-                        >
-                          Details
-                        </Button>
-                      </Stack>
-                    </TableCell>
                   </TableRow>
                 );
               })}

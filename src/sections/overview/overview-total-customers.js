@@ -6,8 +6,9 @@ import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from "@mui/mate
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "src/contexts/auth-context";
+import moment from "moment";
 
-export const OverviewTotalCustomers = (props) => {
+export const TotalCheckin = (props) => {
   const { difference, positive = false, sx, value } = props;
 
   const [totalCustomers, setTotalCustomers] = useState();
@@ -17,11 +18,10 @@ export const OverviewTotalCustomers = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const startDate = new Date(); // current date
-        const endDate = new Date();
-        startDate.setDate(endDate.getDate() - 7);
+        const endDate = moment().toISOString();
+        const startDate = moment(endDate).subtract(7, "days").toISOString();
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalCheckin?parkingTypeName=resident&${startDate}&${endDate}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalCheckin?parkingTypeName=guest&dateStart=${startDate}&dateEnd=${endDate}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ export const OverviewTotalCustomers = (props) => {
         <Stack alignItems="flex-start" direction="row" justifyContent="space-between" spacing={3}>
           <Stack spacing={1}>
             <Typography color="text.secondary" variant="overline">
-              Total Checkin in 7days
+             Guest Checkin in 7 days
             </Typography>
             <Typography variant="h4">
               {totalCustomers !== null ? totalCustomers : "Loading..."}
@@ -68,27 +68,12 @@ export const OverviewTotalCustomers = (props) => {
             </SvgIcon>
           </Avatar>
         </Stack>
-        {difference && (
-          <Stack alignItems="center" direction="row" spacing={2} sx={{ mt: 2 }}>
-            <Stack alignItems="center" direction="row" spacing={0.5}>
-              <SvgIcon color={positive ? "success" : "error"} fontSize="small">
-                {positive ? <ArrowUpIcon /> : <ArrowDownIcon />}
-              </SvgIcon>
-              <Typography color={positive ? "success.main" : "error.main"} variant="body2">
-                {difference}%
-              </Typography>
-            </Stack>
-            <Typography color="text.secondary" variant="caption">
-              Since last month
-            </Typography>
-          </Stack>
-        )}
       </CardContent>
     </Card>
   );
 };
 
-OverviewTotalCustomers.propTypes = {
+TotalCheckin.propTypes = {
   difference: PropTypes.number,
   positive: PropTypes.bool,
   value: PropTypes.string.isRequired,

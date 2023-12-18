@@ -1,5 +1,7 @@
+// pages/registrations/index.js
+
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
 import {
@@ -24,16 +26,69 @@ import { toast } from "react-toastify";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const RegistrationPage = () => {
   const [registrations, setRegistrations] = useState([]);
+  const registrationsRef = useRef(null);
   const [filteredRegistrations, setFilteredRegistrations] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [showPaid, setShowPaid] = useState(false);
   const [showInactive, setShowInactive] = useState(false);
   const [showVerified, setShowVerified] = useState(false);
+  const [showActive, setShowActive] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
 
-  const router = useRouter();
   const auth = useAuthContext();
   const token = auth.user.accessToken;
+
+  const getDataListFilter = useCallback(() => {
+    if (registrations.length === 0) {
+      return;
+    }
+    if (showActive) {
+      const updatedArr = registrations.filter((e) => showActive && e.status === "active");
+      setRegistrations(updatedArr);
+      setFilteredRegistrations(updatedArr);
+      setPage(0);
+      return;
+    }
+    setRegistrations(registrationsRef.current);
+    setFilteredRegistrations(registrationsRef.current);
+    setPage(0);
+  }, [showActive]);
+
+  const handleSearch = useCallback(
+    (value) => {
+      const filteredData = registrations.filter((item) => item?.plateNumber?.includes(value));
+
+      const statusFilteredData = filteredData.filter((item) => {
+        if (showActive && item.status === "active") {
+          return true;
+        }
+
+        if (showInactive && item.status === "inactive") {
+          return true;
+        }
+
+        if (showVerified && (item.status === "verified" || item.status === "created")) {
+          return true;
+        }
+
+        return false;
+      });
+
+      setFilteredRegistrations(statusFilteredData);
+      setPage(0);
+    },
+    [registrations, showActive, showInactive, showVerified]
+  );
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(event.target.value);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,16 +96,10 @@ const RegistrationPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: {
-            showPaid,
-            showInactive,
-            showVerified,
-          },
         });
 
         if (response.data.code === 200) {
           if (response.data.data === "No registrations found") {
-            // Handle the case when no registrations are found, show a message or perform any specific action
             toast.warning("No registrations found");
           } else {
             const formattedData = response.data.data.map((registration) => ({
@@ -67,6 +116,7 @@ const RegistrationPage = () => {
             }));
             setRegistrations(formattedData);
             setFilteredRegistrations(formattedData);
+            registrationsRef.current = formattedData;
           }
         } else {
           toast.error("Failed to fetch registrations. Please try again.");
@@ -77,33 +127,17 @@ const RegistrationPage = () => {
     };
 
     fetchData();
-  }, [showPaid, showInactive, showVerified]);
+  }, [token]);
 
-  const handlePageChange = (event, value) => {
-    setPage(value);
-  };
-  const handleRowsPerPageChange = (event) => {
-    setRowsPerPage(event.target.value);
-  };
-  const handleSearch = (e) => {
-    const keyword = e.target.value;
-    const filteredData = registrations.filter((item) => item?.plateNumber?.includes(keyword));
-    // Apply status filter
-    const statusFilteredData = filteredData.filter((item) => {
-      if (showPaid && item.status === "paid") {
-        return true;
-      }
-      if (showInactive && item.status === "inactive") {
-        return true;
-      }
-      if (showVerified && item.status === "verified") {
-        return true;
-      }
-      return false;
-    });
-    setFilteredRegistrations(statusFilteredData);
-    setPage(0); // Reset page when performing a new search
-  };
+  useEffect(() => {
+    getDataListFilter();
+  }, [getDataListFilter]);
+
+  useEffect(() => {
+    if (searchQ) {
+      handleSearch(searchQ);
+    }
+  }, [registrations]);
 
   return (
     <>
@@ -124,8 +158,13 @@ const RegistrationPage = () => {
                 <Typography variant="h4">Registration</Typography>
               </Stack>
             </Stack>
-            <RegistrationsSearch onSearch={handleSearch} />
-            {/* Filter button */}
+            <RegistrationsSearch
+              value={searchQ}
+              onChange={(event) => {
+                setSearchQ(event.target.value);
+                handleSearch(event.target.value);
+              }}
+            />
             <Stack spacing={1} direction="row">
               <FormControlLabel
                 control={<Checkbox checked={showPaid} onChange={() => setShowPaid(!showPaid)} />}
@@ -148,6 +187,12 @@ const RegistrationPage = () => {
                   />
                 }
                 label="Verified"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox checked={showActive} onChange={() => setShowActive(!showActive)} />
+                }
+                label="Active"
               />
             </Stack>
 

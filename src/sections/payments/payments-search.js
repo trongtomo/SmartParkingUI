@@ -1,7 +1,7 @@
 import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import { Card, InputAdornment, OutlinedInput, SvgIcon, Button } from "@mui/material";
 
-export const ParkingSessionsSearch = ({ onSearch }) => {
+export const PaymentsSearch = ({ onSearch }) => {
   const handleSearch = (event) => {
     // Prevent form submission
     event.preventDefault();
@@ -16,7 +16,7 @@ export const ParkingSessionsSearch = ({ onSearch }) => {
           name="search"
           defaultValue=""
           fullWidth
-          placeholder="Search by Plate Number"
+          placeholder="Search by registrationId"
           startAdornment={
             <InputAdornment position="start">
               <SvgIcon color="action" fontSize="small">

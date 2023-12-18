@@ -10,12 +10,15 @@ import { Button } from "@mui/material";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { useAuthContext } from "src/contexts/auth-context";
+import { UserHistoriesTable } from "src/sections/users/users-history-table";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UserDetailPage = () => {
   const router = useRouter();
   const userId = router.query.userId;
   const [user, setUser] = useState({});
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const auth = useAuthContext();
   const token = auth.user?.accessToken;
 
@@ -31,6 +34,7 @@ const UserDetailPage = () => {
         return "Unknown";
     }
   };
+
   const handleActivate = async () => {
     try {
       const response = await axios.put(
@@ -47,15 +51,14 @@ const UserDetailPage = () => {
         setUser((prev) => ({ ...prev, isActive: true }));
         // router.replace(router.asPath); // Reload the page
       } else {
-        console.error("Failed to active user:", response.data.message);
-        toast.error("Failed to active user. Please try again.");
+        console.error("Failed to activate user:", response.data.message);
+        toast.error("Failed to activate user. Please try again.");
       }
     } catch (error) {
       console.error("Error activating user:", error);
-      toast.error("Failed to active user. Something wrong!.");
+      toast.error("Failed to activate user. Something wrong!.");
     }
   };
-
   const handleDeactivate = async () => {
     try {
       const response = await axios.put(
@@ -69,16 +72,24 @@ const UserDetailPage = () => {
       );
       if (response.data.success) {
         toast.success("User activated successfully");
-        setUser((prev) => ({ ...prev, isActive: false }));
+        setUser((prev) => ({ ...prev, isActive: true }));
         // router.replace(router.asPath); // Reload the page
       } else {
-        console.error("Failed to deactive user:", response.data.message);
-        toast.error("Failed to deactive user. Please try again.");
+        console.error("Failed to activate user:", response.data.message);
+        toast.error("Failed to activate user. Please try again.");
       }
     } catch (error) {
-      console.error("Error deactivating user:", error);
-      toast.error("Failed to deactivate user. Please try again.");
+      console.error("Error activating user:", error);
+      toast.error("Failed to activate user. Something wrong!.");
     }
+  };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const handleRowsPerPageChange = (event) => {
+    setRowsPerPage(event.target.value);
+    setPage(0);
   };
 
   useEffect(() => {
@@ -91,6 +102,17 @@ const UserDetailPage = () => {
         });
         const userDetails = response.data?.data?.user || {};
         setUser(userDetails);
+
+        const userHistoriesResponse = await axios.get(
+          `${apiUrl}/api/admin/users/${userId}/history`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const userHistories = userHistoriesResponse.data?.data?.userHistories || [];
+        setUser((prev) => ({ ...prev, userHistories }));
       } catch (err) {
         console.error("ERR", err);
       }
@@ -119,6 +141,7 @@ const UserDetailPage = () => {
       </>
     );
   }
+
   return (
     <>
       <Head>
@@ -171,6 +194,16 @@ const UserDetailPage = () => {
                 </Button>
               )}
             </Stack>
+            {/* User Histories Table */}
+            <Typography variant="h5">User Histories</Typography>
+            <UserHistoriesTable
+              count={user.userHistories ? user.userHistories.length : 0}
+              items={user.userHistories || []}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              page={page}
+              rowsPerPage={rowsPerPage}
+            />
           </Stack>
         </Container>
       </Box>

@@ -1,4 +1,4 @@
-// src/sections/payments/payments-table.js
+// src/sections/bikes/bikes-table.js
 import PropTypes from "prop-types";
 import {
   Box,
@@ -15,7 +15,7 @@ import {
 import { Scrollbar } from "src/components/scrollbar";
 import moment from "moment";
 import Link from "next/link";
-export const PaymentsTable = (props) => {
+export const BikesTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -32,25 +32,33 @@ export const PaymentsTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Registration ID</TableCell>
-                <TableCell>Amount</TableCell>
+                <TableCell>Bike ID</TableCell>
+                <TableCell>User ID</TableCell>
+                <TableCell>Model</TableCell>
+                <TableCell>Plate Number</TableCell>
+                <TableCell>Manufacture</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Payment Method</TableCell>
                 <TableCell>Created At</TableCell>
+                <TableCell>Updated At</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((payment) => (
-                <TableRow hover key={payment.paymentId}>
+              {items.map((bike) => (
+                <TableRow hover key={bike.bikeId}>
                   <TableCell>
-                    <Link href={`/registrations/${payment.registrationId}`}>
-                      {payment.registrationId}
-                    </Link>
+                    {" "}
+                    <Link href={`/bikes/${bike.bikeId}`}>{bike.bikeId}</Link>
                   </TableCell>
-                  <TableCell>{payment.amount}</TableCell>
-                  <TableCell>{payment.status}</TableCell>
-                  <TableCell>{payment.paymentMethod}</TableCell>
-                  <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
+                  <TableCell>
+                    {" "}
+                    <Link href={`/users/${bike.userId}`}>{bike.userId}</Link>
+                  </TableCell>
+                  <TableCell>{bike.model}</TableCell>
+                  <TableCell>{bike.plateNumber}</TableCell>
+                  <TableCell>{bike.manufacture}</TableCell>
+                  <TableCell>{bike.status}</TableCell>
+                  <TableCell>{moment(bike.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
+                  <TableCell>{moment(bike.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -70,7 +78,7 @@ export const PaymentsTable = (props) => {
   );
 };
 
-PaymentsTable.propTypes = {
+BikesTable.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,
   onPageChange: PropTypes.func,

@@ -1,123 +1,68 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  Card,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  CardContent,
-} from "@mui/material";
+import Head from "next/head";
+import { subDays, subHours } from "date-fns";
+import { Box, Container, Unstable_Grid2 as Grid } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { useAuthContext } from "src/contexts/auth-context";
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+import { TotalCheckout } from "src/sections/overview/overview-budget";
+import { OverviewSales } from "src/sections/overview/overview-sales";
+import { TotalCheckin } from "src/sections/overview/overview-total-customers";
+import { TotalGuestInCome } from "src/sections/overview/overview-total-profit";
+import { OverviewTraffic } from "src/sections/overview/overview-traffic";
+import { useState } from "react";
+const now = new Date();
 
 const Page = () => {
-  const [startDate, setStartDate] = useState(new Date()); // Initial start date
-  const [endDate, setEndDate] = useState(new Date()); // Initial end date
-  const [checkinCount, setCheckinCount] = useState(null);
-  const [selectedParkingType, setSelectedParkingType] = useState("resident");
-  const [totalGuestIncome, setTotalGuestIncome] = useState(null);
-  const auth = useAuthContext();
-  const token = auth.user?.accessToken;
-
-  const fetchData = async () => {
-    try {
-      // Format dates to ISO string format
-      const formattedStartDate = startDate.toISOString();
-      const formattedEndDate = endDate.toISOString();
-
-      // Fetch data from the API
-      const response = await axios.get(`${apiUrl}/api/admin/getTotalCheckin`, {
-        params: {
-          parkingTypeName: selectedParkingType,
-          dateStart: formattedStartDate,
-          dateEnd: formattedEndDate,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.data.success) {
-        setCheckinCount(response.data.data);
-      } else {
-        console.error("Failed to fetch data:", response.data.message);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [startDate, endDate]);
-
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
-  const handleParkingTypeChange = (event) => {
-    setSelectedParkingType(event.target.value);
+  const [checkoutValue, setCheckoutValue] = useState(null);
+  const handleCheckoutValue = (value) => {
+    setCheckoutValue(value);
   };
   return (
-    <Container maxWidth="lg">
-      <Box mt={4}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Checkin Data
-        </Typography>
-        <Card>
-          <CardContent>
-            <Stack spacing={2} direction="row" alignItems="center">
-              <TextField
-                label="Start Date"
-                type="date"
-                value={startDate.toISOString().split("T")[0]}
-                onChange={(e) => handleStartDateChange(new Date(e.target.value))}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+    <>
+      <Head>
+        <title>Overview | Smart Parking</title>
+      </Head>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          py: 8,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Grid container spacing={3}>
+            <Grid xs={12} sm={6} lg={3}>
+              <TotalCheckout difference={16} positive={false} sx={{ height: "100%" }} value="1.6k" />
+            </Grid>
+            <Grid xs={12} sm={6} lg={3}>
+              <TotalCheckin difference={16} positive={false} sx={{ height: "100%" }} value="1.6k" />
+            </Grid>
+
+            <Grid xs={12} sm={6} lg={3}>
+              <TotalGuestInCome sx={{ height: "100%" }} value="$15k" />
+            </Grid>
+            <Grid xs={12} lg={8}>
+              <OverviewSales
+                chartSeries={[
+                  {
+                    name: "This year",
+                    data: [18, 16, 5, 8, 3, 14, 14, 16, 17, 19, 18, 20],
+                  },
+                ]}
+                sx={{ height: "100%" }}
               />
-              <TextField
-                label="End Date"
-                type="date"
-                value={endDate.toISOString().split("T")[0]}
-                onChange={(e) => handleEndDateChange(new Date(e.target.value))}
-                InputLabelProps={{
-                  shrink: true,
-                }}
+            </Grid>
+            <Grid xs={12} md={6} lg={4}>
+              <OverviewTraffic
+                chartSeries={[63, 15, 22]}
+                labels={["Desktop", "Tablet", "Phone"]}
+                sx={{ height: "100%" }}
               />
-              <FormControl>
-                <InputLabel>Parking Type</InputLabel>
-                <Select
-                  value={selectedParkingType}
-                  onChange={handleParkingTypeChange}
-                  style={{ minWidth: 120 }}
-                >
-                  <MenuItem value="resident">Resident</MenuItem>
-                  <MenuItem value="guest">Guest</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
-            <Typography variant="h6" align="center" gutterBottom>
-              Checkin Count: {checkinCount !== null ? checkinCount : "Loading..."}
-            </Typography>
-          </CardContent>
-        </Card>
+            </Grid>
+          </Grid>
+        </Container>
       </Box>
-    </Container>
+    </>
   );
 };
-
 Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+
 export default Page;

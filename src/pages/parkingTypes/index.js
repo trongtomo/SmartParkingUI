@@ -105,6 +105,15 @@ const ParkingTypesIndexPage = () => {
       }
     } catch (error) {
       console.error("Error deleting parking type:", error);
+      if (error.response && error.response.status === 500) {
+        // Server error, display the server error message if available
+        const serverErrorMessage =
+          error.response.data && error.response.data.message
+            ? error.response.data.message
+            : "Parking already associated with cards or sessions";
+
+        toast.error(`Failed to delete parking type: ${serverErrorMessage}`);
+      }
     }
   };
 

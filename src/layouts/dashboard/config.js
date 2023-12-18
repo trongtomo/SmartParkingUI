@@ -14,6 +14,8 @@ import ListBulletIcon from "@heroicons/react/24/solid/ListBulletIcon";
 import PhoneIcon from "@heroicons/react/24/solid/PhoneIcon";
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
 import CurrencyDollarIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
+import DeviceTabletIcon from "@heroicons/react/24/solid/DeviceTabletIcon";
+import EllipsisVerticalIcon from "@heroicons/react/24/solid/EllipsisVerticalIcon";
 export const items = [
   {
     title: "Overview",
@@ -56,7 +58,7 @@ export const items = [
     path: "/cards",
     icon: (
       <SvgIcon fontSize="small">
-        <ArrowPathIcon />
+        <DeviceTabletIcon />
       </SvgIcon>
     ),
   },
@@ -87,15 +89,15 @@ export const items = [
       </SvgIcon>
     ),
   },
-  // {
-  //   title: "User profile",
-  //   path: "/account",
-  //   icon: (
-  //     <SvgIcon fontSize="small">
-  //       <UserPlusIcon />
-  //     </SvgIcon>
-  //   ),
-  // },
+  {
+    title: "Bikes",
+    path: "/bikes",
+    icon: (
+      <SvgIcon fontSize="small">
+        <EllipsisVerticalIcon />
+      </SvgIcon>
+    ),
+  },
   // {
   //   title: "Settings",
   //   path: "/settings",

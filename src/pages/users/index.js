@@ -21,6 +21,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { useAuthContext } from "src/contexts/auth-context";
+import { UsersSearch } from "src/sections/users/users-search";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UsersIndexPage = () => {
@@ -112,7 +113,14 @@ const UsersIndexPage = () => {
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
   };
-
+  const handleSearchByName = (value) => {
+    // Filter users based on full name
+    const filteredUsers = users.filter((user) =>
+      user.fullName.toLowerCase().includes(value.toLowerCase())
+    );
+    setPage(0);
+    setUsers(filteredUsers);
+  };
   return (
     <>
       <Head>
@@ -132,6 +140,7 @@ const UsersIndexPage = () => {
                 Create New Security
               </Button>
             </div>
+            <UsersSearch onSearch={handleSearchByName} />
             {/* Create User Form */}
             <Dialog
               open={isFormOpen}

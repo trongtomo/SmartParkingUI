@@ -71,7 +71,6 @@ export const TopNav = (props) => {
                 height: 40,
                 width: 40,
               }}
-              src="/assets/logos/motorbik.ico"
             />
           </Stack>
         </Stack>

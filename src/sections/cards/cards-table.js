@@ -1,71 +1,32 @@
 // src/sections/cards/cards-table.js
-"use client";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { useState, useEffect } from "react";
 import {
   Box,
   Card,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
   Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
-import Link from "next/link";
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-import { useAuthContext } from "src/contexts/auth-context";
-import axios from "axios";
+
 export const CardsTable = (props) => {
   const {
     count = 0,
     items = [],
-    onPageChange = () => {},
+    onPageChange,
     onRowsPerPageChange,
-    page = 0,
-    rowsPerPage = 0,
+    page,
+    rowsPerPage,
+    onDeactivate,
+    onActivate,
+    onRevoke,
   } = props;
-  const [revokeButtonDisabled, setRevokeButtonDisabled] = useState(true);
-  const auth = useAuthContext();
-  const token = auth.user?.accessToken;
-  useEffect(() => {
-    // Check if any card in the items array has an expiredDate
-    const isAnyCardWithInactive = items.some(
-      (card) => card.status === "inactive" && card.plateNumber !== "N/A"
-    );
-    setRevokeButtonDisabled(!isAnyCardWithInactive);
-  }, [items]);
 
-  const handleRevokeAction = async (card) => {
-    try {
-      // Make an API request to revoke the card by plate number
-      const response = await axios.post(
-        `${apiUrl}/api/admin/cards/revoke?plateNumber=${card.plateNumber}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        // If the API request is successful, you can handle any additional actions or updates here
-        console.log(`Card revoked successfully for plate number: ${card.plateNumber}`);
-        // You might want to refetch data or update the local state
-      } else {
-        // Handle the case where the API request was not successful
-        console.error(`Failed to revoke card for plate number: ${card.plateNumber}`);
-      }
-    } catch (error) {
-      // Handle errors that may occur during the API request
-      console.error("Error revoking card:", error);
-    }
-  };
   return (
     <Card>
       <Scrollbar>
@@ -83,34 +44,45 @@ export const CardsTable = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((card) => {
-                const parkingTypeLabel =
-                  card.parkingTypeId === 1
-                    ? "Guest"
-                    : card.parkingTypeId === 2
-                    ? "Resident"
-                    : "N/A";
-                return (
-                  <TableRow hover key={card.cardId}>
-                    <TableCell>{card.cardId}</TableCell>
-                    <TableCell>{card.startDate}</TableCell>
-                    <TableCell>{card.expiredDate ? card.expiredDate : "N/A"}</TableCell>
-                    <TableCell>{card.status}</TableCell>
-                    <TableCell>{card.plateNumber ? card.plateNumber : "N/A"}</TableCell>
-                    <TableCell>{parkingTypeLabel}</TableCell>
-                    <TableCell>
+              {items.map((card) => (
+                <TableRow hover key={card.cardId}>
+                  <TableCell>{card.cardId}</TableCell>
+                  <TableCell>{card.startDate}</TableCell>
+                  <TableCell>{card.expiredDate || "N/A"}</TableCell>
+                  <TableCell>{card.status}</TableCell>
+                  <TableCell>{card.plateNumber || "N/A"}</TableCell>
+                  <TableCell>
+                    {card.parkingTypeId === 1
+                      ? "Guest"
+                      : card.parkingTypeId === 2
+                      ? "Resident"
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {card.status === "inactive" ? (
+                      <Button variant="contained" color="primary" onClick={() => onActivate(card)}>
+                        Activate
+                      </Button>
+                    ) : (
                       <Button
                         variant="contained"
-                        color="secondary"
-                        disabled={revokeButtonDisabled || card.status !== "inactive"}
-                        onClick={() => handleRevokeAction(card)}
+                        color="primary"
+                        onClick={() => onDeactivate(card)}
                       >
-                        Revoke
+                        Deactivate
                       </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                    )}
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => onRevoke(card.plateNumber)}
+                      disabled={card.status === "assigned" ? false : true}
+                    >
+                      Revoke
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </Box>
@@ -135,4 +107,7 @@ CardsTable.propTypes = {
   onRowsPerPageChange: PropTypes.func,
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
+  onDeactivate: PropTypes.func,
+  onActivate: PropTypes.func,
+  onRevoke: PropTypes.func,
 };

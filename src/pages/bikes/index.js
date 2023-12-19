@@ -103,7 +103,7 @@ const BikesIndexPage = () => {
   return (
     <>
       <Head>
-        <title>Bikes | Your App Name</title>
+        <title>Bikes | Smart-Parking</title>
       </Head>
       <Box
         component="main"

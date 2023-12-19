@@ -17,6 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 const ParkingSessionsIndexPage = () => {
   const [parkingSessions, setParkingSessions] = useState([]);
   const [page, setPage] = useState(0);
@@ -26,6 +27,7 @@ const ParkingSessionsIndexPage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(moment().subtract(7, "days").toDate()); // Default to 7 days ago
   const [endDate, setEndDate] = useState(new Date());
+
   const [searchTerm, setSearchTerm] = useState("");
   const auth = useAuthContext();
   const token = auth.user.accessToken;
@@ -41,11 +43,12 @@ const ParkingSessionsIndexPage = () => {
             dateEnd: endDate ? endDate.toISOString() : null,
           },
         });
-        const filteredData = response.data.data.parkingSessions.filter((session) =>
-          session.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
-        );
 
         if (response.data.code === 200) {
+          const filteredData = response.data.data.parkingSessions.filter((session) =>
+            session.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+
           const formattedData = filteredData.map((session) => ({
             parkingSessionId: session.parkingSessionId,
             checkinCardId: session.checkinCardId,
@@ -59,25 +62,23 @@ const ParkingSessionsIndexPage = () => {
             approvedBy: session.approvedBy,
             plateNumber: session.plateNumber,
             parkingFee: session.parkingFee,
-            // createdAt: moment(session.createdAt).format("YYYY-MM-DD HH:mm:ss"),
             updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
           }));
+
           setParkingSessions(formattedData);
+        } else {
+          // No records found
+          toast.info("No sessions found for this date range");
+          setParkingSessions([]); // Explicitly set parkingSessions to an empty array
         }
       } catch (error) {
-        if (error.response && error.response.status === 204) {
-          toast.info("No sessions found for this date range");
-          setParkingSessions([]);
-        } else {
-          console.error("Error fetching sessions:", error);
-          toast.error("Failed to fetch sessions. Please try again later.");
-        }
+        console.error("Error fetching sessions:", error);
+        toast.error("Failed to fetch sessions. Please try again later.");
       }
     };
 
     fetchData();
-  }, [endDate, searchTerm]);
-
+  }, [startDate, endDate, searchTerm]);
   const handlePageChange = (event, value) => {
     setPage(value);
   };

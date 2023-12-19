@@ -94,7 +94,7 @@ const SessionDetailPage = () => {
                     borderRadius: 4,
                     padding: 3,
                   }}
-                >parking
+                >
                   <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Paper elevation={3} sx={{ p: 2 }}>

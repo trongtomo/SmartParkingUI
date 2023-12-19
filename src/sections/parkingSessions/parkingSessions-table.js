@@ -43,7 +43,6 @@ export const ParkingSessionsTable = (props) => {
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Parking Fee</TableCell>
                 <TableCell>Updated At</TableCell>
-                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -62,7 +61,12 @@ export const ParkingSessionsTable = (props) => {
                   : "parking";
                 return (
                   <TableRow hover key={session.parkingSessionId}>
-                    <TableCell>{session.parkingSessionId}</TableCell>
+                    <TableCell>
+                      {" "}
+                      <Link href={`/parkingSessions/${session.parkingSessionId}`}>
+                        {session.parkingSessionId}
+                      </Link>
+                    </TableCell>
                     <TableCell>
                       {session.checkinCardId ? session.checkinCardId : "parking"}
                     </TableCell>
@@ -76,13 +80,6 @@ export const ParkingSessionsTable = (props) => {
                     <TableCell>{session.parkingFee}</TableCell>
                     {/* <TableCell>{createdAt}</TableCell> */}
                     <TableCell>{updatedAt}</TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
-                        <Link href={`/parkingSessions/${session.parkingSessionId}`}>
-                          <p style={{ textDecoration: "none", color: "inherit" }}>Details</p>
-                        </Link>
-                      </Stack>
-                    </TableCell>
                   </TableRow>
                 );
               })}

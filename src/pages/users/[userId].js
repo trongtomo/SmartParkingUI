@@ -71,16 +71,15 @@ const UserDetailPage = () => {
         }
       );
       if (response.data.success) {
-        toast.success("User activated successfully");
-        setUser((prev) => ({ ...prev, isActive: true }));
-        // router.replace(router.asPath); // Reload the page
+        toast.success("User deactivated successfully");
+        setUser((prev) => ({ ...prev, isActive: false }));
       } else {
-        console.error("Failed to activate user:", response.data.message);
-        toast.error("Failed to activate user. Please try again.");
+        console.error("Failed to deactivate user:", response.data.message);
+        toast.error("Failed to deactivate user. Please try again.");
       }
     } catch (error) {
-      console.error("Error activating user:", error);
-      toast.error("Failed to activate user. Something wrong!.");
+      console.error("Error deactivating user:", error);
+      toast.error("Failed to deactivate user. Something went wrong.");
     }
   };
   const handlePageChange = (event, value) => {

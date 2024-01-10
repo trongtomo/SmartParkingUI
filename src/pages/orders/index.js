@@ -1,86 +1,98 @@
-import { useEffect, useCallback, useState, useRef } from "react";
+"use client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
 import {
   Box,
+  Button,
   Container,
   Stack,
+  SvgIcon,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Checkbox,
   FormControlLabel,
-  TextField,
-  Button,
+  Checkbox,
 } from "@mui/material";
-import { RegistrationsSearch } from "src/sections/registrations/registrations-search";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
+import { RegistrationsTable } from "src/sections/registrations/registrations-table";
+import { RegistrationsSearch } from "src/sections/registrations/registrations-search";
+import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
-import { RegistrationsTable } from "src/sections/registrations/registrations-table";
-import { applyPagination } from "src/utils/apply-pagination";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
 const RegistrationPage = () => {
   const [registrations, setRegistrations] = useState([]);
+  const registrationsRef = useRef([]);
   const [filteredRegistrations, setFilteredRegistrations] = useState([]);
   const searchData = useRef([]);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [showPending, setShowPending] = useState(true);
-  const [showVerified, setShowVerified] = useState(true);
-  const [showRejected, setShowRejected] = useState(false);
+  const [showPaid, setShowPaid] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
+  const [showVerified, setShowVerified] = useState(false);
+  const [showActive, setShowActive] = useState(false);
   const [searchQ, setSearchQ] = useState("");
 
   const auth = useAuthContext();
   const token = auth.user.accessToken;
-
   const getDataListFilter = useCallback(() => {
     if (registrations.length === 0) {
       return;
     }
+    if (showActive || showVerified || showInactive || showPaid) {
+      const updatedArr = registrations.filter(
+        (e) =>
+          (showActive && e.status === "active") ||
+          (showVerified && e.status === "verified") ||
+          (showInactive && e.status === "inactive") ||
+          (showPaid && e.status === "paid")
+      );
+      // setRegistrations(updatedArr)
 
-    const updatedArr = registrations.filter(
-      (e) =>
-        (showPending && e.registrationStatus === "pending") ||
-        (showVerified && e.registrationStatus === "verified") ||
-        (showRejected && e.registrationStatus === "rejected")
-    );
-
-    setFilteredRegistrations(updatedArr);
-    searchData.current = updatedArr;
+      setFilteredRegistrations(updatedArr);
+      registrationsRef.current = updatedArr;
+      searchData.current = updatedArr;
+      setPage(0);
+      return;
+    }
+    // setRegistrations(registrationsRef.current)
+    setFilteredRegistrations(registrations);
+    registrationsRef.current = registrations;
+    searchData.current = registrations;
     setPage(0);
-  }, [registrations, showPending, showVerified, showRejected]);
+  }, [registrations, showActive, showVerified, showInactive, showPaid]);
+
+  const cloneFilterRegis = useMemo(() => {
+    return;
+  }, []);
 
   const handleSearch = useCallback((value) => {
     if (searchData.current === 0) {
       return;
     }
-
     if (!value) {
-      setFilteredRegistrations(searchData.current);
+      setFilteredRegistrations(registrationsRef.current);
+      searchData.current = registrationsRef.current;
       return;
     }
 
-    const filteredData = searchData.current.filter((item) =>
-      item?.plateNumber?.toLowerCase().includes(value.toLowerCase())
-    );
+    const filteredData = searchData.current.filter((item) => item?.plateNumber?.includes(value));
+    // Apply status filter
+    // const statusFilteredData = filteredData.filter((item) => {
+    //   console.log(item)
+    //   console.log((showActive && item.status === "active") || (showVerified && item.status === "verified"))
+    //   return (showActive && item.status === "active") || (showVerified && item.status === "verified")
+    // });
 
     setFilteredRegistrations(filteredData);
-    setPage(0);
+    setPage(0); // Reset page when performing a new search
   }, []);
 
   const handlePageChange = (event, value) => {
     setPage(value);
   };
-
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
   };
@@ -92,16 +104,23 @@ const RegistrationPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          // params: {
+          // showPaid,
+          // showInactive,
+          // showVerified,
+          // showActive
+          // },
         });
 
         if (response.data.code === 200) {
           if (response.data.data === "No registrations found") {
+            // Handle the case when no registrations are found, show a message or perform any specific action
             toast.warning("No registrations found");
           } else {
             const formattedData = response.data.data.map((registration) => ({
               registrationId: registration.registrationId,
               username: registration.User.username,
-              registrationStatus: registration.registrationStatus,
+              status: registration.status,
               approvedBy: registration.approvedBy,
               expiredDate: registration.expiredDate
                 ? moment(registration.expiredDate).format("YYYY-MM-DD HH:mm:ss")
@@ -110,9 +129,9 @@ const RegistrationPage = () => {
               createdAt: moment(registration.createdAt).format("YYYY-MM-DD HH:mm:ss"),
               updatedAt: moment(registration.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
             }));
-
             setRegistrations(formattedData);
             setFilteredRegistrations(formattedData);
+            registrationsRef.current = formattedData;
           }
         } else {
           toast.error("Failed to fetch registrations. Please try again.");
@@ -131,7 +150,7 @@ const RegistrationPage = () => {
 
   useEffect(() => {
     handleSearch(searchQ);
-  }, [showPending, showVerified, showRejected, searchQ]);
+  }, [showActive, showVerified]);
 
   return (
     <>
@@ -159,12 +178,20 @@ const RegistrationPage = () => {
                 handleSearch(event.target.value);
               }}
             />
+            {/* Filter button */}
             <Stack spacing={1} direction="row">
               <FormControlLabel
+                control={<Checkbox checked={showPaid} onChange={() => setShowPaid(!showPaid)} />}
+                label="Paid"
+              />
+              <FormControlLabel
                 control={
-                  <Checkbox checked={showPending} onChange={() => setShowPending(!showPending)} />
+                  <Checkbox
+                    checked={showInactive}
+                    onChange={() => setShowInactive(!showInactive)}
+                  />
                 }
-                label="Pending"
+                label="Inactive"
               />
               <FormControlLabel
                 control={
@@ -177,12 +204,9 @@ const RegistrationPage = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox
-                    checked={showRejected}
-                    onChange={() => setShowRejected(!showRejected)}
-                  />
+                  <Checkbox checked={showActive} onChange={() => setShowActive(!showActive)} />
                 }
-                label="Rejected"
+                label="Active"
               />
             </Stack>
 

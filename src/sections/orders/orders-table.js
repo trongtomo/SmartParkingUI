@@ -38,6 +38,7 @@ export const RegistrationsTable = (props) => {
                 <TableCell>Users phone</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Approved By</TableCell>
+                <TableCell>Expired Date</TableCell>
                 <TableCell>Plate Number</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
@@ -45,6 +46,9 @@ export const RegistrationsTable = (props) => {
             </TableHead>
             <TableBody>
               {items.map((registration) => {
+                const expiredDate = registration.expiredDate
+                  ? moment(registration.expiredDate).format("DD/MM/YYYY HH:mm:ss")
+                  : "";
                 const createdAt = registration.createdAt
                   ? moment(registration.createdAt).format("DD/MM/YYYY HH:mm:ss")
                   : "";
@@ -59,8 +63,9 @@ export const RegistrationsTable = (props) => {
                       </Link>
                     </TableCell>
                     <TableCell>{registration.username}</TableCell>
-                    <TableCell>{registration.registrationStatus}</TableCell>
+                    <TableCell>{registration.status}</TableCell>
                     <TableCell>{registration.approvedBy}</TableCell>
+                    <TableCell>{expiredDate}</TableCell>
                     <TableCell>{registration.plateNumber}</TableCell>
                     <TableCell>{createdAt}</TableCell>
                     <TableCell>{updatedAt}</TableCell>

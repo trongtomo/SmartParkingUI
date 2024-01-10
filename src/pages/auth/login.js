@@ -54,7 +54,10 @@ const Page = () => {
   const handleMethodChange = useCallback((event, value) => {
     setMethod(value);
   }, []);
-
+  const handleSkip = useCallback(() => {
+    auth.skip();
+    router.push("/");
+  }, [auth, router]);
   return (
     <>
       <Head>
@@ -120,8 +123,12 @@ const Page = () => {
                 <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                   Continue
                 </Button>
+                <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
+                  Skip authentication
+                </Button>
               </form>
             )}
+
             {method === "phoneNumber" && (
               <div>
                 <Typography sx={{ mb: 1 }} variant="h6">

@@ -140,11 +140,30 @@ export const AuthProvider = (props) => {
       type: HANDLERS.SIGN_OUT,
     });
   };
+  const skip = () => {
+    try {
+      window.sessionStorage.setItem("authenticated", "true");
+    } catch (err) {
+      console.error(err);
+    }
 
+    const user = {
+      id: "5e86809283e28b96d2d38537",
+      avatar: "/assets/avatars/avatar-anika-visser.png",
+      name: "Anika Visser",
+      email: "anika.visser@devias.io",
+    };
+
+    dispatch({
+      type: HANDLERS.SIGN_IN,
+      payload: user,
+    });
+  };
   return (
     <AuthContext.Provider
       value={{
         ...state,
+        skip,
         signIn,
         signUp,
         signOut,
@@ -160,6 +179,5 @@ AuthProvider.propTypes = {
 };
 
 export const AuthConsumer = AuthContext.Consumer;
-
 
 export const useAuthContext = () => useContext(AuthContext);

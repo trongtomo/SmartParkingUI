@@ -56,7 +56,7 @@ const UsersIndexPage = () => {
             userId: user.userId,
             fullName: user.fullName,
             username: user.username,
-            isActive: user.isActive,
+            userStatus: user.userStatus,
             firebaseToken: user.firebaseToken,
             createdAt: moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss"),
             updatedAt: moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss"),

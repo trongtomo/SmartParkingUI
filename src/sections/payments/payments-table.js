@@ -33,6 +33,7 @@ export const PaymentsTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Registration ID</TableCell>
+                <TableCell>Payment ID</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Payment Method</TableCell>
@@ -46,6 +47,9 @@ export const PaymentsTable = (props) => {
                     <Link href={`/registrations/${payment.registrationId}`}>
                       {payment.registrationId}
                     </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link href={`/payments/${payment.paymentId}`}>{payment.paymentId}</Link>
                   </TableCell>
                   <TableCell>{payment.amount}</TableCell>
                   <TableCell>{payment.status}</TableCell>

@@ -36,6 +36,15 @@ export const items = [
     ),
   },
   {
+    title: "Order",
+    path: "/orders",
+    icon: (
+      <SvgIcon fontSize="small">
+        <PhoneIcon/>
+      </SvgIcon>
+    ),
+  },
+  {
     title: "Parking Sessions",
     path: "/parkingSessions",
     icon: (

@@ -48,7 +48,7 @@ const UserDetailPage = () => {
       );
       if (response.data.success) {
         toast.success("User activated successfully");
-        setUser((prev) => ({ ...prev, isActive: true }));
+        setUser((prev) => ({ ...prev, userStatus: "active" }));
         // router.replace(router.asPath); // Reload the page
       } else {
         console.error("Failed to activate user:", response.data.message);
@@ -72,7 +72,7 @@ const UserDetailPage = () => {
       );
       if (response.data.success) {
         toast.success("User deactivated successfully");
-        setUser((prev) => ({ ...prev, isActive: false }));
+        setUser((prev) => ({ ...prev, userStatus: "inactive" }));
       } else {
         console.error("Failed to deactivate user:", response.data.message);
         toast.error("Failed to deactivate user. Please try again.");
@@ -156,14 +156,14 @@ const UserDetailPage = () => {
 
             <Grid container spacing={3}>
               <Grid xs={12} md={6} lg={4}>
-                <Typography variant="body1">{`Full Name: ${user.fullName}`}</Typography>
+                <Typography variant="body1">{`Full Name: ${user.userFullName}`}</Typography>
                 <Typography variant="body1">{`Address: ${user.address || "N/A"}`}</Typography>
                 <Typography variant="body1">{`Age: ${user.age || "N/A"}`}</Typography>
                 <Typography variant="body1">{`Gender: ${user.gender || "N/A"}`}</Typography>
                 <Typography variant="body1">{`Role: ${getRoleName(user.roleId)}`}</Typography>
               </Grid>
               <Grid xs={12} md={6} lg={8}>
-                <Typography variant="body1">{`Active: ${user.isActive ? "Yes" : "No"}`}</Typography>
+                <Typography variant="body1">{`User Status: ${user.userStatus}`}</Typography>
                 <Typography variant="body1">{`Username: ${user.username}`}</Typography>
                 <Typography variant="body1">{`Firebase Token: ${
                   user.firebaseToken || "N/A"
@@ -174,24 +174,22 @@ const UserDetailPage = () => {
             </Grid>
             {/* { button logic here} */}
             <Stack direction="row" spacing={2}>
-              {user.isActive ? (
-                <Button variant="contained" color="secondary" disabled>
-                  Activate
-                </Button>
-              ) : (
-                <Button variant="contained" color="primary" onClick={handleActivate}>
-                  Activate
-                </Button>
-              )}
-              {user.isActive ? (
-                <Button variant="contained" color="primary" onClick={handleDeactivate}>
-                  Deactivate
-                </Button>
-              ) : (
-                <Button variant="contained" color="secondary" disabled>
-                  Deactivate
-                </Button>
-              )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleActivate}
+                disabled={user.userStatus === "active"}
+              >
+                Activate
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleDeactivate}
+                disabled={user.userStatus === "inactive"}
+              >
+                Deactivate
+              </Button>
             </Stack>
             {/* User Histories Table */}
             <Typography variant="h5">User Histories</Typography>

@@ -27,7 +27,7 @@ const ParkingTypesIndexPage = () => {
   const token = auth.user.accessToken;
   const [parkingTypesList, setParkingTypesList] = useState([]);
   const [formData, setFormData] = useState({
-    name: "",
+    parkingTypeName: "",
     description: "",
   });
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -81,6 +81,7 @@ const ParkingTypesIndexPage = () => {
       }
     } catch (error) {
       console.error("Error creating parking type:", error);
+      toast.error("Failed to create parking type", error);
     }
   };
 
@@ -148,12 +149,12 @@ const ParkingTypesIndexPage = () => {
                 <TextField
                   autoFocus
                   margin="dense"
-                  id="name"
+                  id=" parkingTypeName"
                   label="Name"
                   type="text"
                   fullWidth
-                  value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  value={formData.parkingTypeName}
+                  onChange={(e) => handleInputChange("parkingTypeName", e.target.value)}
                 />
                 <TextField
                   margin="dense"
@@ -190,7 +191,7 @@ const ParkingTypesIndexPage = () => {
                   >
                     <div>
                       <Typography variant="h6" gutterBottom>
-                        {parkingType.name}
+                        {parkingType.parkingTypeName}
                       </Typography>
                       <Typography variant="body1">
                         Description: {parkingType.description}

@@ -15,7 +15,7 @@ const CardDetailsPage = () => {
   const [card, setCard] = useState({});
   const [cardLogs, setCardLogs] = useState([]);
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
   const router = useRouter();
   const cardId = router.query.cardId;
 

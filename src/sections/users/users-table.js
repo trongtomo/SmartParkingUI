@@ -62,9 +62,9 @@ export const UsersTable = (props) => {
                     <TableCell>
                       <Link href={`/users/${user.userId}`}>{user.userId}</Link>
                     </TableCell>
-                    <TableCell>{user.fullName}</TableCell>
+                    <TableCell>{user.userFullName}</TableCell>
                     <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.isActive ? "Yes" : "No"}</TableCell>
+                    <TableCell>{user.userStatus}</TableCell>
                     <TableCell>{moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{getRoleName(user.roleId)}</TableCell>

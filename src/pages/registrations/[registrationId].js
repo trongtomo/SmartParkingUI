@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -10,10 +11,12 @@ import {
   Grid,
   Card,
   CardContent,
-  Badge,
   List,
-  ListItem,
-  ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import Image from "next/image";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
@@ -21,16 +24,18 @@ import moment from "moment";
 import { useAuthContext } from "src/contexts/auth-context";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-
+import Link from "next/link";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const RegistrationDetailPage = () => {
   const auth = useAuthContext();
-  const token = auth.user?.accessToken;
+  const token = localStorage.accessToken;
   const router = useRouter();
   const registrationId = router.query.registrationId;
   const [registration, setRegistrationData] = useState({});
   const [registrationHistories, setRegistrationHistories] = useState([]);
+  const [rejectReason, setRejectReason] = useState("");
+  const [isRejectModalOpen, setRejectModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +69,14 @@ const RegistrationDetailPage = () => {
     fetchData();
   }, [token]);
 
+  const openRejectModal = () => {
+    setRejectModalOpen(true);
+  };
+
+  const closeRejectModal = () => {
+    setRejectModalOpen(false);
+  };
+
   const handleVerify = async (registrationId) => {
     try {
       const response = await axios.put(
@@ -77,7 +90,8 @@ const RegistrationDetailPage = () => {
       );
       if (response.data.success) {
         toast.success("Verify success");
-        router.replace(router.asPath);
+        // Update state to trigger re-render
+        setRegistrationData({ ...registration, registrationStatus: "verified" });
       } else {
         toast.error("Can't verify, please try again!");
       }
@@ -91,21 +105,30 @@ const RegistrationDetailPage = () => {
     try {
       const response = await axios.put(
         `${apiUrl}/api/admin/registrations/reject/${registrationId}`,
-        {}
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (response.data.success) {
-        toast.success("Reject success");
-        router.replace(router.asPath);
+        toast.success("Reject success", 1000);
+        // Update state to trigger re-render
+        setRegistrationData({ ...registration, registrationStatus: "rejected" });
+        setTimeout(() => {
+          closeRejectModal();
+        }, 1000);
       } else {
-        // Handle errors
+        toast.error("Can't reject, please try again!");
       }
     } catch (error) {
       console.error("Error rejecting registration:", error);
-      toast.error("Can't Reject, please try again!");
+      toast.error("Can't Reject, please try again!", 1000);
     }
   };
 
-  if (!registration) {
+  if (!registration || !registrationHistories) {
     return (
       <>
         <Head>
@@ -153,11 +176,33 @@ const RegistrationDetailPage = () => {
               >
                 {registration.registrationStatus === "pending" && (
                   <>
-                    <Button
-                      onClick={() => handleReject(registration.registrationId)}
-                      variant="contained"
-                      color="error"
-                    >
+                    <Dialog open={isRejectModalOpen} onClose={closeRejectModal}>
+                      <DialogTitle>Reject Registration</DialogTitle>
+                      <DialogContent>
+                        <TextField
+                          label="Reason for Rejection"
+                          multiline
+                          rows={4}
+                          variant="outlined"
+                          fullWidth
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                        />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={closeRejectModal} color="primary">
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={() => handleReject(registration.registrationId, rejectReason)}
+                          variant="contained"
+                          color="error"
+                        >
+                          Reject
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                    <Button onClick={openRejectModal} variant="contained" color="error">
                       Reject
                     </Button>
                     <Button
@@ -192,7 +237,11 @@ const RegistrationDetailPage = () => {
                       </Grid>
                       {/* Right side */}
                       <Grid item xs={12} sm={6}>
-                        <Typography variant="body1">{`User ID: ${registration.userId}`}</Typography>
+                        <Typography variant="body1">
+                          User ID:
+                          <Link href={`/users/${registration.userId}`}>{registration.userId}</Link>
+                        </Typography>
+
                         <Typography variant="body1">{`Created At: ${moment(
                           registration.createdAt
                         ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>

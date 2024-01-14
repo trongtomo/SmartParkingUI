@@ -30,7 +30,7 @@ const ParkingSessionsIndexPage = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -91,7 +91,7 @@ const getStatusBadge = (status) => {
 };
 const RegistrationDetailPage = () => {
   const auth = useAuthContext();
-  const token = auth.user?.accessToken;
+  const token = localStorage.accessToken;
   const router = useRouter();
   const registrationId = router.query.registrationId;
   const [registration, setRegistrationData] = useState({});
@@ -447,7 +447,7 @@ RegistrationDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardL
 const ActivateRegistrationForm = ({ open, handleClose, handleActivate, cards, registrationId }) => {
   const [selectedCardId, setSelectedCardId] = useState("");
   const auth = useAuthContext();
-  const token = auth.user?.accessToken;
+  const token = localStorage.accessToken;
   const handleActivateClick = async () => {
     // Validate the form fields, perform additional checks if needed
     if (selectedCardId) {

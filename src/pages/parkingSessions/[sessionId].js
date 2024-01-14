@@ -15,7 +15,7 @@ const SessionDetailPage = () => {
   const [session, setSessionData] = useState({});
   const router = useRouter();
   const auth = useAuthContext();
-  const token = auth.user?.accessToken;
+  const token = localStorage.accessToken;
   const sessionId = router.query?.sessionId;
   useEffect(() => {
     const getParkingSession = async () => {

@@ -18,13 +18,13 @@ const BikesIndexPage = () => {
   const [bikes, setBikes] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [showActive, setShowActive] = useState(false);
+  const [showActive, setShowActive] = useState(true);
   const [showDeactive, setShowDeactive] = useState(false);
   const [showTempDeactive, setShowTempDeactive] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // New state for search term
   const router = useRouter();
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
 
   useEffect(() => {
     fetchData();
@@ -66,15 +66,15 @@ const BikesIndexPage = () => {
     let filteredBikes = bikes;
 
     if (showActive) {
-      filteredBikes = filteredBikes.filter((bike) => bike.status === "active");
+      filteredBikes = filteredBikes.filter((bike) => bike.bikeStatus === "active");
     }
 
     if (showDeactive) {
-      filteredBikes = filteredBikes.filter((bike) => bike.status === "deactive");
+      filteredBikes = filteredBikes.filter((bike) => bike.bikeStatus === "deactive");
     }
 
     if (showTempDeactive) {
-      filteredBikes = filteredBikes.filter((bike) => bike.status === "temporarily_deactive");
+      filteredBikes = filteredBikes.filter((bike) => bike.bikeStatus === "temporarily_deactive");
     }
 
     return filteredBikes;

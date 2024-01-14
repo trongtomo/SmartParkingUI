@@ -35,7 +35,7 @@ const Page = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [chartSeries, setChartSeries] = useState([]);
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
 
   useEffect(() => {
     const dateStart = moment(selectedDateStart).format("YYYY-MM-DD HH:mm:ss");

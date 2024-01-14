@@ -35,11 +35,10 @@ export const CardsTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Card ID</TableCell>
-                <TableCell>Start Date</TableCell>
-                <TableCell>Expired Date</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Bike Plate number</TableCell>
-                <TableCell>Parking Type</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Updated At</TableCell>
+                <TableCell>Bike's Plate number</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -47,39 +46,41 @@ export const CardsTable = (props) => {
               {items.map((card) => (
                 <TableRow hover key={card.cardId}>
                   <TableCell>{card.cardId}</TableCell>
-                  <TableCell>{card.startDate}</TableCell>
-                  <TableCell>{card.expiredDate || "N/A"}</TableCell>
-                  <TableCell>{card.status}</TableCell>
+                  <TableCell>{card.cardStatus}</TableCell>
+                  <TableCell>{card.createdAt}</TableCell>
+                  <TableCell>{card.updatedAt || "N/A"}</TableCell>
                   <TableCell>{card.plateNumber || "N/A"}</TableCell>
                   <TableCell>
-                    {card.parkingTypeId === 1
-                      ? "Guest"
-                      : card.parkingTypeId === 2
-                      ? "Resident"
-                      : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    {card.status === "inactive" ? (
-                      <Button variant="contained" color="primary" onClick={() => onActivate(card)}>
-                        Activate
-                      </Button>
-                    ) : (
+                    <Box display="flex">
                       <Button
                         variant="contained"
-                        color="primary"
-                        onClick={() => onDeactivate(card)}
+                        color="secondary"
+                        onClick={() => onRevoke(card.plateNumber)}
+                        style={{ marginRight: 6 }}
+                        disabled={card.status === "assigned" ? false : true}
                       >
-                        Deactivate
+                        Revoke
                       </Button>
-                    )}
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => onRevoke(card.plateNumber)}
-                      disabled={card.status === "assigned" ? false : true}
-                    >
-                      Revoke
-                    </Button>
+                      {card.status === "inactive" ? (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => onActivate(card)}
+                          style={{ marginRight: 6 }}
+                        >
+                          Activate
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => onDeactivate(card)}
+                          style={{ marginRight: 6 }}
+                        >
+                          Deactivate
+                        </Button>
+                      )}
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}

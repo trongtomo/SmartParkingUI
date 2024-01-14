@@ -36,11 +36,11 @@ export const items = [
     ),
   },
   {
-    title: "Order",
+    title: "Parking Order",
     path: "/orders",
     icon: (
       <SvgIcon fontSize="small">
-        <PhoneIcon/>
+        <PhoneIcon />
       </SvgIcon>
     ),
   },
@@ -72,20 +72,11 @@ export const items = [
     ),
   },
   {
-    title: "Parking Types",
+    title: "Parking Types & Fees",
     path: "/parkingTypes",
     icon: (
       <SvgIcon fontSize="small">
         <ListBulletIcon />
-      </SvgIcon>
-    ),
-  },
-  {
-    title: "Fees",
-    path: "/fees",
-    icon: (
-      <SvgIcon fontSize="small">
-        <MoneyIcon />
       </SvgIcon>
     ),
   },

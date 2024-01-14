@@ -43,6 +43,7 @@ const handlers = {
   },
   [HANDLERS.SIGN_OUT]: (state) => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("authenticated");
     return {
       ...state,
       isAuthenticated: false,
@@ -94,6 +95,7 @@ export const AuthProvider = (props) => {
 
   const setToken = (token) => {
     localStorage.setItem("accessToken", token);
+    localStorage.setItem("authenticated", true);
   };
 
   const signIn = async (username, password) => {
@@ -106,6 +108,7 @@ export const AuthProvider = (props) => {
 
       const token = response.data.data.token;
       setToken(token);
+      
 
       const responseData = response.data.data;
 

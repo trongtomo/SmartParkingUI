@@ -19,7 +19,7 @@ const PaymentsIndexPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState(""); // New state for search term
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
 
   useEffect(() => {
     fetchData();
@@ -36,7 +36,7 @@ const PaymentsIndexPage = () => {
       if (response.data.success) {
         // Filter payments based on the search term
         const filteredPayments = response.data.data.filter((payment) =>
-          payment.registrationId.toString().includes(searchTerm)
+          payment.parkingOrderId.toString().includes(searchTerm)
         );
 
         setPayments(filteredPayments);

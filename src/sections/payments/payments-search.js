@@ -16,7 +16,7 @@ export const PaymentsSearch = ({ onSearch }) => {
           name="search"
           defaultValue=""
           fullWidth
-          placeholder="Search by registrationId"
+          placeholder="Search by Order Id"
           startAdornment={
             <InputAdornment position="start">
               <SvgIcon color="action" fontSize="small">

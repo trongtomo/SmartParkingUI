@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { useAuthContext } from "src/contexts/auth-context";
 import { UserHistoriesTable } from "src/sections/users/users-history-table";
+import { applyPagination } from "src/utils/apply-pagination";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const UserDetailPage = () => {
@@ -20,7 +21,7 @@ const UserDetailPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const auth = useAuthContext();
-  const token = auth.user?.accessToken;
+  const token = localStorage.accessToken;
 
   const getRoleName = (roleId) => {
     switch (roleId) {
@@ -88,9 +89,7 @@ const UserDetailPage = () => {
 
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
-    setPage(0);
   };
-
   useEffect(() => {
     const getUserDetails = async () => {
       try {
@@ -164,7 +163,7 @@ const UserDetailPage = () => {
               </Grid>
               <Grid xs={12} md={6} lg={8}>
                 <Typography variant="body1">{`User Status: ${user.userStatus}`}</Typography>
-                <Typography variant="body1">{`Username: ${user.username}`}</Typography>
+                <Typography variant="body1">{`Phone Number: ${user.username}`}</Typography>
                 <Typography variant="body1">{`Firebase Token: ${
                   user.firebaseToken || "N/A"
                 }`}</Typography>
@@ -195,7 +194,7 @@ const UserDetailPage = () => {
             <Typography variant="h5">User Histories</Typography>
             <UserHistoriesTable
               count={user.userHistories ? user.userHistories.length : 0}
-              items={user.userHistories || []}
+              items={applyPagination(user.userHistories, page, rowsPerPage)}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}

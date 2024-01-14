@@ -14,14 +14,16 @@ import {
 import { Scrollbar } from "src/components/scrollbar";
 import moment from "moment";
 
-export const UserHistoriesTable = ({
-  count = 0,
-  items = [],
-  onPageChange = () => {},
-  onRowsPerPageChange,
-  page = 0,
-  rowsPerPage = 0,
-}) => {
+export const UserHistoriesTable = (props) => {
+  const {
+    count = 0,
+    items = [],
+    onPageChange = () => {},
+    onRowsPerPageChange,
+    page = 0,
+    rowsPerPage = 0,
+  } = props;
+
   return (
     <Card>
       <Scrollbar>
@@ -38,7 +40,7 @@ export const UserHistoriesTable = ({
               {items.map((history) => (
                 <TableRow hover key={history.userHistoryId}>
                   <TableCell>{history.userHistoryId}</TableCell>
-                  <TableCell>{history.eventName}</TableCell>
+                  <TableCell>{history.event}</TableCell>
                   <TableCell>{moment(history.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                 </TableRow>
               ))}

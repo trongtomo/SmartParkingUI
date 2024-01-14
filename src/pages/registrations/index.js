@@ -39,8 +39,7 @@ const RegistrationPage = () => {
   const [showRejected, setShowRejected] = useState(false);
   const [searchQ, setSearchQ] = useState("");
 
-  const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
 
   const getDataListFilter = useCallback(() => {
     if (registrations.length === 0) {
@@ -109,6 +108,7 @@ const RegistrationPage = () => {
               plateNumber: registration.plateNumber,
               createdAt: moment(registration.createdAt).format("YYYY-MM-DD HH:mm:ss"),
               updatedAt: moment(registration.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+              userId: registration.userId,
             }));
 
             setRegistrations(formattedData);

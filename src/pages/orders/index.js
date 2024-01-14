@@ -1,98 +1,86 @@
-"use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+"use-client";
+import { useEffect, useCallback, useState, useRef } from "react";
 import axios from "axios";
 import Head from "next/head";
 import {
   Box,
-  Button,
   Container,
   Stack,
-  SvgIcon,
   Typography,
-  FormControlLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   Checkbox,
+  FormControlLabel,
+  TextField,
+  Button,
 } from "@mui/material";
+import { OrdersTable } from "src/sections/orders/orders-table"; // Assuming you have an OrdersTable component
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
-import { RegistrationsTable } from "src/sections/registrations/registrations-table";
-import { RegistrationsSearch } from "src/sections/registrations/registrations-search";
-import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment";
 import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
+import { applyPagination } from "src/utils/apply-pagination";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const RegistrationPage = () => {
-  const [registrations, setRegistrations] = useState([]);
-  const registrationsRef = useRef([]);
-  const [filteredRegistrations, setFilteredRegistrations] = useState([]);
-  const searchData = useRef([]);
 
+const OrderPage = () => {
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const searchData = useRef([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [showPaid, setShowPaid] = useState(false);
-  const [showInactive, setShowInactive] = useState(false);
-  const [showVerified, setShowVerified] = useState(false);
-  const [showActive, setShowActive] = useState(false);
+  const [showActive, setShowActive] = useState(true);
+  const [showPending, setShowPending] = useState(true);
+  const [showCancelled, setShowCancelled] = useState(false);
   const [searchQ, setSearchQ] = useState("");
 
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
+
   const getDataListFilter = useCallback(() => {
-    if (registrations.length === 0) {
+    if (orders.length === 0) {
       return;
     }
-    if (showActive || showVerified || showInactive || showPaid) {
-      const updatedArr = registrations.filter(
-        (e) =>
-          (showActive && e.status === "active") ||
-          (showVerified && e.status === "verified") ||
-          (showInactive && e.status === "inactive") ||
-          (showPaid && e.status === "paid")
-      );
-      // setRegistrations(updatedArr)
 
-      setFilteredRegistrations(updatedArr);
-      registrationsRef.current = updatedArr;
-      searchData.current = updatedArr;
-      setPage(0);
-      return;
-    }
-    // setRegistrations(registrationsRef.current)
-    setFilteredRegistrations(registrations);
-    registrationsRef.current = registrations;
-    searchData.current = registrations;
+    const updatedArr = orders.filter(
+      (e) =>
+        (showActive && e.parkingOrderStatus === "active") ||
+        (showPending && e.parkingOrderStatus === "pending") ||
+        (showCancelled && e.parkingOrderStatus === "cancelled")
+    );
+
+    setFilteredOrders(updatedArr);
+    searchData.current = updatedArr;
     setPage(0);
-  }, [registrations, showActive, showVerified, showInactive, showPaid]);
-
-  const cloneFilterRegis = useMemo(() => {
-    return;
-  }, []);
+  }, [orders, showActive, showPending, showCancelled]);
 
   const handleSearch = useCallback((value) => {
     if (searchData.current === 0) {
       return;
     }
+
     if (!value) {
-      setFilteredRegistrations(registrationsRef.current);
-      searchData.current = registrationsRef.current;
+      setFilteredOrders(searchData.current);
       return;
     }
 
-    const filteredData = searchData.current.filter((item) => item?.plateNumber?.includes(value));
-    // Apply status filter
-    // const statusFilteredData = filteredData.filter((item) => {
-    //   console.log(item)
-    //   console.log((showActive && item.status === "active") || (showVerified && item.status === "verified"))
-    //   return (showActive && item.status === "active") || (showVerified && item.status === "verified")
-    // });
+    const filteredData = searchData.current.filter((item) =>
+      item?.plateNumber?.toLowerCase().includes(value.toLowerCase())
+    );
 
-    setFilteredRegistrations(filteredData);
-    setPage(0); // Reset page when performing a new search
+    setFilteredOrders(filteredData);
+    setPage(0);
   }, []);
 
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
   };
@@ -100,47 +88,40 @@ const RegistrationPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/admin/registrations/allRegistrations`, {
+        const response = await axios.get(`${apiUrl}/api/admin/parkingOrders`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          // params: {
-          // showPaid,
-          // showInactive,
-          // showVerified,
-          // showActive
-          // },
         });
-
+        console.log("Response:", response);
         if (response.data.code === 200) {
-          if (response.data.data === "No registrations found") {
-            // Handle the case when no registrations are found, show a message or perform any specific action
-            toast.warning("No registrations found");
+          if (response.data.data === "No parking orders found") {
+            toast.warning("No parking orders found");
           } else {
-            const formattedData = response.data.data.map((registration) => ({
-              registrationId: registration.registrationId,
-              username: registration.User.username,
-              status: registration.status,
-              approvedBy: registration.approvedBy,
-              expiredDate: registration.expiredDate
-                ? moment(registration.expiredDate).format("YYYY-MM-DD HH:mm:ss")
-                : "",
-              plateNumber: registration.plateNumber,
-              createdAt: moment(registration.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-              updatedAt: moment(registration.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+            const formattedData = response.data.data.parkingOrders.map((order) => ({
+              parkingOrderId: order.parkingOrderId,
+              parkingOrderStatus: order.parkingOrderStatus,
+              parkingOrderAmount: order.parkingOrderAmount,
+              expiredDate: order.expiredDate ? moment(order.expiredDate).format("YYYY-MM-DD") : "",
+              createdAt: moment(order.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+              updatedAt: moment(order.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+              description: order.description,
+              bikeId: order.bikeId,
+              // parkingType: order.parkingTypeId,
+              plateNumber: order.Bike.plateNumber,
+              parkingType: order.ParkingType.parkingTypeName,
             }));
-            setRegistrations(formattedData);
-            setFilteredRegistrations(formattedData);
-            registrationsRef.current = formattedData;
+            setOrders(formattedData);
+            setFilteredOrders(formattedData);
           }
         } else {
-          toast.error("Failed to fetch registrations. Please try again.");
+          toast.error("Failed to fetch parking orders. Please try again.");
         }
       } catch (error) {
-        toast.error("Failed to fetch registrations. Please try again.");
+        toast.error("Failed to fetch parking orders. Please try again.");
       }
     };
-
+    console.log("Run effect");
     fetchData();
   }, []);
 
@@ -150,12 +131,12 @@ const RegistrationPage = () => {
 
   useEffect(() => {
     handleSearch(searchQ);
-  }, [showActive, showVerified]);
+  }, [showActive, showPending, showCancelled, searchQ]);
 
   return (
     <>
       <Head>
-        <title>Registration | Smart-Parking</title>
+        <title>Parking Orders | Smart-Parking</title>
       </Head>
       <Box
         component="main"
@@ -168,51 +149,45 @@ const RegistrationPage = () => {
           <Stack spacing={3}>
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Registration</Typography>
+                <Typography variant="h4">Parking Orders</Typography>
               </Stack>
             </Stack>
-            <RegistrationsSearch
+            <TextField
+              label="Search by Plate Number"
+              variant="outlined"
               value={searchQ}
               onChange={(event) => {
                 setSearchQ(event.target.value);
                 handleSearch(event.target.value);
               }}
             />
-            {/* Filter button */}
             <Stack spacing={1} direction="row">
-              <FormControlLabel
-                control={<Checkbox checked={showPaid} onChange={() => setShowPaid(!showPaid)} />}
-                label="Paid"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showInactive}
-                    onChange={() => setShowInactive(!showInactive)}
-                  />
-                }
-                label="Inactive"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showVerified}
-                    onChange={() => setShowVerified(!showVerified)}
-                  />
-                }
-                label="Verified"
-              />
               <FormControlLabel
                 control={
                   <Checkbox checked={showActive} onChange={() => setShowActive(!showActive)} />
                 }
                 label="Active"
               />
+              <FormControlLabel
+                control={
+                  <Checkbox checked={showPending} onChange={() => setShowPending(!showPending)} />
+                }
+                label="Pending"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showCancelled}
+                    onChange={() => setShowCancelled(!showCancelled)}
+                  />
+                }
+                label="Cancelled"
+              />
             </Stack>
 
-            <RegistrationsTable
-              count={filteredRegistrations.length}
-              items={applyPagination(filteredRegistrations, page, rowsPerPage)}
+            <OrdersTable
+              count={filteredOrders.length}
+              items={applyPagination(filteredOrders, page, rowsPerPage)}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}
@@ -225,6 +200,6 @@ const RegistrationPage = () => {
   );
 };
 
-RegistrationPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+OrderPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default RegistrationPage;
+export default OrderPage;

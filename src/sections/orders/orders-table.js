@@ -1,24 +1,19 @@
 import PropTypes from "prop-types";
-import moment from "moment"; // Import moment
-
+import moment from "moment";
 import {
   Box,
   Card,
-  Checkbox,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
   Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 
-import Link from "next/link";
-export const RegistrationsTable = (props) => {
+export const OrdersTable = (props) => {
   const {
     count = 0,
     items = [],
@@ -34,39 +29,46 @@ export const RegistrationsTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Registration ID</TableCell>
-                <TableCell>Users phone</TableCell>
+                <TableCell>Parking Order ID</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Approved By</TableCell>
+                <TableCell>Amount</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Bike Plate's Number</TableCell>
+                <TableCell>Parking Type</TableCell>
                 <TableCell>Expired Date</TableCell>
-                <TableCell>Plate Number</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.map((registration) => {
-                const expiredDate = registration.expiredDate
-                  ? moment(registration.expiredDate).format("DD/MM/YYYY HH:mm:ss")
+              {items.map((order) => {
+                const expiredDate = order.expiredDate
+                  ? moment(order.expiredDate).format("DD/MM/YYYY")
                   : "";
-                const createdAt = registration.createdAt
-                  ? moment(registration.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                const createdAt = order.createdAt
+                  ? moment(order.createdAt).format("DD/MM/YYYY HH:mm:ss")
                   : "";
-                const updatedAt = registration.updatedAt
-                  ? moment(registration.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                const updatedAt = order.updatedAt
+                  ? moment(order.updatedAt).format("DD/MM/YYYY HH:mm:ss")
                   : "";
                 return (
-                  <TableRow hover key={registration.registrationId}>
+                  <TableRow hover key={order.parkingOrderId}>
                     <TableCell>
-                      <Link href={`/registrations/${registration.registrationId}`}>
-                        {registration.registrationId}
-                      </Link>
+                      <Button href={`/orders/${order.parkingOrderId}`}>
+                        {order.parkingOrderId}
+                      </Button>
                     </TableCell>
-                    <TableCell>{registration.username}</TableCell>
-                    <TableCell>{registration.status}</TableCell>
-                    <TableCell>{registration.approvedBy}</TableCell>
+                    <TableCell>{order.parkingOrderStatus}</TableCell>
+                    <TableCell>{order.parkingOrderAmount}</TableCell>
+                    <TableCell>{order.description}</TableCell>
+                    {/* <TableCell>{order.bikeId}</TableCell>
+                    <TableCell>{order.parkingType}</TableCell> */}
+
+                    <TableCell>
+                      <Button href={`/bikes/${order.bikeId}`}>{order.plateNumber}</Button>
+                    </TableCell>
+                    <TableCell>{order.parkingType}</TableCell>
                     <TableCell>{expiredDate}</TableCell>
-                    <TableCell>{registration.plateNumber}</TableCell>
                     <TableCell>{createdAt}</TableCell>
                     <TableCell>{updatedAt}</TableCell>
                   </TableRow>
@@ -89,7 +91,7 @@ export const RegistrationsTable = (props) => {
   );
 };
 
-RegistrationsTable.propTypes = {
+OrdersTable.propTypes = {
   count: PropTypes.number,
   items: PropTypes.array,
   onPageChange: PropTypes.func,

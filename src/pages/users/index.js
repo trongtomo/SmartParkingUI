@@ -40,7 +40,7 @@ const UsersIndexPage = () => {
 
   const router = useRouter();
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -54,7 +54,7 @@ const UsersIndexPage = () => {
         if (isMounted && response.data.code === 200) {
           const formattedData = response.data.data.users.map((user) => ({
             userId: user.userId,
-            fullName: user.fullName,
+            userFullName: user.userFullName,
             username: user.username,
             userStatus: user.userStatus,
             firebaseToken: user.firebaseToken,

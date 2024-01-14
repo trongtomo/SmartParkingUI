@@ -23,7 +23,7 @@ const CardsIndexPage = () => {
   const [showInactive, setShowInactive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const auth = useAuthContext();
-  const token = auth.user.accessToken;
+  const token = localStorage.accessToken;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,11 +36,10 @@ const CardsIndexPage = () => {
         if (response.data.code === 200) {
           const formattedData = response.data.data.cards.map((card) => ({
             cardId: card.cardId,
-            startDate: moment(card.startDate).format("YYYY-MM-DD ") || "N/A",
-            expiredDate: moment(card.expiredDate).format("YYYY-MM-DD ") || "N/A",
-            status: card.status,
-            plateNumber: card.Bike ? card.Bike.plateNumber : "N/A",
-            parkingTypeId: card.parkingTypeId,
+            status: card.cardStatus,
+            createdAt: moment(card.createdAt).format("YYYY-MM-DD ") || "N/A",
+            updatedAt: moment(card.updatedAt).format("YYYY-MM-DD ") || "N/A",
+            plateNumber: card.plateNumber,
           }));
           setCards(formattedData);
         }
@@ -54,7 +53,7 @@ const CardsIndexPage = () => {
 
   const handlePageChange = (event, value) => {
     setPage(value);
-  };  
+  };
 
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);

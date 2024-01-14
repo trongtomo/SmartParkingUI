@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {
   Box,
   Card,
-  Stack,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 import moment from "moment";
-import Link from "next/link";
+
 export const PaymentsTable = (props) => {
   const {
     count = 0,
@@ -32,8 +32,9 @@ export const PaymentsTable = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Registration ID</TableCell>
+                <TableCell>Transaction ID</TableCell>
                 <TableCell>Payment ID</TableCell>
+                <TableCell>Parking Order ID</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Payment Method</TableCell>
@@ -43,16 +44,15 @@ export const PaymentsTable = (props) => {
             <TableBody>
               {items.map((payment) => (
                 <TableRow hover key={payment.paymentId}>
+                  <TableCell>{payment.transactionId}</TableCell>
+                  <TableCell>{payment.paymentId}</TableCell>
                   <TableCell>
-                    <Link href={`/registrations/${payment.registrationId}`}>
-                      {payment.registrationId}
-                    </Link>
+                    <Button href={`/orders/${payment.parkingOrderId}`}>
+                      {payment.parkingOrderId}
+                    </Button>
                   </TableCell>
-                  <TableCell>
-                    <Link href={`/payments/${payment.paymentId}`}>{payment.paymentId}</Link>
-                  </TableCell>
-                  <TableCell>{payment.amount}</TableCell>
-                  <TableCell>{payment.status}</TableCell>
+                  <TableCell>{payment.paymentAmount}</TableCell>
+                  <TableCell>{payment.paymentStatus}</TableCell>
                   <TableCell>{payment.paymentMethod}</TableCell>
                   <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                 </TableRow>

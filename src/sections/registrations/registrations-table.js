@@ -54,11 +54,15 @@ export const RegistrationsTable = (props) => {
                 return (
                   <TableRow hover key={registration.registrationId}>
                     <TableCell>
-                      <Link href={`/registrations/${registration.registrationId}`}>
+                      <Button href={`/registrations/${registration.registrationId}`}>
                         {registration.registrationId}
-                      </Link>
+                      </Button>
                     </TableCell>
-                    <TableCell>{registration.username}</TableCell>
+                    <TableCell>
+                      <Button href={`/users/${registration.userId}`}>
+                        {registration.username}
+                      </Button>
+                    </TableCell>
                     <TableCell>{registration.registrationStatus}</TableCell>
                     <TableCell>{registration.approvedBy}</TableCell>
                     <TableCell>{registration.plateNumber}</TableCell>

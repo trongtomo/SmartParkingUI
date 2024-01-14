@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {
   Box,
   Card,
-  Stack,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -33,10 +33,10 @@ export const BikesTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Bike ID</TableCell>
-                <TableCell>User ID</TableCell>
+                <TableCell>Registration ID</TableCell>
                 <TableCell>Model</TableCell>
                 <TableCell>Plate Number</TableCell>
-                <TableCell>Manufacture</TableCell>
+                <TableCell>Manufacturer</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
@@ -47,16 +47,18 @@ export const BikesTable = (props) => {
                 <TableRow hover key={bike.bikeId}>
                   <TableCell>
                     {" "}
-                    <Link href={`/bikes/${bike.bikeId}`}>{bike.bikeId}</Link>
+                    <Button href={`/bikes/${bike.bikeId}`}>{bike.bikeId}</Button>
                   </TableCell>
                   <TableCell>
                     {" "}
-                    <Link href={`/users/${bike.userId}`}>{bike.userId}</Link>
+                    <Button href={`/registrations/${bike.registrationId}`}>
+                      {bike.registrationId}
+                    </Button>
                   </TableCell>
                   <TableCell>{bike.model}</TableCell>
                   <TableCell>{bike.plateNumber}</TableCell>
-                  <TableCell>{bike.manufacture}</TableCell>
-                  <TableCell>{bike.status}</TableCell>
+                  <TableCell>{bike.manufacturer}</TableCell>
+                  <TableCell>{bike.bikeStatus}</TableCell>
                   <TableCell>{moment(bike.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                   <TableCell>{moment(bike.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                 </TableRow>

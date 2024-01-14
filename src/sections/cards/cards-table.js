@@ -46,7 +46,7 @@ export const CardsTable = (props) => {
               {items.map((card) => (
                 <TableRow hover key={card.cardId}>
                   <TableCell>{card.cardId}</TableCell>
-                  <TableCell>{card.cardStatus}</TableCell>
+                  <TableCell>{card.status}</TableCell>
                   <TableCell>{card.createdAt}</TableCell>
                   <TableCell>{card.updatedAt || "N/A"}</TableCell>
                   <TableCell>{card.plateNumber || "N/A"}</TableCell>

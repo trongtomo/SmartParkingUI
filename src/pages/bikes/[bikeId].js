@@ -16,15 +16,55 @@ const BikeDetailsPage = () => {
   const [isActivateButtonDisabled, setActivateButtonDisabled] = useState(false);
   const [isDeactivateButtonDisabled, setDeactivateButtonDisabled] = useState(false);
 
+  const [availableCards, setAvailableCards] = useState([]);
+  const [assignedCards, setAssignedCards] = useState([]);
+  const [selectedCardId, setSelectedCardId] = useState("");
+
   const router = useRouter();
   const auth = useAuthContext();
   const token = localStorage.accessToken;
   const bikeId = router.query.bikeId;
 
-  useEffect(() => {
-    // Fetch bike details when the component mounts
-    fetchBikeDetails();
-  }, []);
+  const fetchAvailableCards = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/admin/active-cards`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        // Assuming the response data is an object with an "activeCards" property
+        setAvailableCards(response.data.data.activeCards || []);
+      } else {
+        toast.error("Failed to fetch available cards. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error fetching available cards:", error);
+      toast.error("Failed to fetch available cards. Please try again later.");
+    }
+  };
+  const fetchAssignedCards = async () => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/admin/cards/getAllCardsByBikeId?bikeId=${bikeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setAssignedCards(response.data.data);
+      } else {
+        toast.error("Failed to fetch assigned cards. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error fetching assigned cards:", error);
+      toast.error("Failed to fetch assigned cards. Please try again later.");
+    }
+  };
 
   const fetchBikeDetails = async () => {
     try {
@@ -41,6 +81,10 @@ const BikeDetailsPage = () => {
         // Set button states based on bike status
         setActivateButtonDisabled(fetchedBike.bikeStatus === "active");
         setDeactivateButtonDisabled(fetchedBike.bikeStatus !== "active");
+
+        // Fetch available and assigned cards for the bike
+        fetchAvailableCards();
+        fetchAssignedCards();
       } else {
         toast.error("Failed to fetch bike details. Please try again later.");
       }
@@ -50,9 +94,11 @@ const BikeDetailsPage = () => {
     }
   };
 
-  if (!bike) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    // Fetch bike details when the component mounts
+    fetchBikeDetails();
+  }, []);
+
   const handleActivate = async () => {
     try {
       await axios.put(
@@ -71,6 +117,7 @@ const BikeDetailsPage = () => {
       toast.error("Failed to activate bike. Please try again later.");
     }
   };
+
   const handleDeactivate = async () => {
     try {
       await axios.put(
@@ -89,9 +136,33 @@ const BikeDetailsPage = () => {
       toast.error("Failed to deactivate bike. Please try again later.");
     }
   };
-  if (!bike) {
-    return <div>Loading...</div>;
-  }
+
+  const handleAssignCard = async () => {
+    try {
+      await axios.post(
+        `${apiUrl}/api/admin/cards/assign`,
+        {
+          plateNumber: bike.plateNumber,
+          cardId: selectedCardId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast.success("Card assigned to bike successfully.");
+      fetchAvailableCards(); // Refresh the list of available cards after assignment
+      fetchAssignedCards(); // Refresh the list of assigned cards after assignment
+    } catch (error) {
+      console.error("Error assigning card:", error);
+      toast.error("Failed to assign card. Please try again later.");
+    }
+  };
+
+  const handleCardChange = (event) => {
+    setSelectedCardId(event.target.value);
+  };
 
   return (
     <>
@@ -108,7 +179,7 @@ const BikeDetailsPage = () => {
               <Button onClick={() => router.back()} variant="contained">
                 Back
               </Button>
-              <Typography variant="h4">{`Bike Details #${bike.bikeId}`}</Typography>
+              <Typography variant="h4">{`Bike Details #${bike?.bikeId}`}</Typography>
               {/* Activate and Deactivate buttons */}
               <Stack direction="row" spacing={2} mt={2}>
                 <Button
@@ -132,23 +203,64 @@ const BikeDetailsPage = () => {
 
             <Card>
               <CardContent>
-                <Typography variant="h6">Model: {bike.model}</Typography>
-                <Typography variant="h6">Registration Number: {bike.registrationNumber}</Typography>
-                <Typography variant="h6">Plate Number: {bike.plateNumber}</Typography>
-                <Typography variant="h6">Manufacture: {bike.manufacturer}</Typography>
-                <Typography variant="h6">Status: {bike.bikeStatus}</Typography>
+                <Typography variant="h6">Model: {bike?.model}</Typography>
                 <Typography variant="h6">
-                  Created At: {moment(bike.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+                  Registration Number: {bike?.registrationNumber}
+                </Typography>
+                <Typography variant="h6">Plate Number: {bike?.plateNumber}</Typography>
+                <Typography variant="h6">Manufacture: {bike?.manufacturer}</Typography>
+                <Typography variant="h6">Status: {bike?.bikeStatus}</Typography>
+                <Typography variant="h6">
+                  Created At: {moment(bike?.createdAt).format("YYYY-MM-DD HH:mm:ss")}
                 </Typography>
                 <Typography variant="h6">
-                  Updated At: {moment(bike.updatedAt).format("YYYY-MM-DD HH:mm:ss")}
+                  Updated At: {moment(bike?.updatedAt).format("YYYY-MM-DD HH:mm:ss")}
                 </Typography>
                 <Typography variant="h6">
-                  Registration Id:
-                  <Button href={`/registrations/${bike.registrationId}`}>
-                    {bike.registrationId}
+                  Registration Id:{" "}
+                  <Button href={`/registrations/${bike?.registrationId}`}>
+                    {bike?.registrationId}
                   </Button>
                 </Typography>
+              </CardContent>
+            </Card>
+
+            {/* Display Assigned Cards */}
+            {assignedCards.length > 0 && (
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">Assigned Cards:</Typography>
+                  <ul>
+                    {assignedCards.map((card) => (
+                      <li key={card.cardId}>{card.cardId}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Card Assignment Section */}
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Assign New Cards:</Typography>
+                <select value={selectedCardId} onChange={handleCardChange}>
+                  <option value="" disabled>
+                    Select a card
+                  </option>
+                  {availableCards.map((card) => (
+                    <option key={card.cardId} value={card.cardId}>
+                      {card.cardId}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAssignCard}
+                  disabled={!selectedCardId}
+                >
+                  Assign Card
+                </Button>
               </CardContent>
             </Card>
           </Stack>

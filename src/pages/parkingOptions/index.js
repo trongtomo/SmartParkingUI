@@ -1,5 +1,5 @@
 // pages/parking-options/index.js
-
+"use client";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import {
@@ -80,7 +80,6 @@ const ParkingOptions = () => {
         },
       });
       // Handle success, e.g., show a notification
-  
 
       // Reload parking options after creating a new one
       fetchParkingOptions();
@@ -130,7 +129,6 @@ const ParkingOptions = () => {
         },
       });
       // Handle success, e.g., show a notification
-
 
       // Reload parking options after updating
       fetchParkingOptions();

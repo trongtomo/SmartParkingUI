@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useCallback, useState, useRef } from "react";
 import axios from "axios";
 import Head from "next/head";

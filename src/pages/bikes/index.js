@@ -6,7 +6,7 @@ import Head from "next/head";
 import { Box, Container, Stack, Typography, FormControlLabel, Checkbox } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { BikesTable } from "src/sections/bikes/bikes-table";
-import { BikesSearch } from "src/sections/bikes/bikes-search"; // Import the search component
+import { BikesSearch } from "src/sections/bikes/bikes-search";
 import { applyPagination } from "src/utils/apply-pagination";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -14,21 +14,22 @@ import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 const BikesIndexPage = () => {
+  const [originalBikes, setOriginalBikes] = useState([]);
   const [bikes, setBikes] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [showActive, setShowActive] = useState(true);
   const [showDeactive, setShowDeactive] = useState(false);
-  const [showTempDeactive, setShowTempDeactive] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const auth = useAuthContext();
   const token = localStorage.accessToken;
 
   useEffect(() => {
     fetchData();
-  }, [token, searchTerm]); // Include token and searchTerm in the dependency array
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -39,14 +40,9 @@ const BikesIndexPage = () => {
       });
 
       if (response.data.success) {
-        // Filter bikes based on the search term
-        const filteredBikes = response.data.data.bikes.filter((bike) =>
-          bike.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        // Apply additional filters if needed (e.g., showActive, showDeactive, showTempDeactive)
-
-        setBikes(filteredBikes);
+        const bikesData = response.data.data.bikes;
+        setOriginalBikes(bikesData);
+        filterAndSetBikes(bikesData, searchTerm, showActive, showDeactive);
       }
     } catch (error) {
       console.error("Error fetching bikes:", error);
@@ -62,42 +58,33 @@ const BikesIndexPage = () => {
     setRowsPerPage(event.target.value);
   };
 
-  const filterBikes = () => {
-    let filteredBikes = bikes;
-
-    if (showActive) {
-      filteredBikes = filteredBikes.filter((bike) => bike.bikeStatus === "active");
-    }
-
-    if (showDeactive) {
-      filteredBikes = filteredBikes.filter((bike) => bike.bikeStatus === "deactive");
-    }
-
-    if (showTempDeactive) {
-      filteredBikes = filteredBikes.filter((bike) => bike.bikeStatus === "temporarily_deactive");
-    }
-
-    return filteredBikes;
-  };
-
   const handleShowActiveChange = (event) => {
     setShowActive(event.target.checked);
-    setPage(0); // Reset page when changing filters
+    setPage(0);
+    filterAndSetBikes(originalBikes, searchTerm, event.target.checked, showDeactive);
   };
 
   const handleShowDeactiveChange = (event) => {
     setShowDeactive(event.target.checked);
-    setPage(0); // Reset page when changing filters
-  };
-
-  const handleShowTempDeactiveChange = (event) => {
-    setShowTempDeactive(event.target.checked);
-    setPage(0); // Reset page when changing filters
+    setPage(0);
+    filterAndSetBikes(originalBikes, searchTerm, showActive, event.target.checked);
   };
 
   const handleSearch = (term) => {
-    setPage(0); // Reset page when searching
     setSearchTerm(term);
+    setPage(0);
+    filterAndSetBikes(originalBikes, term, showActive, showDeactive);
+  };
+
+  const filterAndSetBikes = (data, term, active, deactive) => {
+    const filteredBikes = data
+      .filter((bike) => bike.plateNumber.toLowerCase().includes(term.toLowerCase()))
+      .filter(
+        (bike) =>
+          (active && bike.bikeStatus === "active") || (deactive && bike.bikeStatus === "inactive")
+      );
+
+    setBikes(filteredBikes);
   };
 
   return (
@@ -141,21 +128,11 @@ const BikesIndexPage = () => {
                 }
                 label="Deactive"
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showTempDeactive}
-                    onChange={handleShowTempDeactiveChange}
-                    color="primary"
-                  />
-                }
-                label="Temp. Deactive"
-              />
             </Box>
 
             <BikesTable
-              count={filterBikes().length}
-              items={applyPagination(filterBikes(), page, rowsPerPage)}
+              count={bikes.length}
+              items={applyPagination(bikes, page, rowsPerPage)}
               onPageChange={handlePageChange}
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}

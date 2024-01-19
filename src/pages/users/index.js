@@ -32,7 +32,7 @@ const UsersIndexPage = () => {
   const [newUser, setNewUser] = useState({
     username: "",
     password: "",
-    fullName: "",
+    userFullName: "",
   });
 
   const [showSecurity, setShowSecurity] = useState(false);
@@ -41,40 +41,35 @@ const UsersIndexPage = () => {
   const router = useRouter();
   const auth = useAuthContext();
   const token = localStorage.accessToken;
-  useEffect(() => {
-    let isMounted = true;
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/admin/users`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (isMounted && response.data.code === 200) {
-          const formattedData = response.data.data.users.map((user) => ({
-            userId: user.userId,
-            userFullName: user.userFullName,
-            username: user.username,
-            userStatus: user.userStatus,
-            firebaseToken: user.firebaseToken,
-            createdAt: moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss"),
-            updatedAt: moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-            roleId: user.roleId,
-          }));
+      if (response.data.code === 200) {
+        const formattedData = response.data.data.users.map((user) => ({
+          userId: user.userId,
+          userFullName: user.userFullName,
+          username: user.username,
+          userStatus: user.userStatus,
+          firebaseToken: user.firebaseToken,
+          createdAt: moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+          updatedAt: moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+          roleId: user.roleId,
+        }));
 
-          setUsers(formattedData);
-        }
-      } catch (error) {
-        toast.error("Failed to fetch users. Please try again.");
+        setUsers(formattedData);
       }
-    };
-
+    } catch (error) {
+      toast.error("Failed to fetch users. Please try again.");
+    }
+  };
+  useEffect(() => {
     fetchData();
-    return () => {
-      isMounted = false;
-    };
-  }, [token]);
+  }, []);
 
   const handleCreateUser = async () => {
     try {
@@ -83,7 +78,7 @@ const UsersIndexPage = () => {
         {
           username: newUser.username,
           password: newUser.password,
-          fullName: newUser.fullName,
+          userFullName: newUser.userFullName,
         },
         {
           headers: {
@@ -97,6 +92,7 @@ const UsersIndexPage = () => {
         setIsFormOpen(false);
         // router.push(`${apiUrl}/admin/users/${createdUser.userId}`); // Redirect to the details page of the created user
         toast.success("Security created successfully!", { autoClose: 2000 });
+        fetchData();
       } else {
         console.error("Failed to create user:", response.data.message);
       }
@@ -116,7 +112,7 @@ const UsersIndexPage = () => {
   const handleSearchByName = (value) => {
     // Filter users based on full name
     const filteredUsers = users.filter((user) =>
-      user.fullName.toLowerCase().includes(value.toLowerCase())
+      user.userFullName.toLowerCase().includes(value.toLowerCase())
     );
     setPage(0);
     setUsers(filteredUsers);
@@ -135,6 +131,7 @@ const UsersIndexPage = () => {
       >
         <Container maxWidth="xl">
           <Stack spacing={3}>
+            <Typography variant="h4">Users</Typography>
             <div style={{ textAlign: "left" }}>
               <Button variant="contained" color="primary" onClick={() => setIsFormOpen(true)}>
                 Create New Security
@@ -171,12 +168,12 @@ const UsersIndexPage = () => {
                 />
                 <TextField
                   margin="dense"
-                  id="fullName"
+                  id="userFullName"
                   label="Full Name"
                   type="text"
                   fullWidth
-                  value={newUser.fullName}
-                  onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
+                  value={newUser.userFullName}
+                  onChange={(e) => setNewUser({ ...newUser, userFullName: e.target.value })}
                 />
               </DialogContent>
               <DialogActions>
@@ -191,7 +188,6 @@ const UsersIndexPage = () => {
 
             <Stack direction="row" justifyContent="space-between" spacing={4}>
               <Stack spacing={1}>
-                <Typography variant="h4">Users</Typography>
                 <Stack alignItems="center" direction="row" spacing={1}>
                   {/* Create User Form */}
 

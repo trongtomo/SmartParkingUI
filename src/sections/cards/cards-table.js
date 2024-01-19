@@ -22,8 +22,6 @@ export const CardsTable = (props) => {
     onRowsPerPageChange,
     page,
     rowsPerPage,
-    onDeactivate,
-    onActivate,
     onRevoke,
   } = props;
 
@@ -38,48 +36,45 @@ export const CardsTable = (props) => {
                 <TableCell>Status</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
-                <TableCell>Bike's Plate number</TableCell>
+                <TableCell>Bike Plate number</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((card) => (
                 <TableRow hover key={card.cardId}>
-                  <TableCell>{card.cardId}</TableCell>
+                  <TableCell>
+                    <Button href={`/cards/${card.cardId}`}>{card.cardId}</Button>
+                  </TableCell>
                   <TableCell>{card.status}</TableCell>
                   <TableCell>{card.createdAt}</TableCell>
                   <TableCell>{card.updatedAt || "N/A"}</TableCell>
-                  <TableCell>{card.plateNumber || "N/A"}</TableCell>
+                  <TableCell>
+                    {card.bikeId ? (
+                      <Button href={`/bikes/${card.bikeId}`}>{card.plateNumber}</Button>
+                    ) : (
+                      <span>N/A</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Box display="flex">
                       <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => onRevoke(card.plateNumber)}
+                        onClick={() => onRevoke(card.cardId)}
                         style={{ marginRight: 6 }}
                         disabled={card.status === "assigned" ? false : true}
                       >
                         Revoke
                       </Button>
-                      {card.status === "inactive" ? (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => onActivate(card)}
-                          style={{ marginRight: 6 }}
-                        >
-                          Activate
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => onDeactivate(card)}
-                          style={{ marginRight: 6 }}
-                        >
-                          Deactivate
-                        </Button>
-                      )}
+                      <Button
+                        variant="contained"
+                        color="info"
+                        href={`/cards/${card.cardId}`}
+                        style={{ marginRight: 6 }}
+                      >
+                        View logs
+                      </Button>
                     </Box>
                   </TableCell>
                 </TableRow>

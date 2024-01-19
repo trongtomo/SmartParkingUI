@@ -1,5 +1,5 @@
 // EditParkingTypeForm.js
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -9,27 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 
-const EditParkingTypeForm = ({ isOpen, onClose, onUpdate, parkingType }) => {
-  // Use the same state for form data in both components
-  const [formData, setFormData] = useState({
-    parkingTypeId: "",
-    parkingTypeName: "",
-    parkingTypeGroup: "",
-    parkingTypeFee: "",
-    description: "",
-  });
-
-  useEffect(() => {
-    setFormData(parkingType || {});
-  }, [parkingType]);
-
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
+const EditParkingTypeForm = ({ isOpen, onClose, onUpdate, parkingType, onInputChange }) => {
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>Edit Parking Type</DialogTitle>
@@ -39,39 +19,39 @@ const EditParkingTypeForm = ({ isOpen, onClose, onUpdate, parkingType }) => {
           label="Parking Type Name"
           type="text"
           fullWidth
-          value={formData.parkingTypeName || ""}
-          onChange={(e) => handleChange("parkingTypeName", e.target.value)}
+          value={parkingType.parkingTypeName || ""}
+          onChange={(e) => onInputChange("parkingTypeName", e.target.value)}
         />
         <TextField
           margin="dense"
           label="Parking Type Group"
           type="text"
           fullWidth
-          value={formData.parkingTypeGroup || ""}
-          onChange={(e) => handleChange("parkingTypeGroup", e.target.value)}
+          value={parkingType.parkingTypeGroup || ""}
+          onChange={(e) => onInputChange("parkingTypeGroup", e.target.value)}
         />
         <TextField
           margin="dense"
           label="Parking Type Fee"
           type="number"
           fullWidth
-          value={formData.parkingTypeFee || ""}
-          onChange={(e) => handleChange("parkingTypeFee", e.target.value)}
+          value={parkingType.parkingTypeFee || ""}
+          onChange={(e) => onInputChange("parkingTypeFee", e.target.value)}
         />
         <TextField
           margin="dense"
           label="Description"
           type="text"
           fullWidth
-          value={formData.description || ""}
-          onChange={(e) => handleChange("description", e.target.value)}
+          value={parkingType.description || ""}
+          onChange={(e) => onInputChange("description", e.target.value)}
         />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={() => onUpdate(formData)} color="primary">
+        <Button onClick={() => onUpdate(parkingType)} color="primary">
           Update
         </Button>
       </DialogActions>

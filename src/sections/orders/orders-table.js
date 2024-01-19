@@ -33,7 +33,7 @@ export const OrdersTable = (props) => {
                 <TableCell>Status</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Description</TableCell>
-                <TableCell>Bike Plate's Number</TableCell>
+                <TableCell>Bike Plate Number</TableCell>
                 <TableCell>Parking Type</TableCell>
                 <TableCell>Expired Date</TableCell>
                 <TableCell>Created At</TableCell>

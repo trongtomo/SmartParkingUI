@@ -1,4 +1,4 @@
-"use-client";
+"use client";
 import { useEffect, useCallback, useState, useRef } from "react";
 import axios from "axios";
 import Head from "next/head";
@@ -93,7 +93,6 @@ const OrderPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("Response:", response);
         if (response.data.code === 200) {
           if (response.data.data === "No parking orders found") {
             toast.warning("No parking orders found");
@@ -121,7 +120,6 @@ const OrderPage = () => {
         toast.error("Failed to fetch parking orders. Please try again.");
       }
     };
-    console.log("Run effect");
     fetchData();
   }, []);
 

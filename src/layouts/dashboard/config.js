@@ -16,6 +16,7 @@ import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
 import CurrencyDollarIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
 import DeviceTabletIcon from "@heroicons/react/24/solid/DeviceTabletIcon";
 import EllipsisVerticalIcon from "@heroicons/react/24/solid/EllipsisVerticalIcon";
+import ArrowTopRightOnSquareIcon from "@heroicons/react/24/solid/ArrowTopRightOnSquareIcon";
 export const items = [
   {
     title: "Overview",
@@ -32,6 +33,15 @@ export const items = [
     icon: (
       <SvgIcon fontSize="small">
         <UsersIcon />
+      </SvgIcon>
+    ),
+  },
+  {
+    title: "Parking Options",
+    path: "/parkingOptions",
+    icon: (
+      <SvgIcon fontSize="small">
+        <ArrowTopRightOnSquareIcon />
       </SvgIcon>
     ),
   },

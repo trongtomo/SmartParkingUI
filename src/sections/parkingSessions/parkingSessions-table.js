@@ -15,7 +15,6 @@ import {
   Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
-import Link from "next/link";
 
 // Define the ParkingSessionsTable component
 export const ParkingSessionsTable = (props) => {
@@ -48,24 +47,24 @@ export const ParkingSessionsTable = (props) => {
             <TableBody>
               {items.map((session) => {
                 const checkinTime = session.checkinTime
-                  ? moment(session.checkinTime).format("DD/MM/YYYY HH:mm:ss")
+                  ? moment(session.checkinTime).format("YYYY/MM/DD HH:mm:ss")
                   : "parking";
                 const checkoutTime = moment(session.checkoutTime).isValid()
-                  ? moment(session.checkoutTime).format("DD/MM/YYYY HH:mm:ss")
+                  ? moment(session.checkoutTime).format("YYYY/MM/DD HH:mm:ss")
                   : "parking";
                 // const createdAt = session.createdAt
-                // ? moment(session.createdAt).format("DD/MM/YYYY HH:mm:ss")
+                // ? moment(session.createdAt).format("YYYY/MM/DD HH:mm:ss")
                 // : "parking";
                 const updatedAt = session.updatedAt
-                  ? moment(session.updatedAt).format("DD/MM/YYYY HH:mm:ss")
+                  ? moment(session.updatedAt).format("YYYY/MM/DD HH:mm:ss")
                   : "parking";
                 return (
                   <TableRow hover key={session.parkingSessionId}>
                     <TableCell>
                       {" "}
-                      <Link href={`/parkingSessions/${session.parkingSessionId}`}>
+                      <Button href={`/parkingSessions/${session.parkingSessionId}`}>
                         {session.parkingSessionId}
-                      </Link>
+                      </Button>
                     </TableCell>
                     <TableCell>
                       {session.checkinCardId ? session.checkinCardId : "parking"}

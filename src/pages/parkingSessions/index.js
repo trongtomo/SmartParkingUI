@@ -34,42 +34,45 @@ const ParkingSessionsIndexPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/admin/sessions`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            dateStart: startDate ? startDate.toISOString() : null,
-            dateEnd: endDate ? endDate.toISOString() : null,
-          },
-        });
+        if (startDate && endDate) {
+          const response = await axios.get(`${apiUrl}/api/admin/sessions`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: {
+              dateStart: startDate ? startDate.toISOString() : null,
+              dateEnd: endDate ? endDate.toISOString() : null,
+            },
+          });
 
-        if (response.data.code === 200) {
-          const filteredData = response.data.data.parkingSessions.filter((session) =>
-            session.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
-          );
+          if (response.data.code === 200) {
+            const filteredData = response.data.data.parkingSessions.filter((session) =>
+              session.plateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+            );
 
-          const formattedData = filteredData.map((session) => ({
-            parkingSessionId: session.parkingSessionId,
-            checkinCardId: session.checkinCardId,
-            checkinTime: session.checkinTime
-              ? moment(session.checkinTime).format("YYYY-MM-DD HH:mm:ss")
-              : "",
-            checkoutCardId: session.checkoutCardId,
-            checkoutTime: session.checkoutTime
-              ? moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss")
-              : "",
-            approvedBy: session.approvedBy,
-            plateNumber: session.plateNumber,
-            parkingFee: session.parkingFee,
-            updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-          }));
+            const formattedData = filteredData.map((session) => ({
+              parkingSessionId: session.parkingSessionId,
+              checkinCardId: session.checkinCardId,
+              checkinTime: session.checkinTime
+                ? moment(session.checkinTime).format("YYYY-MM-DD HH:mm:ss")
+                : "",
+              checkoutCardId: session.checkoutCardId,
+              checkoutTime: session.checkoutTime
+                ? moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss")
+                : "",
+              approvedBy: session.approvedBy,
+              plateNumber: session.plateNumber,
+              parkingFee: session.parkingFee,
+              parkingTypeGroup: session.parkingTypeGroup,
+              updatedAt: moment(session.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+            }));
 
-          setParkingSessions(formattedData);
-        } else {
-          // No records found
-          toast.info("No sessions found for this date range");
-          setParkingSessions([]); // Explicitly set parkingSessions to an empty array
+            setParkingSessions(formattedData);
+          } else {
+            // No records found
+            toast.info("No sessions found for this date range");
+            setParkingSessions([]); // Explicitly set parkingSessions to an empty array
+          }
         }
       } catch (error) {
         console.error("Error fetching sessions:", error);
@@ -95,6 +98,12 @@ const ParkingSessionsIndexPage = () => {
     setShowDatePicker(!showDatePicker);
     setAnchorEl(event.currentTarget);
   };
+  const formatDateRangeText = () => {
+    if (!startDate || !endDate) {
+      return "Select Date Range";
+    }
+    return `${moment(startDate).format("YYYY/MM/DD")} --- ${moment(endDate).format("YYYY/MM/DD")}`;
+  };
   const handleSearch = (term) => {
     setPage(0); // Reset page when searching
     setSearchTerm(term);
@@ -118,7 +127,8 @@ const ParkingSessionsIndexPage = () => {
             </Stack>
             <ParkingSessionsSearch onSearch={handleSearch} />
             <Stack direction="row" justifyContent="space-between">
-              <Button onClick={handleToggleDatePicker}>Choose Date</Button>
+              <Button onClick={handleToggleDatePicker}>Choose Date: {formatDateRangeText()}</Button>
+
               <DateRangePicker
                 startDate={startDate}
                 endDate={endDate}

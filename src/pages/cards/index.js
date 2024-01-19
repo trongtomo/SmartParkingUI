@@ -25,29 +25,30 @@ const CardsIndexPage = () => {
   const auth = useAuthContext();
   const token = localStorage.accessToken;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/admin/cards`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.data.code === 200) {
-          const formattedData = response.data.data.cards.map((card) => ({
-            cardId: card.cardId,
-            status: card.cardStatus,
-            createdAt: moment(card.createdAt).format("YYYY-MM-DD ") || "N/A",
-            updatedAt: moment(card.updatedAt).format("YYYY-MM-DD ") || "N/A",
-            plateNumber: card.plateNumber,
-          }));
-          setCards(formattedData);
-        }
-      } catch (error) {
-        toast.error("Failed to fetch cards. Please try again later.");
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/admin/cards`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.code === 200) {
+        const formattedData = response.data.data.cards.map((card) => ({
+          cardId: card.cardId,
+          status: card.cardStatus,
+          bikeId: card.bikeId,
+          createdAt: moment(card.createdAt).format("YYYY-MM-DD ") || "N/A",
+          updatedAt: moment(card.updatedAt).format("YYYY-MM-DD ") || "N/A",
+          plateNumber: card.plateNumber,
+        }));
+        setCards(formattedData);
       }
-    };
+    } catch (error) {
+      toast.error("Failed to fetch cards. Please try again later.");
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [token]);
 
@@ -58,10 +59,11 @@ const CardsIndexPage = () => {
   const handleRowsPerPageChange = (event) => {
     setRowsPerPage(event.target.value);
   };
-  const handleDeactivate = async (card) => {
+
+  const handleRevoke = async (cardId) => {
     try {
       const response = await axios.put(
-        `${apiUrl}/api/admin/cards/deactive/${card.cardId}`,
+        `${apiUrl}/api/admin/cards/revokeByCardId?cardId=${cardId}`,
         {},
         {
           headers: {
@@ -71,62 +73,18 @@ const CardsIndexPage = () => {
       );
 
       if (response.data.success) {
-        toast.success(`Card with ID ${card.cardId} deactivated successfully`);
-        // Refresh the cards after deactivation
-        fetchData();
-      } else {
-        console.error(`Failed to deactivate card with ID ${card.cardId}`);
-      }
-    } catch (error) {
-      console.error("Error deactivating card:", error);
-    }
-  };
-  const handleActivate = async (card) => {
-    try {
-      const response = await axios.put(
-        `${apiUrl}/api/admin/cards/active/${card.cardId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        toast.success(`Card with ID ${card.cardId} activated successfully`);
-        // Refresh the cards after activation
-        fetchData();
-      } else {
-        console.error(`Failed to activate card with ID ${card.cardId}`);
-      }
-    } catch (error) {
-      console.error("Error activating card:", error);
-    }
-  };
-  const handleRevoke = async (plateNumber) => {
-    try {
-      const response = await axios.put(
-        `${apiUrl}/api/admin/cards/revoke?plateNumber=${plateNumber}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        toast.success(`Card with Plate Number ${plateNumber} revoked successfully`);
+        toast.success(`Card with Card ID ${cardId} revoked successfully`);
         // Refresh the cards after revocation
         fetchData();
       } else {
-        console.error(`Failed to revoke card with Plate Number ${plateNumber}`);
+        console.error(`Failed to revoke card with Card ID ${cardId}`);
       }
     } catch (error) {
+      toast.error(`Failed to Revoke card`, error);
       console.error("Error revoking card:", error);
     }
   };
+
   return (
     <>
       <Head>
@@ -182,8 +140,6 @@ const CardsIndexPage = () => {
               onRowsPerPageChange={handleRowsPerPageChange}
               page={page}
               rowsPerPage={rowsPerPage}
-              onDeactivate={handleDeactivate}
-              onActivate={handleActivate}
               onRevoke={handleRevoke}
             />
           </Stack>

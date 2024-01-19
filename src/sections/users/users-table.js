@@ -15,7 +15,7 @@ import {
   Button,
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
-import Link from "next/link";
+
 import { useRouter } from "next/router";
 export const UsersTable = (props) => {
   const router = useRouter();
@@ -60,7 +60,7 @@ export const UsersTable = (props) => {
                 return (
                   <TableRow hover key={user.userId}>
                     <TableCell>
-                      <Link href={`/users/${user.userId}`}>{user.userId}</Link>
+                      <Button href={`/users/${user.userId}`}>{user.userId}</Button>
                     </TableCell>
                     <TableCell>{user.userFullName}</TableCell>
                     <TableCell>{user.username}</TableCell>

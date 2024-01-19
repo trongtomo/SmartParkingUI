@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
 import { Box, Button, Container, Stack, Typography, Unstable_Grid2 as Grid } from "@mui/material";
-import { Paper } from "@mui/material";
+import { Paper, Card } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import moment from "moment";
 import { useRouter } from "next/router";
@@ -58,9 +58,6 @@ const SessionDetailPage = () => {
   return (
     <>
       <Head>
-        <div>
-          <button onClick={() => router.back()}>Back</button>
-        </div>
         <title>{`Session #${session.parkingSessionId} | Smart-Parking`}</title>
       </Head>
 
@@ -74,7 +71,9 @@ const SessionDetailPage = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Button onClick={() => router.back()}>Back</Button>
+              <Button onClick={() => router.back()} variant="contained">
+                Back
+              </Button>
               <Typography variant="h4">{`Session #${session.parkingSessionId}`}</Typography>
             </Stack>
 
@@ -106,6 +105,8 @@ const SessionDetailPage = () => {
                             ? moment(session.checkinTime).format("YYYY-MM-DD HH:mm:ss")
                             : "parking"
                         }`}</Typography>
+                      </Paper>
+                      <Paper elevation={3} sx={{ p: 2 }}>
                         <Typography variant="body1">{`Checkout card ID: ${
                           session.checkoutCardId || "parking"
                         }`}</Typography>
@@ -121,10 +122,8 @@ const SessionDetailPage = () => {
                     <Grid item xs={12} sm={6}>
                       <Paper elevation={3} sx={{ p: 2 }}>
                         <Typography variant="body1">{`Approved By: ${session.approvedBy}`}</Typography>
-                        <Typography variant="body1">{`Plate Number: ${session.plateNumber}`}</Typography>
-                        <Typography variant="body1">{`Parking Fee: ${
-                          session.parkingFee ? session.parkingFee : "parking"
-                        }`}</Typography>
+                        <Typography variant="body1">{`Bike's Plate Number: ${session.plateNumber}`}</Typography>
+
                         {/* <Typography variant="body1">{`Created At: ${moment(
                           session.createdAt
                         ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
@@ -136,16 +135,16 @@ const SessionDetailPage = () => {
                     <Grid item xs={12}>
                       <Paper elevation={3} sx={{ p: 2 }}>
                         <Typography variant="body1">
-                          {`Parking Type: ${
-                            session.ParkingType
-                              ? session.ParkingType.parkingTypeId === 1
-                                ? "Guest"
-                                : session.ParkingType.parkingTypeId === 2
-                                ? "Resident"
-                                : "parking"
-                              : "parking"
-                          }`}
+                          {`Parking Type: ${session.parkingTypeGroup}`}
                         </Typography>
+                      </Paper>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Paper elevation={3} sx={{ p: 2 }}>
+                        <Typography variant="body1">{`Parking Fee: ${
+                          session.parkingFee ? session.parkingFee : "parking"
+                        }`}</Typography>
                       </Paper>
                     </Grid>
                   </Grid>

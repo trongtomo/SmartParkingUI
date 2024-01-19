@@ -118,8 +118,8 @@ export const IncomeGroupByDate = (props) => {
 IncomeGroupByDate.propTypes = {
   chartSeries: PropTypes.arrayOf(
     PropTypes.shape({
-      totalParkingFee: PropTypes.number.isRequired,
-      date: PropTypes.string.isRequired,
+      totalParkingFee: PropTypes.number,
+      date: PropTypes.string,
     })
   ).isRequired,
   startDate: PropTypes.string.isRequired,

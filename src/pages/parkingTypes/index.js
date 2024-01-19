@@ -1,4 +1,5 @@
-"use-client";
+// ParkingTypesIndexPage.js
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -14,6 +15,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import { Layout as DashboardLayout } from "src/layouts/dashboard/layout";
 import { useAuthContext } from "src/contexts/auth-context";
@@ -26,6 +29,8 @@ const ParkingTypesIndexPage = () => {
   const auth = useAuthContext();
   const token = localStorage.accessToken;
   const [parkingTypesList, setParkingTypesList] = useState([]);
+  const [showActive, setShowActive] = useState(true);
+  const [showInactive, setShowInactive] = useState(false);
   const [formData, setFormData] = useState({
     parkingTypeId: "",
     parkingTypeName: "",
@@ -34,7 +39,6 @@ const ParkingTypesIndexPage = () => {
     description: "",
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
@@ -49,7 +53,7 @@ const ParkingTypesIndexPage = () => {
         },
       });
 
-      if (response.data.success && response.data.data && response.data.data.parkingTypes) {
+      if (response.data.success) {
         setParkingTypesList(response.data.data.parkingTypes);
       } else {
         toast.error("Failed to fetch parking types:", response.data.message);
@@ -91,29 +95,15 @@ const ParkingTypesIndexPage = () => {
   };
 
   const handleEditClick = (parkingType) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      parkingTypeId: parkingType.parkingTypeId,
-      parkingTypeName: parkingType.parkingTypeName,
-      parkingTypeGroup: parkingType.parkingTypeGroup,
-      parkingTypeFee: parkingType.parkingTypeFee,
-      description: parkingType.description,
-    }));
+    setFormData({ ...parkingType });
     setIsEditModalOpen(true);
-    console.log("Form data after edit click:", formData);
   };
 
   const handleUpdate = async () => {
     try {
       const response = await axios.put(
         `${apiUrl}/api/admin/parkingTypes/${formData.parkingTypeId}`,
-        {
-          parkingTypeId: formData.parkingTypeId,
-          parkingTypeName: formData.parkingTypeName,
-          parkingTypeGroup: formData.parkingTypeGroup,
-          parkingTypeFee: formData.parkingTypeFee,
-          description: formData.description,
-        },
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,11 +114,11 @@ const ParkingTypesIndexPage = () => {
       if (response.data.success) {
         setParkingTypesList((prevParkingTypes) =>
           prevParkingTypes.map((type) =>
-            type.parkingTypeId === formData.parkingTypeId ? response.data.data.parkingType : type
+            type.parkingTypeId === formData.parkingTypeId ? formData : type
           )
         );
-        console.log("API response", response);
         toast.success("Parking Type Updated!");
+        fetchParkingTypes();
         setIsEditModalOpen(false);
       } else {
         console.error("Failed to update parking type:", response.data.message);
@@ -139,7 +129,35 @@ const ParkingTypesIndexPage = () => {
       toast.error("Error updating parking type");
     }
   };
+  const filterParkingTypes = () => {
+    let filteredParkingTypes = parkingTypesList;
 
+    if (!showActive && !showInactive) {
+      return []; // If both are unchecked, show no parking types
+    }
+
+    if (!showActive) {
+      filteredParkingTypes = filteredParkingTypes.filter(
+        (type) => type.parkingTypeStatus !== "active"
+      );
+    }
+
+    if (!showInactive) {
+      filteredParkingTypes = filteredParkingTypes.filter(
+        (type) => type.parkingTypeStatus !== "inactive"
+      );
+    }
+
+    return filteredParkingTypes;
+  };
+  const filteredParkingTypes = filterParkingTypes();
+  const handleShowActiveChange = (event) => {
+    setShowActive(event.target.checked);
+  };
+
+  const handleShowInactiveChange = (event) => {
+    setShowInactive(event.target.checked);
+  };
   return (
     <>
       <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
@@ -150,9 +168,7 @@ const ParkingTypesIndexPage = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => {
-                  setIsFormOpen(true);
-                }}
+                onClick={() => setIsFormOpen(true)}
                 sx={{ marginTop: 2 }}
               >
                 Create New Parking Type
@@ -205,15 +221,38 @@ const ParkingTypesIndexPage = () => {
                 </Dialog>
               )}
             </Card>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showActive}
+                    onChange={handleShowActiveChange}
+                    color="primary"
+                  />
+                }
+                label="Active"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={showInactive}
+                    onChange={handleShowInactiveChange}
+                    color="primary"
+                  />
+                }
+                label="Inactive"
+              />
+            </Box>
             <EditParkingTypeForm
               isOpen={isEditModalOpen}
               onClose={() => setIsEditModalOpen(false)}
               onUpdate={handleUpdate}
               parkingType={formData}
+              onInputChange={handleInputChange}
             />
 
             <Grid container spacing={3}>
-              {parkingTypesList.map((parkingType) => (
+              {filteredParkingTypes.map((parkingType) => (
                 <Grid item key={parkingType.parkingTypeId} xs={12} md={6} lg={4}>
                   <Box
                     sx={{

@@ -11,6 +11,7 @@ import { TotalCheckinResident } from "src/sections/overview/TotalCheckinResident
 import { TotalGuestIncome } from "src/sections/overview/TotalGuestIncome";
 import { IncomeGroupByDate } from "src/sections/overview/IncomeGroupByDate";
 import { OverviewTraffic } from "src/sections/overview/overview-traffic";
+import { OverviewTraffic2 } from "src/sections/overview/overview-traffic2";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
@@ -21,29 +22,37 @@ import { useAuthContext } from "src/contexts/auth-context";
 import { Stack } from "@mui/system";
 
 const Page = () => {
-  const [totalCheckoutGuest, setTotalCheckoutGuest] = useState(null);
-  const [totalCheckinGuest, setTotalCheckinGuest] = useState(null);
-  const [totalCheckoutResident, setTotalCheckoutResident] = useState(null);
-  const [totalCheckinResident, setTotalCheckinResident] = useState(null);
-  const [totalGuestIncome, setTotalGuestIncome] = useState(null);
+  const [totalCheckoutGuest, setTotalCheckoutGuest] = useState(0);
+  const [totalCheckinGuest, setTotalCheckinGuest] = useState(0);
+  const [totalCheckoutResident, setTotalCheckoutResident] = useState(0);
+  const [totalCheckinResident, setTotalCheckinResident] = useState(0);
+  const [totalGuestIncome, setTotalGuestIncome] = useState(0);
 
   const [dateStart, setdateStart] = useState(new Date());
   const [dateEnd, setdateEnd] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDateStart, setSelectedDateStart] = useState(new Date());
+  const [selectedDateStart, setSelectedDateStart] = useState(moment().subtract(7, "days").toDate());
   const [selectedDateEnd, setSelectedDateEnd] = useState(new Date());
   const [anchorEl, setAnchorEl] = useState(null);
   const [chartSeries, setChartSeries] = useState([]);
   const auth = useAuthContext();
   const token = localStorage.accessToken;
 
+  const formattedStartDate = selectedDateStart
+    ? moment(selectedDateStart).format("YYYY-MM-DD")
+    : "Please choose date";
+  const formattedEndDate = selectedDateEnd
+    ? moment(selectedDateEnd).format("YYYY-MM-DD")
+    : "Please choose date";
+
   useEffect(() => {
     const dateStart = moment(selectedDateStart).format("YYYY-MM-DD HH:mm:ss");
     const dateEnd = moment(selectedDateEnd).format("YYYY-MM-DD HH:mm:ss");
+
     const fetchCheckoutGuestData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalCheckout?parkingTypeName=guest&dateStart=${dateStart}&dateEnd=${dateEnd}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/report/getTotalCheckout?parkingTypeGroup=guest&dateStart=${dateStart}&dateEnd=${dateEnd}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -64,9 +73,8 @@ const Page = () => {
     };
     const fetchCheckinGuestData = async () => {
       try {
-        // Adjust the API endpoint and parameters accordingly
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalCheckin?parkingTypeName=guest&dateStart=${dateStart}&dateEnd=${dateEnd}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/report/getTotalCheckin?parkingTypeGroup=guest&dateStart=${dateStart}&dateEnd=${dateEnd}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -85,10 +93,8 @@ const Page = () => {
     };
     const fetchCheckoutResidentData = async () => {
       try {
-        // Adjust the API endpoint and parameters accordingly
-
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalCheckout?parkingTypeName=resident&dateStart=${dateStart}&dateEnd=${dateEnd}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/report/getTotalCheckout?parkingTypeGroup=resident&dateStart=${dateStart}&dateEnd=${dateEnd}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -107,10 +113,8 @@ const Page = () => {
     };
     const fetchCheckinResidentData = async () => {
       try {
-        // Adjust the API endpoint and parameters accordingly
-
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalCheckin?parkingTypeName=resident&dateStart=${dateStart}&dateEnd=${dateEnd}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/report/getTotalCheckin?parkingTypeGroup=resident&dateStart=${dateStart}&dateEnd=${dateEnd}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -130,7 +134,7 @@ const Page = () => {
     const fetchGuestIncome = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getTotalGuestInCome?dateStart=${dateStart}&dateEnd=${dateEnd}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/report/getTotalGuestInCome?dateStart=${dateStart}&dateEnd=${dateEnd}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -152,7 +156,7 @@ const Page = () => {
     const fetchIncomeGroupByDate = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/getGuestIncomeGroupByDate?dateStart=${dateStart}&dateEnd=${dateEnd}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/report/getGuestIncomeGroupByDate?dateStart=${dateStart}&dateEnd=${dateEnd}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -174,13 +178,14 @@ const Page = () => {
         console.error("Error fetching total customers:", error);
       }
     };
-
-    fetchIncomeGroupByDate();
-    fetchGuestIncome();
-    fetchCheckinGuestData();
-    fetchCheckoutGuestData();
-    fetchCheckinResidentData();
-    fetchCheckoutResidentData();
+    if (selectedDateStart && selectedDateEnd) {
+      fetchIncomeGroupByDate();
+      fetchGuestIncome();
+      fetchCheckinGuestData();
+      fetchCheckoutGuestData();
+      fetchCheckinResidentData();
+      fetchCheckoutResidentData();
+    }
   }, [selectedDateStart, selectedDateEnd]);
 
   const handleTotalCheckoutGuest = (value) => {
@@ -225,7 +230,9 @@ const Page = () => {
       >
         <Container maxWidth="xl">
           <Stack direction="row" spacing={2} alignItems="center" mb={3}>
-            <Button onClick={handleToggleDatePicker}>Choose Date</Button>
+            <Button onClick={handleToggleDatePicker}>
+              Choose Date: {formattedStartDate} - {formattedEndDate}
+            </Button>
             <DateRangePicker
               startDate={selectedDateStart}
               endDate={selectedDateEnd}
@@ -285,8 +292,8 @@ const Page = () => {
             <Grid xs={12} lg={8}>
               <IncomeGroupByDate
                 chartSeries={chartSeries}
-                startDate={dateStart}
-                endDate={dateEnd}
+                startDate={dateStart.toISOString()}
+                endDate={dateEnd.toISOString()}
                 sx={{ height: "100%" }}
               />
             </Grid>
@@ -294,6 +301,13 @@ const Page = () => {
               <OverviewTraffic
                 guestCheckins={totalCheckinGuest}
                 residentCheckins={totalCheckinResident}
+                sx={{ height: "100%" }}
+              />
+            </Grid>
+            <Grid xs={12} md={6} lg={4}>
+              <OverviewTraffic2
+                guestCheckout={totalCheckoutGuest}
+                residentCheckout={totalCheckoutResident}
                 sx={{ height: "100%" }}
               />
             </Grid>

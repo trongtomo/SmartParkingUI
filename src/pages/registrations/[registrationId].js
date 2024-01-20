@@ -32,7 +32,9 @@ const getRegistrationStatusColor = (status) => {
       return "blue";
     case "pending":
       return "green";
-    case "cancelled": // Replace with the actual status name for cancelled
+    case "canceled": // Replace with the actual status name for cancelled
+      return "red";
+    case "rejected": 
       return "red";
     default:
       return "inherit";
@@ -48,9 +50,7 @@ const RegistrationDetailPage = () => {
   const [registrationHistories, setRegistrationHistories] = useState([]);
   const [rejectReason, setRejectReason] = useState("");
   const [isRejectModalOpen, setRejectModalOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       try {
         const [registrationResponse, historyResponse] = await Promise.all([
           axios.get(`${apiUrl}/api/admin/registrations/${registrationId}`, {
@@ -78,6 +78,8 @@ const RegistrationDetailPage = () => {
         toast.error("Failed to fetch registration details");
       }
     };
+  useEffect(() => {
+   
     fetchData();
   }, [token]);
 
@@ -104,6 +106,7 @@ const RegistrationDetailPage = () => {
         toast.success("Verify success");
         // Update state to trigger re-render
         setRegistrationData({ ...registration, registrationStatus: "verified" });
+        fetchData();
       } else {
         toast.error("Can't verify, please try again!");
       }
@@ -131,6 +134,7 @@ const RegistrationDetailPage = () => {
         setTimeout(() => {
           closeRejectModal();
         }, 1000);
+      fetchData();
       } else {
         toast.error("Can't reject, please try again!");
       }

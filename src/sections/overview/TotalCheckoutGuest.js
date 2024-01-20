@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import ArrowDownIcon from "@heroicons/react/24/solid/ArrowDownIcon";
 import ArrowUpIcon from "@heroicons/react/24/solid/ArrowUpIcon";
-import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
+import UserIcon from "@heroicons/react/24/solid/UserIcon";
 import { Avatar, Card, CardContent, Stack, SvgIcon, Typography } from "@mui/material";
 
 import { useState } from "react";
@@ -27,7 +27,7 @@ export const TotalCheckoutGuest = (props) => {
             }}
           >
             <SvgIcon>
-              <UsersIcon />
+              <UserIcon />
             </SvgIcon>
           </Avatar>
         </Stack>

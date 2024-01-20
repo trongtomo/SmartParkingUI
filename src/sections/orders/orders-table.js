@@ -70,7 +70,7 @@ export const OrdersTable = (props) => {
                         {order.parkingOrderId}
                       </Button>
                     </TableCell>
-                    <TableCell>{order.parkingOrderAmount}</TableCell>
+                    <TableCell>{order.parkingOrderAmount} VND</TableCell>
                     <TableCell>{order.description || "N/A"}</TableCell>
                     {/* <TableCell>{order.bikeId}</TableCell>
                     <TableCell>{order.parkingType}</TableCell> */}

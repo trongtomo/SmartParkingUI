@@ -17,6 +17,7 @@ const SessionDetailPage = () => {
   const auth = useAuthContext();
   const token = localStorage.accessToken;
   const sessionId = router.query?.sessionId;
+
   useEffect(() => {
     const getParkingSession = async () => {
       try {
@@ -35,6 +36,56 @@ const SessionDetailPage = () => {
     getParkingSession();
   }, []);
 
+  const renderDateTime = (dateTime, label) => (
+    <Typography variant="body1">
+      {`${label}: ${dateTime ? moment(dateTime).format("YYYY-MM-DD HH:mm:ss") : "parking"}`}
+    </Typography>
+  );
+
+  const renderCardInfo = (cardId, label) => (
+    <Paper elevation={3} sx={{ p: 2, backgroundColor: "#f5f5f5" }}>
+      <Typography variant="body1" color="secondary">{`${label}: ${
+        cardId || "parking"
+      }`}</Typography>
+      {label === "Check-in Time" && renderDateTime(session.checkinTime)}
+      {label === "Check-out Time" && renderDateTime(session.checkoutTime)}
+    </Paper>
+  );
+
+  const renderParkingType = () => (
+    <Paper elevation={3} sx={{ p: 2, backgroundColor: "#f5f5f5" }}>
+      <Typography variant="body1">{`Parking Type: ${session.parkingTypeGroup}`}</Typography>
+    </Paper>
+  );
+
+  const renderParkingFee = () => (
+    <Paper elevation={3} sx={{ p: 2, backgroundColor: "#f5f5f5" }}>
+      <Typography variant="body1">
+        {`Parking Fee: ${session.parkingFee || "parking"}`} VND
+      </Typography>
+    </Paper>
+  );
+
+  const renderImages = (faceImage, plateNumberImage, altText) => (
+    <>
+      <Typography variant="h6" sx={{ color: "#1976D2" }}>
+        {altText}
+      </Typography>
+      {!faceImage && !plateNumberImage ? (
+        <Typography variant="body2">{`${altText}: parking`}</Typography>
+      ) : (
+        <>
+          {faceImage && renderImage(faceImage, `${altText} Face Image`)}
+          {plateNumberImage && renderImage(plateNumberImage, `${altText} Plate Number Image`)}
+        </>
+      )}
+    </>
+  );
+
+  const renderImage = (imageData, altText) => (
+    <Image src={`data:image/png;base64, ${imageData}`} alt={altText} width={300} height={300} />
+  );
+
   if (!session) {
     return (
       <>
@@ -49,12 +100,15 @@ const SessionDetailPage = () => {
           }}
         >
           <Container maxWidth="xl">
-            <Typography variant="h4">Session Not Found</Typography>
+            <Typography variant="h4" sx={{ color: "#d32f2f" }}>
+              Session Not Found
+            </Typography>
           </Container>
         </Box>
       </>
     );
   }
+
   return (
     <>
       <Head>
@@ -71,18 +125,23 @@ const SessionDetailPage = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Button onClick={() => router.back()} variant="contained">
+              <Button onClick={() => router.back()} variant="contained" sx={{ color: "white" }}>
                 Back
               </Button>
-              <Typography variant="h4">{`Session #${session.parkingSessionId}`}</Typography>
+              <Typography
+                variant="h4"
+                sx={{ color: "#1976D2" }}
+              >{`Session #${session.parkingSessionId}`}</Typography>
             </Stack>
 
             <Grid container spacing={3}>
               {/* Check-in Images */}
               <Grid item xs={12} md={6} lg={6}>
-                <Typography variant="h6">Check-In</Typography>
-                {renderImage(session.checkinFaceImage, "Check-In Face Image")}
-                {renderImage(session.checkinPlateNumberImage, "Check-In Plate Number Image")}
+                {renderImages(
+                  session.checkinFaceImage,
+                  session.checkinPlateNumberImage,
+                  "Check-In"
+                )}
               </Grid>
 
               {/* Session Details */}
@@ -96,56 +155,20 @@ const SessionDetailPage = () => {
                 >
                   <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
-                      <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="body1">{`Checkin card ID: ${
-                          session.checkinCardId || "parking"
-                        }`}</Typography>
-                        <Typography variant="body1">{`Check-in Time: ${
-                          session.checkinTime
-                            ? moment(session.checkinTime).format("YYYY-MM-DD HH:mm:ss")
-                            : "parking"
-                        }`}</Typography>
-                      </Paper>
-                      <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="body1">{`Checkout card ID: ${
-                          session.checkoutCardId || "parking"
-                        }`}</Typography>
-                        <Typography variant="body1">{`Check-out Time: ${
-                          session.checkoutTime
-                            ? moment(session.checkoutTime, "YYYY-MM-DD HH:mm:ss", true).isValid()
-                              ? moment(session.checkoutTime).format("YYYY-MM-DD HH:mm:ss")
-                              : "parking"
-                            : "parking"
-                        }`}</Typography>
-                      </Paper>
+                      {renderCardInfo(session.checkinCardId, "Checkin card ID")}
+                      {renderCardInfo(session.checkoutCardId, "Checkout card ID")}
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                      <Paper elevation={3} sx={{ p: 2 }}>
+                      <Paper elevation={3} sx={{ p: 2, backgroundColor: "#f5f5f5" }}>
                         <Typography variant="body1">{`Approved By: ${session.approvedBy}`}</Typography>
-                        <Typography variant="body1">{`Bike's Plate Number: ${session.plateNumber}`}</Typography>
-
-                        {/* <Typography variant="body1">{`Created At: ${moment(
-                          session.createdAt
-                        ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography>
-                        <Typography variant="body1">{`Updated At: ${moment(
-                          session.updatedAt
-                        ).format("YYYY-MM-DD HH:mm:ss")}`}</Typography> */}
+                        <Typography variant="body1">{`Plate Number: ${session.plateNumber}`}</Typography>
                       </Paper>
                     </Grid>
                     <Grid item xs={12}>
-                      <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="body1">
-                          {`Parking Type: ${session.parkingTypeGroup}`}
-                        </Typography>
-                      </Paper>
+                      {renderParkingType()}
                     </Grid>
-
                     <Grid item xs={12}>
-                      <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="body1">{`Parking Fee: ${
-                          session.parkingFee ? session.parkingFee : "parking"
-                        }`}</Typography>
-                      </Paper>
+                      {renderParkingFee()}
                     </Grid>
                   </Grid>
                 </Box>
@@ -153,9 +176,11 @@ const SessionDetailPage = () => {
 
               {/* Check-out Images */}
               <Grid item xs={12} md={6} lg={6}>
-                <Typography variant="h6">Check-Out</Typography>
-                {renderImage(session.checkoutFaceImage, "Check-Out Face Image")}
-                {renderImage(session.checkoutPlateNumberImage, "Check-Out Plate Number Image")}
+                {renderImages(
+                  session.checkoutFaceImage,
+                  session.checkoutPlateNumberImage,
+                  "Check-Out"
+                )}
               </Grid>
             </Grid>
           </Stack>
@@ -164,15 +189,7 @@ const SessionDetailPage = () => {
     </>
   );
 };
-const renderImage = (imageData, altText) => {
-  if (!imageData) {
-    return <Typography variant="body2">{`${altText}: parking`}</Typography>;
-  }
 
-  return (
-    <Image src={`data:image/png;base64, ${imageData}`} alt={altText} width={300} height={300} />
-  );
-};
 SessionDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default SessionDetailPage;

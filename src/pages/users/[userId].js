@@ -150,7 +150,7 @@ const UserDetailPage = () => {
           <Stack spacing={3}>
             <Stack direction="row" spacing={2} alignItems="center">
               <Button onClick={() => router.back()}>Back</Button>
-              <Typography variant="h4">{`User #${user.userId}`}</Typography>
+              <Typography variant="h4" color="primary">{`User #${user.userId}`}</Typography>
             </Stack>
 
             <Grid container spacing={3}>
@@ -162,7 +162,12 @@ const UserDetailPage = () => {
                 <Typography variant="body1">{`Role: ${getRoleName(user.roleId)}`}</Typography>
               </Grid>
               <Grid xs={12} md={6} lg={8}>
-                <Typography variant="body1">{`User Status: ${user.userStatus}`}</Typography>
+                <Typography variant="body1">
+                  User Status:{" "}
+                  <span style={{ color: user.userStatus === "active" ? "#007bff" : "#dc3545" }}>
+                    {user.userStatus}
+                  </span>
+                </Typography>
                 <Typography variant="body1">{`Phone Number: ${user.username}`}</Typography>
                 <Typography variant="body1">{`Firebase Token: ${
                   user.firebaseToken || "N/A"
@@ -191,7 +196,9 @@ const UserDetailPage = () => {
               </Button>
             </Stack>
             {/* User Histories Table */}
-            <Typography variant="h5">User Histories</Typography>
+            <Typography variant="h5" color="primary">
+              User Histories
+            </Typography>
             <UserHistoriesTable
               count={user.userHistories ? user.userHistories.length : 0}
               items={applyPagination(user.userHistories, page, rowsPerPage)}

@@ -279,7 +279,7 @@ const ParkingTypesIndexPage = () => {
                         </span>
                       </Typography>
                       <Typography variant="body1">Group: {parkingType.parkingTypeGroup}</Typography>
-                      <Typography variant="body1">Fee: {parkingType.parkingTypeFee}</Typography>
+                      <Typography variant="body1">Fee: {parkingType.parkingTypeFee} VND</Typography>
                       <Typography variant="body1">
                         Description: {parkingType.description}
                       </Typography>

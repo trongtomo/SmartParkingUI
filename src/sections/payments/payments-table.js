@@ -51,7 +51,7 @@ export const PaymentsTable = (props) => {
                       {payment.parkingOrderId}
                     </Button>
                   </TableCell>
-                  <TableCell>{payment.paymentAmount}</TableCell>
+                  <TableCell>{payment.paymentAmount} VND</TableCell>
 
                   <TableCell
                     style={{ color: payment.paymentStatus === "success" ? "blue" : "red" }}

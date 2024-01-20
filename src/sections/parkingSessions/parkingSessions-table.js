@@ -76,7 +76,7 @@ export const ParkingSessionsTable = (props) => {
                     <TableCell>{checkoutTime ? checkoutTime : "parking"}</TableCell>
                     <TableCell>{session.approvedBy}</TableCell>
                     <TableCell>{session.plateNumber}</TableCell>
-                    <TableCell>{session.parkingFee}</TableCell>
+                    <TableCell>{session.parkingFee} VND</TableCell>
                     {/* <TableCell>{createdAt}</TableCell> */}
                     <TableCell>{updatedAt}</TableCell>
                   </TableRow>

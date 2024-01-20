@@ -20,7 +20,30 @@ import { useAuthContext } from "src/contexts/auth-context";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
+const getStatusColor = (status) => {
+  switch (status) {
+    case "active":
+      return "blue";
+    case "cancelled":
+      return "red";
+    // Add more cases if needed
+    default:
+      return "inherit";
+  }
+};
+const getPaymentStatusColor = (status) => {
+  switch (status) {
+    case "success":
+      return "blue";
+    case "cancelled":
+      return "red";
+    case "pending":
+      return "orange";
+    // Add more cases if needed
+    default:
+      return "inherit";
+  }
+};
 const OrderDetailsPage = () => {
   const [order, setOrder] = useState(null);
   const [payments, setPayments] = useState([]);
@@ -92,30 +115,40 @@ const OrderDetailsPage = () => {
         <Container maxWidth="xl">
           <Stack spacing={3}>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Button onClick={() => router.back()} variant="contained">
+              <Button onClick={() => router.back()} variant="contained" color="primary">
                 Back
               </Button>
-              <Typography variant="h4">{`Order Details #${order?.parkingOrderId}`}</Typography>
+              <Typography
+                variant="h4"
+                color="primary"
+              >{`Order Details #${order?.parkingOrderId}`}</Typography>
             </Stack>
             {order !== null && (
-              <Paper elevation={3}>
+              <Paper elevation={3} sx={{ backgroundColor: "#ffecd9" }}>
                 <Grid container spacing={3} p={3}>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="h6">Status: {order.parkingOrderStatus}</Typography>
-                    <Typography variant="h6">Amount: {order.parkingOrderAmount}</Typography>
+                    <Typography variant="h6">
+                      Status:
+                      <span style={{ color: getStatusColor(order.parkingOrderStatus) }}>
+                        {order.parkingOrderStatus}
+                      </span>
+                    </Typography>
+                    <Typography variant="h6">Amount: {order.parkingOrderAmount} VND</Typography>
                     <Typography variant="h6">Order Type: {order.parkingOrderType}</Typography>
                     <Typography variant="h6">
                       Expired Date: {moment(order.expiredDate).format("YYYY-MM-DD")}
                     </Typography>
                     <Typography variant="h6">
-                      Parking Type : {order.ParkingType.parkingTypeName}
+                      Parking Type: {order.ParkingType.parkingTypeName}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6">Description: {order.description || "N/A"}</Typography>
                     <Typography variant="h6">
                       Bike ID:
-                      <Button href={`/bikes/${order.bikeId}`}>{order.bikeId}</Button>
+                      <Button href={`/bikes/${order.bikeId}`} color="secondary">
+                        {order.bikeId}
+                      </Button>
                     </Typography>
                     <Typography variant="h6">
                       Created At: {moment(order.createdAt).format("YYYY-MM-DD HH:mm:ss")}
@@ -135,20 +168,23 @@ const OrderDetailsPage = () => {
   );
 };
 
-OrderDetailsPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-
-export default OrderDetailsPage;
-
 const PaymentsSection = ({ payments }) => (
   <Paper elevation={3}>
     <Stack spacing={3} p={3}>
-      <Typography variant="h5">Payments</Typography>
+      <Typography variant="h5" color="primary">
+        Payments
+      </Typography>
       {payments.map((payment) => (
         <Card key={payment.paymentId}>
           <CardContent>
             <Typography variant="h6">Transaction ID: {payment.transactionId}</Typography>
-            <Typography variant="h6">Amount: {payment.paymentAmount}</Typography>
-            <Typography variant="h6">Payment Status: {payment.paymentStatus}</Typography>
+            <Typography variant="h6">Amount: {payment.paymentAmount} VND</Typography>
+            <Typography variant="h6">
+              Payment Status:
+              <span style={{ color: getPaymentStatusColor(payment.paymentStatus) }}>
+                {payment.paymentStatus}
+              </span>
+            </Typography>
             <Typography variant="h6">Payment Method: {payment.paymentMethod}</Typography>
             <Typography variant="h6">
               Payment Date: {moment(payment.createdAt).format("YYYY-MM-DD HH:mm:ss")}
@@ -159,3 +195,7 @@ const PaymentsSection = ({ payments }) => (
     </Stack>
   </Paper>
 );
+
+OrderDetailsPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+
+export default OrderDetailsPage;

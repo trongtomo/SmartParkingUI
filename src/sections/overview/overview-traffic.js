@@ -10,8 +10,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { Chart } from "src/components/chart";
-import PhoneIcon from "@heroicons/react/24/solid/PhoneIcon";
-import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
+import PhoneIcon from "@heroicons/react/24/solid/UserIcon";
+import ClockIcon from "@heroicons/react/24/solid/UsersIcon";
 
 const useChartOptions = (labels) => {
   const theme = useTheme();

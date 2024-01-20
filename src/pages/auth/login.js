@@ -123,9 +123,9 @@ const Page = () => {
                 <Button fullWidth size="large" sx={{ mt: 3 }} type="submit" variant="contained">
                   Continue
                 </Button>
-                <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
+                {/* <Button fullWidth size="large" sx={{ mt: 3 }} onClick={handleSkip}>
                   Skip authentication
-                </Button>
+                </Button> */}
               </form>
             )}
 

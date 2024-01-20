@@ -13,6 +13,18 @@ import {
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 
+const getStatusColor = (status) => {
+  switch (status) {
+    case "active":
+      return "blue";
+    case "pending":
+      return "green";
+    case "cancelled":
+      return "red";
+    default:
+      return "black"; // Set a default color if needed
+  }
+};
 export const OrdersTable = (props) => {
   const {
     count = 0,
@@ -30,14 +42,14 @@ export const OrdersTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Parking Order ID</TableCell>
-                <TableCell>Status</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell>Bike Plate Number</TableCell>
                 <TableCell>Parking Type</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Expired Date</TableCell>
                 <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
+                {/* <TableCell>Updated At</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -58,9 +70,8 @@ export const OrdersTable = (props) => {
                         {order.parkingOrderId}
                       </Button>
                     </TableCell>
-                    <TableCell>{order.parkingOrderStatus}</TableCell>
                     <TableCell>{order.parkingOrderAmount}</TableCell>
-                    <TableCell>{order.description}</TableCell>
+                    <TableCell>{order.description || "N/A"}</TableCell>
                     {/* <TableCell>{order.bikeId}</TableCell>
                     <TableCell>{order.parkingType}</TableCell> */}
 
@@ -68,9 +79,12 @@ export const OrdersTable = (props) => {
                       <Button href={`/bikes/${order.bikeId}`}>{order.plateNumber}</Button>
                     </TableCell>
                     <TableCell>{order.parkingType}</TableCell>
+                    <TableCell style={{ color: getStatusColor(order.parkingOrderStatus) }}>
+                      {order.parkingOrderStatus}
+                    </TableCell>
                     <TableCell>{expiredDate}</TableCell>
                     <TableCell>{createdAt}</TableCell>
-                    <TableCell>{updatedAt}</TableCell>
+                    {/* <TableCell>{updatedAt}</TableCell> */}
                   </TableRow>
                 );
               })}

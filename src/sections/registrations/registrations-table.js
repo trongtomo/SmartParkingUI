@@ -18,6 +18,18 @@ import {
 import { Scrollbar } from "src/components/scrollbar";
 
 import Link from "next/link";
+const getRegistrationStatusColor = (status) => {
+  switch (status) {
+    case "verified":
+      return "blue";
+    case "pending":
+      return "green";
+    case "rejected":
+      return "red";
+    default:
+      return "black"; // Set a default color if needed
+  }
+};
 export const RegistrationsTable = (props) => {
   const {
     count = 0,
@@ -36,11 +48,11 @@ export const RegistrationsTable = (props) => {
               <TableRow>
                 <TableCell>Registration ID</TableCell>
                 <TableCell>Users phone</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Approved By</TableCell>
                 <TableCell>Plate Number</TableCell>
+                <TableCell>Approved By</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
+                {/* <TableCell>Updated At</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -63,11 +75,16 @@ export const RegistrationsTable = (props) => {
                         {registration.username}
                       </Button>
                     </TableCell>
-                    <TableCell>{registration.registrationStatus}</TableCell>
-                    <TableCell>{registration.approvedBy}</TableCell>
+
                     <TableCell>{registration.plateNumber}</TableCell>
+                    <TableCell>{registration.approvedBy}</TableCell>
+                    <TableCell
+                      style={{ color: getRegistrationStatusColor(registration.registrationStatus) }}
+                    >
+                      {registration.registrationStatus}
+                    </TableCell>
                     <TableCell>{createdAt}</TableCell>
-                    <TableCell>{updatedAt}</TableCell>
+                    {/* <TableCell>{updatedAt}</TableCell> */}
                   </TableRow>
                 );
               })}

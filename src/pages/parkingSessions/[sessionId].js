@@ -170,7 +170,7 @@ const renderImage = (imageData, altText) => {
   }
 
   return (
-    <Image src={`data:image/png;base64, ${imageData}`} alt={altText} width={300} height={400} />
+    <Image src={`data:image/png;base64, ${imageData}`} alt={altText} width={300} height={300} />
   );
 };
 SessionDetailPage.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;

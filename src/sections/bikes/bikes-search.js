@@ -16,7 +16,7 @@ export const BikesSearch = ({ onSearch }) => {
           name="search"
           defaultValue=""
           fullWidth
-          placeholder="Search by plateNumber"
+          placeholder="Search by Plate Number"
           startAdornment={
             <InputAdornment position="start">
               <SvgIcon color="action" fontSize="small">

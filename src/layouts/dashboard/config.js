@@ -1,22 +1,17 @@
 import ChartBarIcon from "@heroicons/react/24/solid/ChartBarIcon";
-import CogIcon from "@heroicons/react/24/solid/CogIcon";
-import LockClosedIcon from "@heroicons/react/24/solid/LockClosedIcon";
 import ShoppingBagIcon from "@heroicons/react/24/solid/ShoppingBagIcon";
-import UserIcon from "@heroicons/react/24/solid/UserIcon";
-import UserPlusIcon from "@heroicons/react/24/solid/UserPlusIcon";
 import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
-import XCircleIcon from "@heroicons/react/24/solid/XCircleIcon";
+
 import { SpeedDialIcon, SvgIcon } from "@mui/material";
-import MoneyIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
-import ComputerDesktopIcon from "@heroicons/react/24/solid/ComputerDesktopIcon";
-import ArrowPathIcon from "@heroicons/react/24/solid/ArrowPathIcon";
 import ListBulletIcon from "@heroicons/react/24/solid/ListBulletIcon";
 import PhoneIcon from "@heroicons/react/24/solid/PhoneIcon";
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
-import CurrencyDollarIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
+import ClipboardDocumentIcon from "@heroicons/react/24/solid/ClipboardDocumentIcon";
 import DeviceTabletIcon from "@heroicons/react/24/solid/DeviceTabletIcon";
-import EllipsisVerticalIcon from "@heroicons/react/24/solid/EllipsisVerticalIcon";
+import CogIcon from "@heroicons/react/24/solid/CogIcon";
 import ArrowTopRightOnSquareIcon from "@heroicons/react/24/solid/ArrowTopRightOnSquareIcon";
+
+import CreditCardIcon from "@heroicons/react/24/solid/CreditCardIcon";
 export const items = [
   {
     title: "Overview",
@@ -32,7 +27,7 @@ export const items = [
     path: "/registrations",
     icon: (
       <SvgIcon fontSize="small">
-        <UsersIcon />
+        <ClipboardDocumentIcon />
       </SvgIcon>
     ),
   },
@@ -68,7 +63,7 @@ export const items = [
     path: "/users",
     icon: (
       <SvgIcon fontSize="small">
-        <UserIcon />
+        <UsersIcon />
       </SvgIcon>
     ),
   },
@@ -77,7 +72,7 @@ export const items = [
     path: "/cards",
     icon: (
       <SvgIcon fontSize="small">
-        <DeviceTabletIcon />
+        <CreditCardIcon />
       </SvgIcon>
     ),
   },
@@ -104,7 +99,7 @@ export const items = [
     path: "/bikes",
     icon: (
       <SvgIcon fontSize="small">
-        <EllipsisVerticalIcon />
+        <CogIcon />
       </SvgIcon>
     ),
   },

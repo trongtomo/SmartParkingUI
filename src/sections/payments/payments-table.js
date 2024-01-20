@@ -52,7 +52,12 @@ export const PaymentsTable = (props) => {
                     </Button>
                   </TableCell>
                   <TableCell>{payment.paymentAmount}</TableCell>
-                  <TableCell>{payment.paymentStatus}</TableCell>
+
+                  <TableCell
+                    style={{ color: payment.paymentStatus === "success" ? "blue" : "red" }}
+                  >
+                    {payment.paymentStatus}
+                  </TableCell>
                   <TableCell>{payment.paymentMethod}</TableCell>
                   <TableCell>{moment(payment.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                 </TableRow>

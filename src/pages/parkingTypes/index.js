@@ -269,7 +269,14 @@ const ParkingTypesIndexPage = () => {
                         {parkingType.parkingTypeName}
                       </Typography>
                       <Typography variant="body1">
-                        Status: {parkingType.parkingTypeStatus}
+                        <span>Status:</span>{" "}
+                        <span
+                          style={{
+                            color: parkingType.parkingTypeStatus === "active" ? "blue" : "red",
+                          }}
+                        >
+                          {parkingType.parkingTypeStatus}
+                        </span>
                       </Typography>
                       <Typography variant="body1">Group: {parkingType.parkingTypeGroup}</Typography>
                       <Typography variant="body1">Fee: {parkingType.parkingTypeFee}</Typography>

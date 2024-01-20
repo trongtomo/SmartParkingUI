@@ -14,6 +14,18 @@ import {
 } from "@mui/material";
 import { Scrollbar } from "src/components/scrollbar";
 
+const getColorForStatus = (status) => {
+  switch (status) {
+    case "active":
+      return "blue";
+    case "inactive":
+      return "red";
+    case "assigned":
+      return "green";
+    default:
+      return "black"; // or any default color
+  }
+};
 export const CardsTable = (props) => {
   const {
     count = 0,
@@ -33,10 +45,10 @@ export const CardsTable = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Card ID</TableCell>
+                <TableCell>Bike Plate number</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
-                <TableCell>Bike Plate number</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -46,9 +58,6 @@ export const CardsTable = (props) => {
                   <TableCell>
                     <Button href={`/cards/${card.cardId}`}>{card.cardId}</Button>
                   </TableCell>
-                  <TableCell>{card.status}</TableCell>
-                  <TableCell>{card.createdAt}</TableCell>
-                  <TableCell>{card.updatedAt || "N/A"}</TableCell>
                   <TableCell>
                     {card.bikeId ? (
                       <Button href={`/bikes/${card.bikeId}`}>{card.plateNumber}</Button>
@@ -56,6 +65,12 @@ export const CardsTable = (props) => {
                       <span>N/A</span>
                     )}
                   </TableCell>
+                  <TableCell style={{ color: getColorForStatus(card.status) }}>
+                    {card.status}
+                  </TableCell>
+                  <TableCell>{card.createdAt}</TableCell>
+                  <TableCell>{card.updatedAt || "N/A"}</TableCell>
+
                   <TableCell>
                     <Box display="flex">
                       <Button

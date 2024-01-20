@@ -44,6 +44,7 @@ const handlers = {
   [HANDLERS.SIGN_OUT]: (state) => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("authenticated");
+    localStorage.removeItem("userFullName");
     return {
       ...state,
       isAuthenticated: false,
@@ -93,9 +94,10 @@ export const AuthProvider = (props) => {
     initialize();
   }, []);
 
-  const setToken = (token) => {
+  const setToken = (token, userFullName) => {
     localStorage.setItem("accessToken", token);
     localStorage.setItem("authenticated", true);
+    localStorage.setItem("userFullName", userFullName);
   };
 
   const signIn = async (username, password) => {
@@ -105,18 +107,18 @@ export const AuthProvider = (props) => {
         username,
         password,
       });
-
+      console.log(response);
       const token = response.data.data.token;
-      setToken(token);
-      
+      const userFullName = response.data.data.user.userFullName;
+      setToken(token, userFullName);
 
       const responseData = response.data.data;
 
       const user = {
         id: responseData.userId,
-        fullName: responseData.fullName,
+        userFullName: responseData.userFullName,
         username: responseData.username,
-        isActive: responseData.isActive,
+        userStatus: responseData.userStatus,
         createdAt: responseData.createdAt,
         updatedAt: responseData.updatedAt,
         accessToken: token,

@@ -16,7 +16,7 @@ export const CardsSearch = ({ onSearch }) => {
           name="search"
           defaultValue=""
           fullWidth
-          placeholder="Search by cardId"
+          placeholder="Search by Card Id"
           startAdornment={
             <InputAdornment position="start">
               <SvgIcon color="action" fontSize="small">

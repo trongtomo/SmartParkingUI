@@ -64,7 +64,9 @@ export const UsersTable = (props) => {
                     </TableCell>
                     <TableCell>{user.userFullName}</TableCell>
                     <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.userStatus}</TableCell>
+                    <TableCell style={{ color: user.userStatus === "active" ? "blue" : "red" }}>
+                      {user.userStatus}
+                    </TableCell>
                     <TableCell>{moment(user.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{moment(user.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                     <TableCell>{getRoleName(user.roleId)}</TableCell>

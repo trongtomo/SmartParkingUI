@@ -58,7 +58,9 @@ export const BikesTable = (props) => {
                   <TableCell>{bike.model}</TableCell>
                   <TableCell>{bike.plateNumber}</TableCell>
                   <TableCell>{bike.manufacturer}</TableCell>
-                  <TableCell>{bike.bikeStatus}</TableCell>
+                  <TableCell style={{ color: bike.bikeStatus === "active" ? "blue" : "red" }}>
+                    {bike.bikeStatus}
+                  </TableCell>
                   <TableCell>{moment(bike.createdAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                   <TableCell>{moment(bike.updatedAt).format("YYYY-MM-DD HH:mm:ss")}</TableCell>
                 </TableRow>
